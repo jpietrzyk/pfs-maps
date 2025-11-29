@@ -27,7 +27,11 @@ const getStatusColor = (status: string) => {
 };
 
 // Create SVG icon based on priority
-const createSvgIcon = (priority: string, status: string) => {
+const createSvgIcon = (
+  priority: string,
+  status: string,
+  isHighlighted = false
+) => {
   let color = "#6b7280"; // default gray
   let bgColor = "#f9fafb";
 
@@ -53,11 +57,29 @@ const createSvgIcon = (priority: string, status: string) => {
     bgColor = "#fee2e2";
   }
 
+  // Enhanced colors for highlighted state
+  if (isHighlighted) {
+    color = "#1d4ed8"; // bright blue
+    bgColor = "#dbeafe"; // light blue background
+  }
+
+  const strokeWidth = isHighlighted ? "4" : "2";
+  const markerScale = isHighlighted ? "1.2" : "1";
+
   const svg = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="12" fill="${bgColor}" stroke="${color}" stroke-width="2"/>
-      <circle cx="16" cy="16" r="6" fill="${color}"/>
-      <circle cx="16" cy="16" r="3" fill="white"/>
+      <g transform="scale(${markerScale}) translate(4, 4)">
+        <circle cx="16" cy="16" r="12" fill="${bgColor}" stroke="${color}" stroke-width="${strokeWidth}"/>
+        <circle cx="16" cy="16" r="6" fill="${color}"/>
+        <circle cx="16" cy="16" r="3" fill="white"/>
+        ${
+          isHighlighted
+            ? `
+          <circle cx="16" cy="16" r="16" fill="none" stroke="${color}" stroke-width="1" opacity="0.3" stroke-dasharray="4,4"/>
+        `
+            : ""
+        }
+      </g>
     </svg>
   `;
 
@@ -131,8 +153,23 @@ const OrderMarkers: React.FC = () => {
       // Add tooltip behavior
       marker.setData(tooltipContent);
 
+      // Store original icon for highlighting
+      const originalIcon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, false)
+      );
+      const highlightedIcon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, true)
+      );
+
+      // Set initial icon
+      marker.setIcon(originalIcon);
+
       // Add hover events
       marker.addEventListener("pointerenter", () => {
+        // Highlight the marker
+        marker.setIcon(highlightedIcon);
+
+        // Show tooltip
         const tooltip = new H.ui.InfoBubble(marker.getGeometry(), {
           content: tooltipContent,
         });
@@ -143,16 +180,16 @@ const OrderMarkers: React.FC = () => {
       });
 
       marker.addEventListener("pointerleave", () => {
+        // Remove highlight
+        marker.setIcon(originalIcon);
+
+        // Hide tooltip
         const tooltip = marker._tooltip;
         if (tooltip) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (H.ui.UI.getUi(map) as any).removeBubble(tooltip);
         }
       });
-
-      // Style marker based on priority
-      const icon = new H.map.Icon(createSvgIcon(order.priority, order.status));
-      marker.setIcon(icon);
 
       markerGroup.addObject(marker);
     });
