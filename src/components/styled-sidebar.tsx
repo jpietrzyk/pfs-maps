@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import type { Order } from "@/types/order";
 import { sampleOrders } from "@/types/order";
+import { OrderHighlightContext } from "@/contexts/OrderHighlightContext";
 import {
   DndContext,
   closestCenter,
@@ -26,6 +27,7 @@ interface StyledSidebarProps {
 const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [orders, setOrders] = useState<Order[]>(sampleOrders);
+  const { setHighlightedOrderId } = useContext(OrderHighlightContext) || {};
 
   // Configure sensors for drag and drop
   const sensors = useSensors(
@@ -116,6 +118,7 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
               e.currentTarget.style.boxShadow =
                 "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
             }
+            setHighlightedOrderId?.(order.id);
           }}
           onMouseLeave={(e) => {
             if (!isDragging) {
@@ -125,6 +128,7 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
               e.currentTarget.style.boxShadow =
                 "0 1px 3px 0 rgba(0, 0, 0, 0.1)";
             }
+            setHighlightedOrderId?.(null);
           }}
         >
           <div

@@ -1,6 +1,8 @@
 // src/components/OrderMarkers.tsx
 import { useEffect } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
+import { OrderHighlightContext } from "@/contexts/OrderHighlightContext";
+import { useContext } from "react";
 import { sampleOrders } from "@/types/order";
 
 // Helper function to get status colors
@@ -20,9 +22,14 @@ const getStatusColor = (status: string) => {
 };
 
 // Create SVG icon based on priority
-const createSvgIcon = (priority: string, status: string) => {
+const createSvgIcon = (
+  priority: string,
+  status: string,
+  isHighlighted: boolean = false
+) => {
   let color = "#6b7280"; // default gray
   let bgColor = "#f9fafb";
+  let strokeWidth = 2;
 
   // Set colors based on priority
   switch (priority) {
@@ -46,10 +53,29 @@ const createSvgIcon = (priority: string, status: string) => {
     bgColor = "#fee2e2";
   }
 
+  // Apply highlighting
+  if (isHighlighted) {
+    color = "#1d4ed8"; // blue for highlight
+    strokeWidth = 4;
+    // Add glow effect
+    bgColor = "#dbeafe";
+  }
+
   const svg = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="12" fill="${bgColor}" stroke="${color}" stroke-width="2"/>
-      <circle cx="16" cy="16" r="6" fill="${color}"/>
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <circle cx="16" cy="16" r="12" fill="${bgColor}" stroke="${color}" stroke-width="${strokeWidth}"/>
+      <circle cx="16" cy="16" r="${
+        isHighlighted ? 8 : 6
+      }" fill="${color}" filter="${isHighlighted ? "url(#glow)" : ""}"/>
       <circle cx="16" cy="16" r="3" fill="white"/>
     </svg>
   `;
@@ -59,6 +85,9 @@ const createSvgIcon = (priority: string, status: string) => {
 
 const OrderMarkers: React.FC = () => {
   const { isReady, mapRef } = useHereMap();
+  const { highlightedOrderId } = useContext(OrderHighlightContext) || {
+    highlightedOrderId: null,
+  };
 
   useEffect(() => {
     if (!isReady || !mapRef.current) return;
@@ -141,8 +170,14 @@ const OrderMarkers: React.FC = () => {
         }
       });
 
+      // Store order reference on marker for highlighting
+      (marker as any).orderId = order.id;
+
       // Style marker based on priority
-      const icon = new H.map.Icon(createSvgIcon(order.priority, order.status));
+      const isHighlighted = highlightedOrderId === order.id;
+      const icon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, isHighlighted)
+      );
       marker.setIcon(icon);
 
       markerGroup.addObject(marker);
@@ -163,7 +198,7 @@ const OrderMarkers: React.FC = () => {
     return () => {
       map.removeObject(markerGroup);
     };
-  }, [isReady]);
+  }, [isReady, highlightedOrderId]);
 
   return null; // This component doesn't render anything visible
 };
