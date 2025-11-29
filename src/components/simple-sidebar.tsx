@@ -111,7 +111,7 @@ const SimpleSidebar: React.FC<SimpleSidebarProps> = ({ className = "" }) => {
                 ${collapsed ? "justify-center px-2" : ""}
               `}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="h-4 w-4 flex-shrink-0" />
               {!collapsed && <span className="truncate">{item.title}</span>}
             </a>
           );
