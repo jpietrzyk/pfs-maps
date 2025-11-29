@@ -3,6 +3,13 @@ import { useEffect } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
 import { sampleOrders } from "@/types/order";
 
+// Extend MapMarker interface to include tooltip property
+declare global {
+  interface MapMarker {
+    _tooltip?: unknown;
+  }
+}
+
 // Helper function to get status colors
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -64,14 +71,13 @@ const OrderMarkers: React.FC = () => {
     if (!isReady || !mapRef.current) return;
 
     // Get the HERE Maps API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const H = (window as any).H;
+    const H = window.H;
     if (!H) {
       console.error("HERE Maps SDK not available");
       return;
     }
 
-    const map = mapRef.current as any;
+    const map = mapRef.current;
 
     // Create a group for all order markers
     const markerGroup = new H.map.Group();
@@ -130,14 +136,17 @@ const OrderMarkers: React.FC = () => {
         const tooltip = new H.ui.InfoBubble(marker.getGeometry(), {
           content: tooltipContent,
         });
-        H.ui.UI.getUi(map).addBubble(tooltip);
-        (marker as any)._tooltip = tooltip;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (H.ui.UI.getUi(map) as any).addBubble(tooltip);
+        // Store tooltip reference on marker
+        marker._tooltip = tooltip;
       });
 
       marker.addEventListener("pointerleave", () => {
-        const tooltip = (marker as any)._tooltip;
+        const tooltip = marker._tooltip;
         if (tooltip) {
-          H.ui.UI.getUi(map).removeBubble(tooltip);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (H.ui.UI.getUi(map) as any).removeBubble(tooltip);
         }
       });
 
@@ -163,7 +172,7 @@ const OrderMarkers: React.FC = () => {
     return () => {
       map.removeObject(markerGroup);
     };
-  }, [isReady]);
+  }, [isReady, mapRef]);
 
   return null; // This component doesn't render anything visible
 };
