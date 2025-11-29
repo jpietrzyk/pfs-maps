@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import type { Order } from "@/types/order";
 import { sampleOrders } from "@/types/order";
 import { useMarkerHighlight } from "@/contexts/MarkerHighlightContext";
@@ -141,6 +141,7 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
                 ? "0 4px 12px -2px rgba(29, 78, 216, 0.2)"
                 : "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
             }
+            setHighlightedOrderId?.(order.id);
           }}
           onMouseLeave={(e) => {
             if (!isDragging) {
@@ -158,6 +159,7 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
                 ? "0 4px 12px -2px rgba(29, 78, 216, 0.2)"
                 : "0 1px 3px 0 rgba(0, 0, 0, 0.1)";
             }
+            setHighlightedOrderId?.(null);
           }}
         >
           <div
