@@ -224,7 +224,7 @@ const OrderMarkers: React.FC = () => {
     return () => {
       map.removeObject(markerGroup);
     };
-  }, [isReady, mapRef]);
+  }, [isReady, mapRef, setHighlightedOrderId]);
 
   // Effect to handle context changes and update marker highlights
   useEffect(() => {

@@ -16,7 +16,7 @@ function App() {
         </div>
 
         {/* Sidebar overlaid on top of the map */}
-        <div className="absolute inset-y-0 left-0 z-[9999]">
+        <div className="absolute inset-y-0 left-0 z-9999">
           <StyledSidebar />
         </div>
       </div>
