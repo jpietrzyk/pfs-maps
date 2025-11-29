@@ -1,9 +1,18 @@
 // src/components/OrderMarkers.tsx
-import { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
 import { OrderHighlightContext } from "@/contexts/OrderHighlightContext";
 import { useContext } from "react";
 import { sampleOrders } from "@/types/order";
+import { useMarkerHighlight } from "@/contexts/MarkerHighlightContext";
+import type { MapMarker } from "@/types/here-maps";
+
+// Extend MapMarker interface to include tooltip property
+declare global {
+  interface MapMarker {
+    _tooltip?: unknown;
+  }
+}
 
 // Helper function to get status colors
 const getStatusColor = (status: string) => {
@@ -25,7 +34,7 @@ const getStatusColor = (status: string) => {
 const createSvgIcon = (
   priority: string,
   status: string,
-  isHighlighted: boolean = false
+  isHighlighted = false
 ) => {
   let color = "#6b7280"; // default gray
   let bgColor = "#f9fafb";
@@ -53,30 +62,29 @@ const createSvgIcon = (
     bgColor = "#fee2e2";
   }
 
-  // Apply highlighting
+  // Enhanced colors for highlighted state
   if (isHighlighted) {
-    color = "#1d4ed8"; // blue for highlight
-    strokeWidth = 4;
-    // Add glow effect
-    bgColor = "#dbeafe";
+    color = "#1d4ed8"; // bright blue
+    bgColor = "#dbeafe"; // light blue background
   }
+
+  const strokeWidth = isHighlighted ? "4" : "2";
+  const markerScale = isHighlighted ? "1.2" : "1";
 
   const svg = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge>
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
-      <circle cx="16" cy="16" r="12" fill="${bgColor}" stroke="${color}" stroke-width="${strokeWidth}"/>
-      <circle cx="16" cy="16" r="${
-        isHighlighted ? 8 : 6
-      }" fill="${color}" filter="${isHighlighted ? "url(#glow)" : ""}"/>
-      <circle cx="16" cy="16" r="3" fill="white"/>
+      <g transform="scale(${markerScale}) translate(4, 4)">
+        <circle cx="16" cy="16" r="12" fill="${bgColor}" stroke="${color}" stroke-width="${strokeWidth}"/>
+        <circle cx="16" cy="16" r="6" fill="${color}"/>
+        <circle cx="16" cy="16" r="3" fill="white"/>
+        ${
+          isHighlighted
+            ? `
+          <circle cx="16" cy="16" r="16" fill="none" stroke="${color}" stroke-width="1" opacity="0.3" stroke-dasharray="4,4"/>
+        `
+            : ""
+        }
+      </g>
     </svg>
   `;
 
@@ -85,22 +93,22 @@ const createSvgIcon = (
 
 const OrderMarkers: React.FC = () => {
   const { isReady, mapRef } = useHereMap();
-  const { highlightedOrderId } = useContext(OrderHighlightContext) || {
-    highlightedOrderId: null,
-  };
+  const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
+
+  // Store references to markers by order ID
+  const markersRef = useRef<Map<string, MapMarker>>(new Map());
 
   useEffect(() => {
     if (!isReady || !mapRef.current) return;
 
     // Get the HERE Maps API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const H = (window as any).H;
+    const H = window.H;
     if (!H) {
       console.error("HERE Maps SDK not available");
       return;
     }
 
-    const map = mapRef.current as any;
+    const map = mapRef.current;
 
     // Create a group for all order markers
     const markerGroup = new H.map.Group();
@@ -112,6 +120,9 @@ const OrderMarkers: React.FC = () => {
         lat: order.location.lat,
         lng: order.location.lng,
       });
+
+      // Store marker reference by order ID
+      markersRef.current.set(order.id, marker);
 
       // Create tooltip content
       const statusColors = getStatusColor(order.status);
@@ -154,31 +165,49 @@ const OrderMarkers: React.FC = () => {
       // Add tooltip behavior
       marker.setData(tooltipContent);
 
+      // Store original icon for highlighting
+      const originalIcon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, false)
+      );
+      const highlightedIcon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, true)
+      );
+
+      // Set initial icon
+      marker.setIcon(originalIcon);
+
       // Add hover events
       marker.addEventListener("pointerenter", () => {
+        // Set the highlighted order ID in context
+        setHighlightedOrderId(order.id);
+
+        // Highlight the marker
+        marker.setIcon(highlightedIcon);
+
+        // Show tooltip
         const tooltip = new H.ui.InfoBubble(marker.getGeometry(), {
           content: tooltipContent,
         });
-        H.ui.UI.getUi(map).addBubble(tooltip);
-        (marker as any)._tooltip = tooltip;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (H.ui.UI.getUi(map) as any).addBubble(tooltip);
+        // Store tooltip reference on marker
+        marker._tooltip = tooltip;
       });
 
       marker.addEventListener("pointerleave", () => {
-        const tooltip = (marker as any)._tooltip;
+        // Clear the highlighted order ID in context
+        setHighlightedOrderId(null);
+
+        // Remove highlight
+        marker.setIcon(originalIcon);
+
+        // Hide tooltip
+        const tooltip = marker._tooltip;
         if (tooltip) {
-          H.ui.UI.getUi(map).removeBubble(tooltip);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (H.ui.UI.getUi(map) as any).removeBubble(tooltip);
         }
       });
-
-      // Store order reference on marker for highlighting
-      (marker as any).orderId = order.id;
-
-      // Style marker based on priority
-      const isHighlighted = highlightedOrderId === order.id;
-      const icon = new H.map.Icon(
-        createSvgIcon(order.priority, order.status, isHighlighted)
-      );
-      marker.setIcon(icon);
 
       markerGroup.addObject(marker);
     });
@@ -198,7 +227,32 @@ const OrderMarkers: React.FC = () => {
     return () => {
       map.removeObject(markerGroup);
     };
-  }, [isReady, highlightedOrderId]);
+  }, [isReady, mapRef]);
+
+  // Effect to handle context changes and update marker highlights
+  useEffect(() => {
+    if (!isReady || !mapRef.current) return;
+
+    const H = window.H;
+    if (!H) return;
+
+    // Update all markers based on highlightedOrderId
+    sampleOrders.forEach((order) => {
+      const marker = markersRef.current.get(order.id);
+      if (!marker) return;
+
+      const originalIcon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, false)
+      );
+      const highlightedIcon = new H.map.Icon(
+        createSvgIcon(order.priority, order.status, true)
+      );
+
+      // Check if this marker should be highlighted
+      const shouldHighlight = highlightedOrderId === order.id;
+      marker.setIcon(shouldHighlight ? highlightedIcon : originalIcon);
+    });
+  }, [highlightedOrderId, isReady, mapRef]);
 
   return null; // This component doesn't render anything visible
 };

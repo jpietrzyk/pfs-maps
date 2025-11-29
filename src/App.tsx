@@ -1,12 +1,12 @@
 import HereMap from "@/components/here-map.tsx";
 import StyledSidebar from "@/components/styled-sidebar";
 import OrderMarkers from "@/components/order-markers";
-import { OrderHighlightProvider } from "@/contexts/OrderHighlightProvider";
+import { MarkerHighlightProvider } from "@/contexts/MarkerHighlightContext";
 // import PublicTransitToggle from "@/components/public-transit-toggle.jsx"; // TODO: Convert to TypeScript
 
 function App() {
   return (
-    <OrderHighlightProvider>
+    <MarkerHighlightProvider>
       <div className="h-screen w-screen overflow-hidden relative">
         {/* Map in the background */}
         <div className="absolute inset-0 z-0">
@@ -20,7 +20,7 @@ function App() {
           <StyledSidebar />
         </div>
       </div>
-    </OrderHighlightProvider>
+    </MarkerHighlightProvider>
   );
 }
 
