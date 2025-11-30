@@ -3,6 +3,31 @@ import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
 import { useMarkerHighlight } from "@/hooks/useMarkerHighlight";
 import { useOrderRoute } from "@/hooks/useOrderRoute";
+
+// Utility function to trim product names for compact display
+const trimProductName = (name: string, maxLength: number = 25): string => {
+  if (name.length <= maxLength) return name;
+
+  // Try to find good break points
+  const words = name.split(" ");
+
+  // If it's a dimension + description pattern (like "3x5 spad do tyłu...")
+  if (words.length >= 3 && /^\d+x\d+/.test(words[0])) {
+    const dimension = words[0];
+    const type = words.slice(1, 3).join(" "); // Take first 2 words after dimension
+    return `${dimension} ${type}...`;
+  }
+
+  // For very long names, take first few words
+  const shortWords = words.slice(0, 4);
+  return shortWords.join(" ") + "...";
+};
+
+// Utility function to trim customer names
+const trimCustomerName = (name: string, maxLength: number = 15): string => {
+  if (name.length <= maxLength) return name;
+  return name.substring(0, maxLength - 1) + ".";
+};
 import {
   DndContext,
   closestCenter,
@@ -157,7 +182,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
       >
         <div
           style={{
-            padding: "8px 12px",
+            padding: "6px 10px",
             borderRadius: "4px",
             backgroundColor: isHighlighted ? "#dbeafe" : "#f9fafb",
             border: `1px solid ${isHighlighted ? "#1d4ed8" : "#e5e7eb"}`,
@@ -193,8 +218,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
                   fontWeight: "600",
                   color: "#111827",
                 }}
+                title={order.name} // Show full name on hover
               >
-                {order.name}
+                {trimProductName(order.name)}
               </span>
             </div>
             <span
@@ -218,8 +244,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
               marginBottom: "4px",
               fontWeight: "500",
             }}
+            title={order.customer} // Show full name on hover
           >
-            {order.customer}
+            {trimCustomerName(order.customer)}
           </div>
           <div
             style={{
@@ -292,7 +319,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
       >
         <div
           style={{
-            padding: "8px 12px",
+            padding: "6px 10px",
             borderRadius: "4px",
             backgroundColor: "#f9fafb",
             border: "1px solid #e5e7eb",
@@ -333,8 +360,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
                   fontWeight: "600",
                   color: "#374151",
                 }}
+                title={order.name} // Show full name on hover
               >
-                {order.name}
+                {trimProductName(order.name)}
               </span>
             </div>
             <span
@@ -358,8 +386,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
               marginBottom: "4px",
               fontWeight: "500",
             }}
+            title={order.customer} // Show full name on hover
           >
-            {order.customer}
+            {trimCustomerName(order.customer)}
           </div>
           <div
             style={{
@@ -502,8 +531,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: "8px",
-                    maxHeight: "calc(50vh - 150px)",
+                    gap: "6px",
+                    maxHeight: "calc(60vh - 120px)",
                     overflowY: "auto",
                   }}
                 >
@@ -531,8 +560,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: "8px",
-                      maxHeight: "calc(50vh - 150px)",
+                      gap: "6px",
+                      maxHeight: "calc(40vh - 100px)",
                       overflowY: "auto",
                     }}
                   >
