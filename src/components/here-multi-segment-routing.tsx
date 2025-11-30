@@ -1,10 +1,11 @@
 // src/components/HereMultiSegmentRouting.tsx
 import React, { useEffect, useRef } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
-import { sampleOrders } from "@/types/order";
+import { useOrderRoute } from "@/contexts/OrderRouteContext";
 
 const HereMultiSegmentRouting: React.FC = () => {
   const { isReady, mapRef } = useHereMap();
+  const { routeOrders } = useOrderRoute();
   const routeGroupRef = useRef<any>(null);
 
   useEffect(() => {
@@ -17,11 +18,8 @@ const HereMultiSegmentRouting: React.FC = () => {
       return;
     }
 
-    // Sort orders by creation date to create a logical route
-    const sortedOrders = [...sampleOrders].sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+    // Use the current route orders from context
+    const sortedOrders = [...routeOrders];
 
     if (sortedOrders.length < 2) {
       console.warn("Need at least 2 orders to create a route");
@@ -66,7 +64,7 @@ const HereMultiSegmentRouting: React.FC = () => {
         };
 
         try {
-          await new Promise<void>((resolve, reject) => {
+          await new Promise<void>((resolve) => {
             routingService.calculateRoute(
               segmentParams,
               // Success callback
@@ -264,7 +262,7 @@ const HereMultiSegmentRouting: React.FC = () => {
       }
       routeGroupRef.current = null;
     };
-  }, [isReady, mapRef]);
+  }, [isReady, mapRef, routeOrders]);
 
   return null; // This component doesn't render anything visible
 };
