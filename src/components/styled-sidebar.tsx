@@ -22,9 +22,13 @@ import { CSS } from "@dnd-kit/utilities";
 
 interface StyledSidebarProps {
   className?: string;
+  children?: React.ReactNode;
 }
 
-const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
+const StyledSidebar: React.FC<StyledSidebarProps> = ({
+  className = "",
+  children,
+}) => {
   const [collapsed, setCollapsed] = useState(false);
   const [orders, setOrders] = useState<Order[]>(sampleOrders);
   const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
@@ -366,9 +370,11 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
         </button>
       </div>
 
-      {/* Orders Section Only */}
+      {/* Content Section */}
       <nav style={{ flex: 1, padding: "8px" }}>
-        {!collapsed && (
+        {!collapsed && children ? (
+          <div style={{ height: "100%" }}>{children}</div>
+        ) : !collapsed ? (
           <>
             <div style={{ marginBottom: "16px" }}>
               <span
@@ -411,8 +417,7 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
               </SortableContext>
             </DndContext>
           </>
-        )}
-        {collapsed && (
+        ) : (
           <div
             style={{
               display: "flex",
@@ -431,7 +436,7 @@ const StyledSidebar: React.FC<StyledSidebarProps> = ({ className = "" }) => {
                 textOrientation: "mixed",
               }}
             >
-              ORDERS
+              ROUTE
             </span>
           </div>
         )}

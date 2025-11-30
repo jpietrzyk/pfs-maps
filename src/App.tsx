@@ -2,28 +2,34 @@ import HereMap from "@/components/here-map.tsx";
 import StyledSidebar from "@/components/styled-sidebar";
 import OrderMarkers from "@/components/order-markers";
 import HereMultiSegmentRouting from "@/components/here-multi-segment-routing";
+import RouteManager from "@/components/RouteManager";
 // import SimpleRouteTest from "@/components/simple-route-test";
 import { MarkerHighlightProvider } from "@/contexts/MarkerHighlightContext";
+import { OrderRouteProvider } from "@/contexts/OrderRouteContext";
 // import PublicTransitToggle from "@/components/public-transit-toggle.jsx"; // TODO: Convert to TypeScript
 
 function App() {
   return (
     <MarkerHighlightProvider>
-      <div className="h-screen w-screen overflow-hidden relative">
-        {/* Map in the background */}
-        <div className="absolute inset-0 z-0">
-          <HereMap />
-          <OrderMarkers />
-          <HereMultiSegmentRouting />
-          {/* <SimpleRouteTest /> */}
-          {/* <PublicTransitToggle /> */} {/* TODO: Convert to TypeScript */}
-        </div>
+      <OrderRouteProvider>
+        <div className="h-screen w-screen overflow-hidden relative">
+          {/* Map in the background */}
+          <div className="absolute inset-0 z-0">
+            <HereMap />
+            <OrderMarkers />
+            <HereMultiSegmentRouting />
+            {/* <SimpleRouteTest /> */}
+            {/* <PublicTransitToggle /> */} {/* TODO: Convert to TypeScript */}
+          </div>
 
-        {/* Sidebar overlaid on top of the map */}
-        <div className="absolute inset-y-0 left-0 z-[9999]">
-          <StyledSidebar />
+          {/* Sidebar overlaid on top of the map */}
+          <div className="absolute inset-y-0 left-0 z-[9999]">
+            <StyledSidebar>
+              <RouteManager />
+            </StyledSidebar>
+          </div>
         </div>
-      </div>
+      </OrderRouteProvider>
     </MarkerHighlightProvider>
   );
 }
