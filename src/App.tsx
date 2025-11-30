@@ -5,7 +5,7 @@ import HereMultiSegmentRouting from "@/components/here-multi-segment-routing";
 import RouteManager from "@/components/RouteManager";
 
 import { MarkerHighlightProvider } from "@/contexts/MarkerHighlightProvider";
-import { OrderRouteProvider } from "@/contexts/OrderRouteContext";
+import { OrderRouteProvider } from "@/contexts/OrderRouteProvider";
 // import PublicTransitToggle from "@/components/public-transit-toggle.jsx"; // TODO: Convert to TypeScript
 
 function App() {
