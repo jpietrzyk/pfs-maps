@@ -100,15 +100,11 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
           setActiveOrders(newActiveOrders);
           
           // Update route order to match new sidebar order
-          const newRouteOrders = [...routeOrders];
-          const routeIndex = newRouteOrders.findIndex((o) => o.id === draggedOrder.id);
-          if (routeIndex !== -1) {
-            const [movedOrder] = newRouteOrders.splice(routeIndex, 1);
-            // Find position in new route based on new sidebar order
-            const targetRoutIndex = newRouteOrders.findIndex((o) => o.id === newActiveOrders[index].id);
-            newRouteOrders.splice(targetRoutIndex !== -1 ? targetRoutIndex : newRouteOrders.length, 0, movedOrder);
-            setRouteOrders(newRouteOrders);
-          }
+          // Rebuild the route to only include active orders in the new order
+          const newRouteOrders = newActiveOrders.filter(order => 
+            routeOrders.some(routeOrder => routeOrder.id === order.id)
+          );
+          setRouteOrders(newRouteOrders);
         }
       } catch (error) {
         console.error("Error handling drop:", error);
