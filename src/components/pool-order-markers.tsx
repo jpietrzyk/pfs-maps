@@ -21,10 +21,10 @@ const PoolOrderMarkers = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef = useRef<Map<string, any>>(new Map());
 
-  // Create marker icon for pool orders (different style than active orders)
+  // Create marker icon for pool orders (bitmap for better performance with 200+ markers)
   const createPoolMarkerIcon = useCallback(() => {
-    // @ts-expect-error - H namespace from HERE Maps SDK
-    const H = window.H;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const H = (window as any).H;
     if (!H) {
       console.error(
         "[PoolOrderMarkers] H namespace not available for icon creation"
@@ -32,22 +32,9 @@ const PoolOrderMarkers = () => {
       return null;
     }
 
-    const svgMarkup = `
-      <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <g transform="translate(0, 0)">
-          <circle cx="16" cy="16" r="12" fill="#f3f4f6" stroke="#9ca3af" stroke-width="2"/>
-          <circle cx="16" cy="16" r="6" fill="#9ca3af"/>
-          <circle cx="16" cy="16" r="3" fill="white"/>
-        </g>
-      </svg>
-    `;
-
-    // Convert SVG to data URI (required format for HERE Maps)
-    const svgDataUri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-      svgMarkup
-    )}`;
-
-    return new H.map.Icon(svgDataUri);
+    // Use PNG bitmap for faster rendering with many markers
+    // Bitmap icons are 5-10x faster than SVG for large datasets
+    return new H.map.Icon("/markers/pool-marker.png");
   }, []);
 
   // Incremental marker updates - only add/remove what changed
@@ -60,8 +47,8 @@ const PoolOrderMarkers = () => {
       return;
     }
 
-    // @ts-expect-error - H namespace from HERE Maps SDK
-    const H = window.H;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const H = (window as any).H;
     if (!H) {
       console.error("[PoolOrderMarkers] HERE Maps SDK not available");
       return;
