@@ -5,6 +5,7 @@ export interface Order {
   status: 'pending' | 'in-progress' | 'completed' | 'cancelled';
   priority: 'low' | 'medium' | 'high';
   active: boolean;
+  deliveryId?: string; // ID of delivery this order is assigned to (null = in pool)
   createdAt: Date;
   updatedAt: Date;
   customer: string;

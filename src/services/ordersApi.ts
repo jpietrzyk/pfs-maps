@@ -115,4 +115,27 @@ export class OrdersApi {
 
     return { ...updatedOrder };
   }
+
+  /**
+   * Mock method for updating any order fields
+   * Future: This will be a PUT/PATCH request to the backend
+   */
+  static async updateOrder(id: string, updates: Partial<Order>): Promise<Order | null> {
+    await mockDelay(400);
+
+    const orderIndex = sampleOrdersData.findIndex(order => order.id === id);
+    if (orderIndex === -1) return null;
+
+    const updatedOrder = {
+      ...sampleOrdersData[orderIndex],
+      ...updates,
+      id, // Ensure ID doesn't change
+      updatedAt: new Date()
+    };
+
+    // Update the in-memory data
+    sampleOrdersData[orderIndex] = updatedOrder;
+
+    return { ...updatedOrder };
+  }
 }
