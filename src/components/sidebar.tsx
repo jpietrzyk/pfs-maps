@@ -110,6 +110,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
+            style={{
+              ...provided.draggableProps.style,
+              opacity: snapshot.isDragging ? 0.8 : 1,
+            }}
           >
             <Item
               onMouseEnter={() => setHighlightedOrderId(order.id)}
@@ -125,8 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = "", children }) => {
                   : isHighlighted
                   ? "#d1fae5"
                   : "transparent",
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                ...provided.draggableProps.style,
+                transition: "background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               <input
