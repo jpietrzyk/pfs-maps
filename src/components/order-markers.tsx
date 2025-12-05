@@ -10,7 +10,7 @@ import type { HereMapsUI } from "@/types/here-maps";
 // Extend MapMarker interface to include our custom properties
 declare global {
   interface MapMarker {
-    _tooltip?: import("@/types/here-maps").InfoBubble;
+    _tooltip?: HTMLDivElement; // Changed from InfoBubble to HTMLDivElement
     _originalIcon?: MapIcon;
     _highlightedIcon?: MapIcon;
   }
@@ -156,14 +156,10 @@ const OrderMarkers: React.FC = () => {
       if (!currentOrderIds.has(orderId)) {
         const marker = currentMarkers.get(orderId);
         if (marker) {
-          // Cleanup tooltip
+          // Cleanup tooltip (DOM element)
           const tooltip = marker._tooltip;
           if (tooltip) {
-            try {
-              map.removeObject(tooltip);
-            } catch (error) {
-              console.warn("Failed to cleanup tooltip:", error);
-            }
+            tooltip.remove();
             delete marker._tooltip;
           }
           // Remove marker from map
@@ -256,13 +252,21 @@ const OrderMarkers: React.FC = () => {
         // Highlight the marker immediately
         marker.setIcon(highlightedIcon);
 
-        // Show tooltip
-        const tooltip = new H.ui.InfoBubble(marker.getGeometry(), {
-          content: tooltipContent,
-        });
-        map.addObject(tooltip);
+        // Show tooltip using DOM overlay (fallback method)
+        const tooltipDiv = document.createElement("div");
+        tooltipDiv.innerHTML = tooltipContent;
+        tooltipDiv.style.cssText =
+          "position: absolute; background: white; padding: 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000; max-width: 250px; pointer-events: none; font-family: system-ui, sans-serif;";
+        tooltipDiv.className = "here-map-tooltip";
+        document.body.appendChild(tooltipDiv);
+
+        // Position it near the marker
+        const pixel = map.geoToScreen(marker.getGeometry());
+        tooltipDiv.style.left = pixel.x + 15 + "px";
+        tooltipDiv.style.top = pixel.y - 120 + "px";
+
         // Store tooltip reference on marker
-        marker._tooltip = tooltip;
+        marker._tooltip = tooltipDiv;
       });
 
       marker.addEventListener("pointerleave", () => {
@@ -278,9 +282,7 @@ const OrderMarkers: React.FC = () => {
         // Hide and cleanup tooltip
         const tooltip = marker._tooltip;
         if (tooltip) {
-          const ui: HereMapsUI = H.ui.UI.getUi(map);
-          ui.removeBubble(tooltip);
-          // Clear the tooltip reference
+          tooltip.remove();
           delete marker._tooltip;
         }
       });

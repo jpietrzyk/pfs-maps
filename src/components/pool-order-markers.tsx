@@ -2,6 +2,82 @@ import { useEffect, useRef, useCallback } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
 import { useDelivery } from "@/hooks/useDelivery";
 import { mapConfig } from "@/config/map.config";
+import type { Order } from "@/types/order";
+
+// Extend marker interface to include custom properties
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  interface Window {
+    H: any;
+  }
+}
+
+// Helper function to get status colors
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "pending":
+      return { bg: "#fef3c7", text: "#92400e" };
+    case "in-progress":
+      return { bg: "#dbeafe", text: "#1e40af" };
+    case "completed":
+      return { bg: "#d1fae5", text: "#065f46" };
+    case "cancelled":
+      return { bg: "#fee2e2", text: "#991b1b" };
+    default:
+      return { bg: "#f3f4f6", text: "#374151" };
+  }
+};
+
+// Create popup content for pool order
+const createPoolOrderPopupContent = (order: Order): string => {
+  const statusColors = getStatusColor(order.status);
+  return `
+    <div style="padding: 12px; max-width: 250px; font-family: system-ui, sans-serif;">
+      <div style="font-weight: bold; margin-bottom: 8px; font-size: 15px; color: #1f2937;">
+        ${order.name}
+      </div>
+      <div style="padding: 6px 10px; background-color: #f9fafb; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #9ca3af;">
+        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+          Pool Order (Unassigned)
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #4b5563; margin-bottom: 6px;">
+        <strong style="color: #374151;">Customer:</strong> ${order.customer}
+      </div>
+      <div style="font-size: 12px; margin-bottom: 6px;">
+        <strong style="color: #374151;">Status:</strong>
+        <span style="padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;
+          background-color: ${statusColors.bg};
+          color: ${statusColors.text};">
+          ${order.status.toUpperCase()}
+        </span>
+      </div>
+      <div style="font-size: 12px; margin-bottom: 6px;">
+        <strong style="color: #374151;">Priority:</strong>
+        <span style="text-transform: uppercase; font-weight: 600;">${
+          order.priority
+        }</span>
+      </div>
+      <div style="font-size: 12px; color: #059669; margin-bottom: 6px;">
+        <strong>📍 Location:</strong> ${order.location.lat.toFixed(
+          4
+        )}, ${order.location.lng.toFixed(4)}
+      </div>
+      ${
+        order.totalAmount
+          ? `
+        <div style="font-size: 12px; padding-top: 6px; border-top: 1px solid #e5e7eb;">
+          <strong style="color: #374151;">Total:</strong> €${order.totalAmount.toLocaleString()}
+        </div>
+      `
+          : ""
+      }
+      <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #6b7280;">
+        Click to assign to a delivery route
+      </div>
+    </div>
+  `;
+};
 
 /**
  * PoolOrderMarkers - High-performance marker rendering for pool orders
@@ -51,7 +127,9 @@ const PoolOrderMarkers = () => {
           </g>
         </svg>
       `;
-      const svgDataUri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
+      const svgDataUri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+        svgMarkup
+      )}`;
       return new H.map.Icon(svgDataUri);
     }
   }, []);
@@ -108,8 +186,59 @@ const PoolOrderMarkers = () => {
           { icon }
         );
 
-        // Store order data on marker for potential future use
-        marker.setData({ orderId: order.id, orderName: order.name });
+        // Store order data on marker for click handler
+        marker.setData({
+          orderId: order.id,
+          orderName: order.name,
+          order: order, // Store full order object for popup
+        });
+
+        // Add click event listener to show popup
+        marker.addEventListener("tap", (evt: any) => {
+          // Create popup content
+          const popupContent = createPoolOrderPopupContent(order);
+
+          // Create a simple HTML overlay popup
+          const bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+            content: popupContent,
+          });
+
+          // Use the UI layer that was created with the map
+          // First, get or create the default UI
+          let ui = map.getUi?.();
+          if (!ui) {
+            // If getUi doesn't exist, UI was created at map init - access it differently
+            console.warn("[PoolOrderMarkers] Using fallback UI access method");
+            // Store reference to bubble on marker for manual cleanup
+            marker._bubble = bubble;
+            // Try adding as overlay element instead
+            const bubbleDiv = document.createElement("div");
+            bubbleDiv.innerHTML = popupContent;
+            bubbleDiv.style.cssText =
+              "position: absolute; background: white; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000; max-width: 300px;";
+            document.body.appendChild(bubbleDiv);
+
+            // Position it near the click
+            const pixel = map.geoToScreen(marker.getGeometry());
+            bubbleDiv.style.left = pixel.x + 20 + "px";
+            bubbleDiv.style.top = pixel.y - 100 + "px";
+
+            // Close on click outside
+            const closeHandler = () => {
+              bubbleDiv.remove();
+              document.removeEventListener("click", closeHandler);
+            };
+            setTimeout(
+              () => document.addEventListener("click", closeHandler),
+              100
+            );
+
+            return;
+          }
+
+          ui.addBubble(bubble);
+          console.log("[PoolOrderMarkers] Popup opened for:", order.id);
+        });
 
         map.addObject(marker);
         currentMarkers.set(order.id, marker);
