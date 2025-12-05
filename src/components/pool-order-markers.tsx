@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
 import { useDelivery } from "@/hooks/useDelivery";
+import { mapConfig } from "@/config/map.config";
 
 /**
  * PoolOrderMarkers - High-performance marker rendering for pool orders
@@ -12,6 +13,7 @@ import { useDelivery } from "@/hooks/useDelivery";
  * - Batch operations: Group map updates
  * - No route calculations: Just markers
  * - Efficient diffing: Track markers by order ID
+ * - Configurable icon type: Bitmap (fast) or SVG (scalable)
  *
  * Handles 200+ markers efficiently by avoiding unnecessary DOM manipulation
  */
@@ -21,7 +23,7 @@ const PoolOrderMarkers = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const markersRef = useRef<Map<string, any>>(new Map());
 
-  // Create marker icon for pool orders (bitmap for better performance with 200+ markers)
+  // Create marker icon for pool orders (configurable: bitmap or SVG)
   const createPoolMarkerIcon = useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const H = (window as any).H;
@@ -32,9 +34,26 @@ const PoolOrderMarkers = () => {
       return null;
     }
 
-    // Use PNG bitmap for faster rendering with many markers
-    // Bitmap icons are 5-10x faster than SVG for large datasets
-    return new H.map.Icon("/markers/pool-marker.png");
+    // Check configuration: use bitmap or SVG
+    if (mapConfig.poolMarkers.useBitmap) {
+      // BITMAP MODE: PNG image for best performance with 200+ markers
+      // 5-10x faster rendering, lower CPU usage
+      return new H.map.Icon("/markers/pool-marker.png");
+    } else {
+      // SVG MODE: Vector graphics for perfect scaling
+      // Slightly slower but better for dynamic styling
+      const svgMarkup = `
+        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(0, 0)">
+            <circle cx="16" cy="16" r="12" fill="#f3f4f6" stroke="#9ca3af" stroke-width="2"/>
+            <circle cx="16" cy="16" r="6" fill="#9ca3af"/>
+            <circle cx="16" cy="16" r="3" fill="white"/>
+          </g>
+        </svg>
+      `;
+      const svgDataUri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
+      return new H.map.Icon(svgDataUri);
+    }
   }, []);
 
   // Incremental marker updates - only add/remove what changed
