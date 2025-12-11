@@ -1,8 +1,5 @@
-import HereMap from "@/components/here-map.tsx";
 import Sidebar from "@/components/sidebar";
-import OrderMarkers from "@/components/order-markers";
-import PoolOrderMarkers from "@/components/pool-order-markers";
-import HereMultiSegmentRouting from "@/components/here-multi-segment-routing";
+import LeafletMapPlaceholder from "@/components/leaflet-map-placeholder";
 
 import { MarkerHighlightProvider } from "@/contexts/MarkerHighlightProvider";
 import { OrderRouteProvider } from "@/contexts/OrderRouteProvider";
@@ -15,14 +12,9 @@ function App() {
       <OrderRouteProvider>
         <DeliveryProvider>
           <div className="h-screen w-screen overflow-hidden relative">
-            {/* Map in the background */}
+            {/* Leaflet map placeholder in the background */}
             <div className="absolute inset-0 z-0">
-              <HereMap />
-              <OrderMarkers />
-              <PoolOrderMarkers />
-              <HereMultiSegmentRouting />
-              {/* <PublicTransitToggle /> */}{" "}
-              {/* TODO: Convert to TypeScript */}
+              <LeafletMapPlaceholder />
             </div>
 
             {/* Sidebar overlaid on top of the map */}
