@@ -3,13 +3,22 @@ import React, { useState } from "react";
 import { useOrderRoute } from "@/hooks/useOrderRoute";
 import type { Order } from "@/types/order";
 
+interface OrderRoute {
+  routeOrders: Order[];
+  moveOrder: (fromIndex: number, toIndex: number) => void;
+  removeOrderFromRoute: (orderId: string) => void;
+}
+
 interface DragItem {
   index: number;
   order: Order;
 }
 
 const DraggableOrderList: React.FC = () => {
-  const { routeOrders, moveOrder, removeOrderFromRoute } = useOrderRoute();
+  const orderRoute = useOrderRoute() as OrderRoute | undefined;
+  const routeOrders = orderRoute?.routeOrders ?? [];
+  const moveOrder = orderRoute?.moveOrder ?? (() => {});
+  const removeOrderFromRoute = orderRoute?.removeOrderFromRoute ?? (() => {});
   const [draggedItem, setDraggedItem] = useState<DragItem | null>(null);
 
   const handleDragStart = (e: React.DragEvent, index: number, order: Order) => {

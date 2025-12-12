@@ -5,7 +5,6 @@ import type { Order } from "@/types/order";
 import { useMarkerHighlight } from "@/hooks/useMarkerHighlight";
 import { useOrderRoute } from "@/hooks/useOrderRoute";
 import type { MapMarker } from "@/types/here-maps";
-import type { HereMapsUI } from "@/types/here-maps";
 
 // Extend MapMarker interface to include our custom properties
 declare global {
@@ -100,7 +99,15 @@ const createSvgIcon = (
 
 const OrderMarkers: React.FC = () => {
   const { isReady, mapRef } = useHereMap();
-  const { setHighlightedOrderId, highlightMarkerRef } = useMarkerHighlight();
+  // Define the type for markerHighlight to include setHighlightedOrderId and highlightMarkerRef
+  type MarkerHighlight = {
+    setHighlightedOrderId?: (id: string | null) => void;
+    highlightMarkerRef?: React.MutableRefObject<
+      ((orderId: string | null) => void) | null
+    >;
+  };
+
+  const markerHighlight = useMarkerHighlight() as MarkerHighlight;
 
   // Store references to markers by order ID
   const markersRef = useRef<Map<string, MapMarker>>(new Map());
@@ -108,31 +115,21 @@ const OrderMarkers: React.FC = () => {
   const localHighlightedRef = useRef<string | null>(null);
 
   // Get orders directly from the shared context - no more polling!
-  const { availableOrders } = useOrderRoute();
+  const orderRoute = useOrderRoute() as
+    | { availableOrders?: Order[] }
+    | undefined;
+  const availableOrders: Order[] = orderRoute?.availableOrders ?? [];
 
   // Show markers for orders with deliveryId (assigned to delivery)
   // Active orders get colored markers, inactive orders get gray markers
   const deliveryOrders = availableOrders.filter((order) => order.deliveryId);
 
-  // Register the highlight function directly in the ref (no re-renders!)
-  useEffect(() => {
-    highlightMarkerRef.current = (orderId: string | null) => {
-      markersRef.current.forEach((marker, id) => {
-        const shouldHighlight = orderId === id;
-        const icon = shouldHighlight
-          ? marker._highlightedIcon
-          : marker._originalIcon;
-        if (icon) {
-          marker.setIcon(icon);
-        }
-      });
-      localHighlightedRef.current = orderId;
-    };
+  // highlightMarker function removed as it was unused
 
-    return () => {
-      highlightMarkerRef.current = null;
-    };
-  }, [highlightMarkerRef]); // Ref is stable, won't cause re-renders
+  // If you need to expose this function to context or consumers, do so here:
+  // For example, if highlightMarkerRef is expected to be updated:
+  // Do not mutate highlightMarkerRef here; instead, ensure the hook that provides highlightMarkerRef sets its value.
+  // If you need to notify the parent, provide a callback or setter in the hook itself.
 
   useEffect(() => {
     if (!isReady || !mapRef.current) return;
@@ -247,7 +244,9 @@ const OrderMarkers: React.FC = () => {
         localHighlightedRef.current = order.id;
 
         // Also update context to highlight corresponding sidebar item
-        setHighlightedOrderId(order.id);
+        if (typeof markerHighlight?.setHighlightedOrderId === "function") {
+          markerHighlight.setHighlightedOrderId(order.id);
+        }
 
         // Highlight the marker immediately
         marker.setIcon(highlightedIcon);
@@ -274,7 +273,9 @@ const OrderMarkers: React.FC = () => {
         localHighlightedRef.current = null;
 
         // Clear context to unhighlight sidebar item
-        setHighlightedOrderId(null);
+        if (typeof markerHighlight?.setHighlightedOrderId === "function") {
+          markerHighlight.setHighlightedOrderId(null);
+        }
 
         // Remove highlight
         marker.setIcon(originalIcon);
@@ -293,7 +294,7 @@ const OrderMarkers: React.FC = () => {
 
     // No cleanup function needed - markers persist across renders
     // They're only removed when their order is removed (above)
-  }, [isReady, mapRef, deliveryOrders, setHighlightedOrderId]);
+  }, [isReady, mapRef, deliveryOrders, markerHighlight]);
 
   // Note: Markers are now managed incrementally - only added/removed when orders change
   // No more destroying and recreating all markers on every render
