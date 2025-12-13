@@ -13,7 +13,9 @@ function App() {
         {/* Sidebar on the right */}
         <DeliveryPlacSidebar
           header={<div className="font-bold text-lg">Delivery Plac</div>}
-          footer={<div className="text-xs text-gray-500">© 2025 Profi-Stahl</div>}
+          footer={
+            <div className="text-xs text-gray-500">© 2025 Profi-Stahl</div>
+          }
         >
           {/* Place your sidebar content here */}
         </DeliveryPlacSidebar>
