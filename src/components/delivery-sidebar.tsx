@@ -4,7 +4,7 @@ import {
   SidebarFooter,
   SidebarContent,
 } from "@/components/ui/sidebar";
-import { useMarkerHighlight } from "@/hooks/useMarkerHighlight";
+import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 
 const DeliverySidebar = ({ orders = [] }: { orders?: any[] }) => {
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();

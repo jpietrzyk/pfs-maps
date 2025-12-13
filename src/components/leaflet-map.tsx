@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 
 import L from "leaflet";
 import React from "react";
-import { useMarkerHighlight } from "@/hooks/useMarkerHighlight";
+import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 
 interface LeafletMapProps {
   orders?: Array<{
@@ -11,6 +11,7 @@ interface LeafletMapProps {
     name: string;
     customer: string;
     location: { lat: number; lng: number };
+    deliveryId?: string;
   }>;
 }
 
@@ -22,36 +23,53 @@ function MapCenterer({ center }: { center: { lat: number; lng: number } }) {
   return null;
 }
 
-
 const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
-  const center = orders.length > 0 ? orders[0].location : { lat: 51.505, lng: -0.09 };
+  const center =
+    orders.length > 0 ? orders[0].location : { lat: 51.505, lng: -0.09 };
   const { highlightedOrderId } = useMarkerHighlight();
 
   // Preload icons
-  const defaultIcon = React.useMemo(() => L.icon({
-    iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    shadowSize: [41, 41],
-  }), []);
-  const grayedIcon = React.useMemo(() => L.icon({
-    iconUrl: "/marker-icon-grey.svg",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    shadowSize: [41, 41],
-  }), []);
-  const highlightIcon = React.useMemo(() => L.icon({
-    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    shadowSize: [41, 41],
-  }), []);
+  const defaultIcon = React.useMemo(
+    () =>
+      L.icon({
+        iconUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+      }),
+    []
+  );
+  const grayedIcon = React.useMemo(
+    () =>
+      L.icon({
+        iconUrl: "/marker-icon-grey.svg",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+      }),
+    []
+  );
+  const highlightIcon = React.useMemo(
+    () =>
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+      }),
+    []
+  );
 
   return (
     <MapContainer
@@ -70,7 +88,12 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
           icon = highlightIcon;
         }
         return (
-          <Marker key={order.id} position={order.location} icon={icon}>
+          <Marker
+            key={order.id}
+            position={order.location}
+            // @ts-expect-error: icon is supported by react-leaflet Marker but not in type definitions
+            icon={icon as L.Icon}
+          >
             <Popup>
               {order.name}
               <br />
