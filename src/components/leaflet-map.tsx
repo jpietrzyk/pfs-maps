@@ -17,11 +17,19 @@ interface LeafletMapProps {
   orders?: Order[];
 }
 
-function MapCenterer({ center }: { center: { lat: number; lng: number } }) {
+function MapFitter({ orders }: { orders: Order[] }) {
   const map = useMap();
   React.useEffect(() => {
-    map.setView(center);
-  }, [center, map]);
+    if (orders.length === 0) return;
+    if (orders.length === 1) {
+      map.setView(orders[0].location, 13);
+    } else {
+      const bounds = L.latLngBounds(
+        orders.map((o) => [o.location.lat, o.location.lng])
+      );
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }, [orders, map]);
   return null;
 }
 
@@ -116,7 +124,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
       engineType="DEFAULT"
       pixelRatio={window.devicePixelRatio || 1}
     >
-      <MapCenterer center={center} />
+      <MapFitter orders={orders} />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {polylinePositions1 && (
         <Polyline
