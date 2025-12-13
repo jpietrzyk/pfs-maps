@@ -1,16 +1,27 @@
 import LeafletMapPlaceholder from "@/components/leaflet-map-placeholder";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DeliverySidebar } from "@/components/DeliverySidebar";
+import { useEffect, useState } from "react";
+import { OrdersApi } from "@/services/ordersApi";
+import type { Order } from "@/types/order";
 
 function App() {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    OrdersApi.getOrders().then(setOrders);
+  }, []);
+
   return (
     <SidebarProvider>
       <main className="h-screen w-screen overflow-hidden relative flex">
-        <SidebarTrigger className="absolute top-4 right-80 z-50" />
+        <div className="absolute top-4 right-80 z-[9999]">
+          <SidebarTrigger />
+        </div>
         <div className="flex-1 h-full">
           <LeafletMapPlaceholder />
         </div>
-        <DeliverySidebar />
+        <DeliverySidebar orders={orders.filter((order) => order.deliveryId)} />
       </main>
     </SidebarProvider>
   );
