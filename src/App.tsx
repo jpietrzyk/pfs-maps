@@ -1,5 +1,5 @@
 import LeafletMap from "@/components/leaflet-map";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
@@ -14,10 +14,14 @@ function App() {
 
   return (
     <SidebarProvider>
-      <main className="h-screen w-screen overflow-hidden relative flex bg-red-200">
-        {/* SidebarTrigger removed to make sidebar always visible */}
-        <div className="flex-1 h-full">
+      <main className="h-screen w-screen overflow-hidden relative flex">
+        {/* Map layer at the bottom */}
+        <div className="absolute inset-0 z-0">
           <LeafletMap orders={orders} />
+        </div>
+        {/* UI overlays above the map */}
+        <div className="relative w-full flex justify-end items-start z-10">
+          <SidebarTrigger />
         </div>
         <DeliverySidebar orders={orders.filter((order) => order.deliveryId)} />
       </main>
