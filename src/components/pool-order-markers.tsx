@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useHereMap } from "@/hooks/useHereMap";
-import { useDelivery } from "@/hooks/useDelivery";
+import { useDelivery } from "@/hooks/use-delivery";
 import { useOrderRoute } from "@/hooks/useOrderRoute";
 import { mapConfig } from "@/config/map.config";
 import type { Order } from "@/types/order";

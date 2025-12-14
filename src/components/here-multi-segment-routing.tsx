@@ -6,11 +6,15 @@ import type { MapGroup, RoutingResult, RoutingError } from "@/types/here-maps";
 
 const HereMultiSegmentRouting: React.FC = () => {
   const { isReady, mapRef } = useHereMap();
-  const { routeOrders } = useOrderRoute();
+  const orderRoute = useOrderRoute();
   const routeGroupRef = useRef<MapGroup | null>(null);
 
   useEffect(() => {
     if (!isReady || !mapRef.current) return;
+
+    type Order = { name: string; location: { lat: number; lng: number } };
+    const routeOrders =
+      (orderRoute as { routeOrders?: Order[] })?.routeOrders ?? [];
 
     const H = window.H;
     if (!H || !H.service) {
@@ -252,7 +256,7 @@ const HereMultiSegmentRouting: React.FC = () => {
       }
       routeGroupRef.current = null;
     };
-  }, [isReady, mapRef, routeOrders]);
+  }, [isReady, mapRef, orderRoute]);
 
   return null; // This component doesn't render anything visible
 };

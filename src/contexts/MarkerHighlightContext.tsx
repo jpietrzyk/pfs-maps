@@ -1,13 +1,9 @@
-import { createContext, type MutableRefObject } from "react";
+import { createContext } from "react";
 
-export interface MarkerHighlightContextType {
+export type MarkerHighlightContextType = {
   highlightedOrderId: string | null;
-  setHighlightedOrderId: (orderId: string | null) => void;
-  // Use ref instead of state to avoid re-renders
-  highlightMarkerRef: MutableRefObject<
-    ((orderId: string | null) => void) | null
-  >;
-}
+  setHighlightedOrderId: (id: string | null) => void;
+};
 
 export const MarkerHighlightContext = createContext<
   MarkerHighlightContextType | undefined

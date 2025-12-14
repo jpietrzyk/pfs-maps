@@ -1,38 +1,29 @@
-import HereMap from "@/components/here-map.tsx";
-import Sidebar from "@/components/sidebar";
-import OrderMarkers from "@/components/order-markers";
-import PoolOrderMarkers from "@/components/pool-order-markers";
-import HereMultiSegmentRouting from "@/components/here-multi-segment-routing";
-
-import { MarkerHighlightProvider } from "@/contexts/MarkerHighlightProvider";
-import { OrderRouteProvider } from "@/contexts/OrderRouteProvider";
-import { DeliveryProvider } from "@/contexts/DeliveryProvider";
-// import PublicTransitToggle from "@/components/public-transit-toggle.jsx"; // TODO: Convert to TypeScript
+import LeafletMap from "@/components/leaflet-map";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import DeliverySidebar from "@/components/delivery-sidebar";
+import { useEffect, useState } from "react";
+import { OrdersApi } from "@/services/ordersApi";
+import type { Order } from "@/types/order";
 
 function App() {
-  return (
-    <MarkerHighlightProvider>
-      <OrderRouteProvider>
-        <DeliveryProvider>
-          <div className="h-screen w-screen overflow-hidden relative">
-            {/* Map in the background */}
-            <div className="absolute inset-0 z-0">
-              <HereMap />
-              <OrderMarkers />
-              <PoolOrderMarkers />
-              <HereMultiSegmentRouting />
-              {/* <PublicTransitToggle /> */}{" "}
-              {/* TODO: Convert to TypeScript */}
-            </div>
+  const [orders, setOrders] = useState<Order[]>([]);
 
-            {/* Sidebar overlaid on top of the map */}
-            <div className="absolute inset-y-0 left-0 z-9999">
-              <Sidebar />
-            </div>
-          </div>
-        </DeliveryProvider>
-      </OrderRouteProvider>
-    </MarkerHighlightProvider>
+  useEffect(() => {
+    OrdersApi.getOrders().then(setOrders);
+  }, []);
+
+  return (
+    <SidebarProvider>
+      <main className="h-screen w-screen overflow-hidden relative flex">
+        <div className="absolute top-4 right-80 z-9999">
+          <SidebarTrigger />
+        </div>
+        <div className="flex-1 h-full">
+          <LeafletMap orders={orders} />
+        </div>
+        <DeliverySidebar orders={orders.filter((order) => order.deliveryId)} />
+      </main>
+    </SidebarProvider>
   );
 }
 
