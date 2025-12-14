@@ -4,13 +4,28 @@ import {
   SidebarFooter,
   SidebarContent,
 } from "@/components/ui/sidebar";
+import {
+  Item,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemGroup,
+} from "@/components/ui/item";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 
-const DeliverySidebar = ({ orders = [] }: { orders?: any[] }) => {
+interface Order {
+  id: string | number;
+  name: string;
+  customer: string;
+  status: string;
+}
+
+const DeliverySidebar = ({ orders = [] }: { orders?: Order[] }) => {
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
   return (
     <Sidebar
       side="right"
+      collapsible="none"
       className="border-l bg-white shadow-lg z-50 flex flex-col h-full"
     >
       <SidebarHeader className="font-bold text-lg px-4 py-3 border-b">
@@ -21,29 +36,31 @@ const DeliverySidebar = ({ orders = [] }: { orders?: any[] }) => {
           <div className="font-semibold text-sm mb-2 text-gray-700">
             Zamówienia przypisane do dostawy
           </div>
-          <ul className="space-y-2">
+          <ItemGroup className="space-y-2">
             {orders.length === 0 && (
-              <li className="text-xs text-gray-400">Brak zamówień</li>
+              <div className="text-xs text-gray-400">Brak zamówień</div>
             )}
             {orders.map((order) => (
-              <li
+              <Item
                 key={order.id}
-                className={`rounded border p-2 bg-gray-50 ${
-                  highlightedOrderId === order.id ? "ring-2 ring-blue-400" : ""
+                className={`bg-gray-50 ${
+                  highlightedOrderId === String(order.id)
+                    ? "ring-2 ring-blue-400"
+                    : ""
                 }`}
-                onMouseEnter={() => setHighlightedOrderId(order.id)}
+                onMouseEnter={() => setHighlightedOrderId(String(order.id))}
                 onMouseLeave={() => setHighlightedOrderId(null)}
               >
-                <div className="font-medium text-sm text-gray-900">
-                  {order.name}
-                </div>
-                <div className="text-xs text-gray-500">{order.customer}</div>
-                <div className="text-xs text-gray-400">
-                  Status: {order.status}
-                </div>
-              </li>
+                <ItemContent>
+                  <ItemTitle>{order.name}</ItemTitle>
+                  <ItemDescription>{order.customer}</ItemDescription>
+                  <div className="text-xs text-gray-400">
+                    Status: {order.status}
+                  </div>
+                </ItemContent>
+              </Item>
             ))}
-          </ul>
+          </ItemGroup>
         </div>
       </SidebarContent>
       <SidebarFooter className="text-xs text-gray-500 px-4 py-3 border-t">
