@@ -1,4 +1,5 @@
-/* Root sizing is controlled by the app shell (main) using Tailwind classes */
+@import "tailwindcss"; /* Root sizing is controlled by the app shell (main) using Tailwind classes */
+
 #root {
 }
 

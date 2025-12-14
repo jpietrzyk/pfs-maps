@@ -14,7 +14,7 @@ function App() {
 
   return (
     <SidebarProvider>
-      <main className="h-screen w-screen overflow-hidden relative flex">
+      <main className="h-screen w-screen overflow-hidden relative flex bg-red-200">
         {/* SidebarTrigger removed to make sidebar always visible */}
         <div className="flex-1 h-full">
           <LeafletMap orders={orders} />
