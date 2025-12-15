@@ -7,7 +7,7 @@ import {
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 
 import type { Order } from "@/types/order";
-import { DeliveryOrderList } from "./DeliveryOrderList";
+import { DeliveryRouteManager } from "./delivery-route-manager";
 
 
 
@@ -26,7 +26,7 @@ const DeliverySidebar = ({ orders = [] }: { orders?: Order[] }) => {
           <div className="font-semibold text-sm mb-2 text-foreground/70">
             Zamówienia przypisane do dostawy
           </div>
-          <DeliveryOrderList
+          <DeliveryRouteManager
             orders={orders}
             highlightedOrderId={highlightedOrderId}
             setHighlightedOrderId={setHighlightedOrderId}

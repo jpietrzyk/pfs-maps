@@ -30,13 +30,13 @@ function formatTimeHM(date: Date) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-interface DeliveryOrderListProps {
+interface DeliveryRouteManagerProps {
   orders: Order[];
   highlightedOrderId?: string | null;
   setHighlightedOrderId?: (id: string | null) => void;
 }
 
-export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
+export const DeliveryRouteManager: React.FC<DeliveryRouteManagerProps> = ({
   orders,
   highlightedOrderId,
   setHighlightedOrderId,
