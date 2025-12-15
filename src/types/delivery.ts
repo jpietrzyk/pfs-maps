@@ -174,17 +174,17 @@ export const sampleDeliveries: Delivery[] = [
     updatedAt: new Date('2025-12-05T15:30:00Z'),
     orders: [
       {
-        orderId: 'ORD-001',
+        orderId: 'PROD-001',
         sequence: 0,
         status: 'pending',
       },
       {
-        orderId: 'ORD-002',
+        orderId: 'PROD-002',
         sequence: 1,
         status: 'pending',
       },
       {
-        orderId: 'ORD-003',
+        orderId: 'PROD-003',
         sequence: 2,
         status: 'pending',
       },

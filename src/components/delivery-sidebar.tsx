@@ -50,6 +50,8 @@ const DeliverySidebar = () => {
           currentDeliveryOrderIds.includes(order.id)
         );
         console.log("Orders in delivery:", ordersInDelivery);
+        console.log("Orders in delivery count:", ordersInDelivery.length);
+        console.log("All orders count:", allOrders.length);
 
         // Debug: Check if any order IDs match
         const matchingIds = allOrders
