@@ -26,7 +26,9 @@ function App() {
           </div>
         </div>
         <div className="pointer-events-auto">
-          <DeliverySidebar orders={orders.filter((order) => order.deliveryId)} />
+          <DeliverySidebar
+            orders={orders.filter((order) => order.deliveryId)}
+          />
         </div>
       </main>
     </SidebarProvider>
