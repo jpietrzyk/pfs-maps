@@ -118,40 +118,132 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   return (
     <Sidebar
       side="right"
-      className="border-l bg-sidebar text-sidebar-foreground shadow-lg relative z-20 flex flex-col h-screen pointer-events-auto"
+      className="border-l bg-white text-gray-900 shadow-xl relative z-20 flex flex-col h-screen pointer-events-auto w-95 transition-all duration-300"
     >
-      <SidebarHeader className="font-bold text-lg px-4 py-3 border-b">
-        {currentDelivery ? `Trasa ${currentDelivery.name}` : "Trasa D-001"}
+      {/* Enhanced Header with Gradient */}
+      <SidebarHeader className="font-bold text-xl px-6 py-4 border-b bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+              </svg>
+            </div>
+            <span>
+              {currentDelivery
+                ? `Route ${currentDelivery.name}`
+                : "Route D-001"}
+            </span>
+          </div>
+          <div className="bg-white/30 text-white text-xs px-2 py-1 rounded-full">
+            {deliveryOrders.length} orders
+          </div>
+        </div>
       </SidebarHeader>
-      <SidebarContent className="flex-1 overflow-y-auto">
+
+      {/* Enhanced Content with Better Spacing and Typography */}
+      <SidebarContent className="flex-1 overflow-y-auto bg-gray-50">
         {isLoading ? (
-          <div className="px-4 py-2 text-xs text-muted-foreground">
-            Ładowanie zamówień...
+          <div className="px-6 py-8 text-center">
+            <div className="animate-spin mx-auto w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mb-3"></div>
+            <p className="text-sm text-gray-600">Loading orders...</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <DeliveryOrderList
-              orders={deliveryOrders}
-              highlightedOrderId={highlightedOrderId}
-              setHighlightedOrderId={setHighlightedOrderId}
-              onRemoveOrder={handleRemoveOrder}
-              onReorder={handleReorder}
-              title="Zamówienia przypisane do dostawy"
-            />
-            {poolOrders.length > 0 && (
-              <div className="border-t pt-2">
-                <PoolOrderList
-                  poolOrders={poolOrders}
-                  onAddToDelivery={onAddOrderToDelivery || (() => {})}
-                  title="Dostępne zamówienia do przypisania"
+          <div className="space-y-6 p-4">
+            {/* Delivery Orders Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-5 py-4 border-b border-gray-100">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Assigned Orders
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {deliveryOrders.length} orders in this delivery
+                </p>
+              </div>
+              <div className="p-1">
+                <DeliveryOrderList
+                  orders={deliveryOrders}
+                  highlightedOrderId={highlightedOrderId}
+                  setHighlightedOrderId={setHighlightedOrderId}
+                  onRemoveOrder={handleRemoveOrder}
+                  onReorder={handleReorder}
+                  title=""
                 />
+              </div>
+            </div>
+
+            {/* Pool Orders Section */}
+            {poolOrders.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5 text-gray-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Available Pool Orders
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {poolOrders.length} orders available to assign
+                  </p>
+                </div>
+                <div className="p-1">
+                  <PoolOrderList
+                    poolOrders={poolOrders}
+                    onAddToDelivery={onAddOrderToDelivery || (() => {})}
+                    title=""
+                  />
+                </div>
               </div>
             )}
           </div>
         )}
       </SidebarContent>
-      <SidebarFooter className="text-xs text-muted-foreground px-4 py-3 border-t">
-        Panel boczny - stopka
+
+      {/* Enhanced Footer */}
+      <SidebarFooter className="text-xs text-gray-500 px-6 py-4 border-t bg-white">
+        <div className="flex items-center justify-between">
+          <span>© {new Date().getFullYear()} Delivery Manager</span>
+          <div className="flex items-center gap-4">
+            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path
+                  fillRule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
