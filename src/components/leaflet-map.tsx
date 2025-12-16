@@ -12,6 +12,7 @@ import L from "leaflet";
 import React from "react";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import type { Order } from "@/types/order";
+import { OrdersApi } from "@/services/ordersApi";
 
 interface LeafletMapProps {
   orders?: Order[];
@@ -173,7 +174,9 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
               {order.customer}
               <br />({order.location.lat}, {order.location.lng})
               {isPool && (
-                <div style={{ color: "#888" }}>No delivery assigned</div>
+                <div style={{ color: "#888", marginBottom: "8px" }}>
+                  No delivery assigned
+                </div>
               )}
               {isPool && order.totalAmount !== undefined && (
                 <div
@@ -182,10 +185,40 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
                       (order.totalAmount ?? 0) > ORANGE_THRESHOLD
                         ? "#f59e42"
                         : "#888",
+                    marginBottom: "8px",
                   }}
                 >
                   {`Order price: €${order.totalAmount.toLocaleString()} (threshold: €${ORANGE_THRESHOLD.toLocaleString()})`}
                 </div>
+              )}
+              {isPool && (
+                <button
+                  onClick={async () => {
+                    try {
+                      await OrdersApi.updateOrder(order.id, {
+                        deliveryId: "DEL-001",
+                      });
+                      // Refresh the page to update the UI
+                      window.location.reload();
+                    } catch (error) {
+                      console.error("Failed to add order to delivery:", error);
+                      alert("Failed to add order to delivery");
+                    }
+                  }}
+                  style={{
+                    backgroundColor: "#059669",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    marginTop: "8px",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                  }}
+                >
+                  ➕ Add to Delivery
+                </button>
               )}
             </Popup>
           </Marker>
