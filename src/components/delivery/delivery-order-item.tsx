@@ -52,6 +52,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
 
     const handleRemove = (e: React.MouseEvent) => {
       e.stopPropagation(); // Prevent triggering mouse leave/enter on parent
+      e.preventDefault(); // Prevent any drag operations
       onRemove?.(order.id);
     };
 
@@ -97,7 +98,9 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
               variant="destructive"
               size="icon-sm"
               onClick={handleRemove}
-              className="shrink-0 mt-0.5"
+              onMouseDown={(e) => e.stopPropagation()} // Prevent drag start on button
+              onPointerDown={(e) => e.stopPropagation()} // Prevent pointer events
+              className="shrink-0 mt-0.5 cursor-pointer"
               aria-label={`Remove order ${order.id}`}
             >
               <Trash2 className="size-3" />
