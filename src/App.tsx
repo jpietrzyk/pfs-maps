@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
+import { DeliveriesApi } from "@/services/deliveriesApi";
 import type { Order } from "@/types/order";
 
 function App() {
@@ -70,6 +71,29 @@ function App() {
           <DeliverySidebar
             onOrderRemoved={handleOrderRemoved}
             onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
+            poolOrders={poolOrders}
+            onAddOrderToDelivery={async (orderId: string) => {
+              try {
+                // Update the order to assign it to default delivery
+                await OrdersApi.updateOrder(orderId, {
+                  deliveryId: "DEL-001", // Default delivery ID
+                });
+                // Refresh both delivery and pool orders
+                const allOrders = await OrdersApi.getOrders();
+                const updatedDeliveryOrders = allOrders.filter(
+                  (order) => order.deliveryId
+                );
+                const updatedPoolOrders = allOrders.filter(
+                  (order) => !order.deliveryId
+                );
+                setDeliveryOrders(updatedDeliveryOrders);
+                setPoolOrders(updatedPoolOrders);
+                handleDeliveryOrdersUpdated(updatedDeliveryOrders);
+              } catch (error) {
+                console.error("Failed to add order to delivery:", error);
+                alert("Failed to add order to delivery");
+              }
+            }}
           />
         </div>
       </main>
