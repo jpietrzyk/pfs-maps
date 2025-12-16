@@ -1,6 +1,12 @@
 import React from "react";
 import type { Order } from "@/types/order";
 import { DeliveryOrderItem } from "./delivery-order-item";
+import { DeliveryDriveSegment } from "./delivery-drive-segment";
+import {
+  getDistanceKm,
+  getDriveMinutes,
+  getHandlingMinutes,
+} from "@/lib/delivery-time-utils";
 
 interface DeliveryOrderListProps {
   orders: Order[];
@@ -26,15 +32,28 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
         <div className="text-xs text-muted-foreground">Brak zamówień</div>
       ) : (
         <ul className="space-y-2">
-          {orders.map((order) => (
-            <DeliveryOrderItem
-              key={order.id}
-              order={order}
-              isHighlighted={highlightedOrderId === order.id}
-              onMouseEnter={() => setHighlightedOrderId?.(order.id)}
-              onMouseLeave={() => setHighlightedOrderId?.(null)}
-              onRemove={onRemoveOrder}
-            />
+          {orders.map((order, idx) => (
+            <React.Fragment key={order.id}>
+              <DeliveryOrderItem
+                order={order}
+                isHighlighted={highlightedOrderId === order.id}
+                onMouseEnter={() => setHighlightedOrderId?.(order.id)}
+                onMouseLeave={() => setHighlightedOrderId?.(null)}
+                onRemove={onRemoveOrder}
+              />
+              {idx < orders.length - 1 && (
+                <DeliveryDriveSegment
+                  fromOrderId={order.id}
+                  toOrderId={orders[idx + 1].id}
+                  driveMinutes={getDriveMinutes(
+                    getDistanceKm(order.location, orders[idx + 1].location)
+                  )}
+                  handlingMinutes={getHandlingMinutes(
+                    orders[idx + 1].product?.complexity ?? 1
+                  )}
+                />
+              )}
+            </React.Fragment>
           ))}
         </ul>
       )}
