@@ -100,20 +100,15 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
   // Use fixed threshold for orange marker
   const ORANGE_THRESHOLD = 13000;
 
-  // Draw straight lines between the first-second and second-third order markers if they exist
-  let polylinePositions1: [number, number][] | undefined = undefined;
-  let polylinePositions2: [number, number][] | undefined = undefined;
+  // Draw straight lines between all consecutive order markers
+  const polylinePositions: [number, number][][] = [];
   if (orders.length >= 2) {
-    polylinePositions1 = [
-      [orders[0].location.lat, orders[0].location.lng],
-      [orders[1].location.lat, orders[1].location.lng],
-    ];
-  }
-  if (orders.length >= 3) {
-    polylinePositions2 = [
-      [orders[1].location.lat, orders[1].location.lng],
-      [orders[2].location.lat, orders[2].location.lng],
-    ];
+    for (let i = 0; i < orders.length - 1; i++) {
+      polylinePositions.push([
+        [orders[i].location.lat, orders[i].location.lng],
+        [orders[i + 1].location.lat, orders[i + 1].location.lng],
+      ]);
+    }
   }
 
   return (
@@ -126,18 +121,13 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
     >
       <MapFitter orders={orders} />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {polylinePositions1 && (
+      {polylinePositions.map((positions, index) => (
         <Polyline
-          positions={polylinePositions1}
+          key={index}
+          positions={positions}
           pathOptions={{ color: "#2563eb", weight: 4, opacity: 0.8 }}
         />
-      )}
-      {polylinePositions2 && (
-        <Polyline
-          positions={polylinePositions2}
-          pathOptions={{ color: "#f59e42", weight: 4, opacity: 0.8 }}
-        />
-      )}
+      ))}
       {orders.map((order) => {
         const isPool = !order.deliveryId;
         let icon = defaultIcon;
@@ -159,7 +149,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
             icon={icon as L.Icon}
           >
             <Popup>
-              {order.name}
+              {order.product?.name}
               <br />
               {order.customer}
               <br />({order.location.lat}, {order.location.lng})
