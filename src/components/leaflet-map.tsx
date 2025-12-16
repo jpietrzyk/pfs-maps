@@ -16,6 +16,8 @@ import { OrdersApi } from "@/services/ordersApi";
 
 interface LeafletMapProps {
   orders?: Order[];
+  onOrderAddedToDelivery?: (orderId: string) => void;
+  onRefreshRequested?: () => void;
 }
 
 function MapFitter({ orders }: { orders: Order[] }) {
@@ -48,7 +50,11 @@ function MapFitter({ orders }: { orders: Order[] }) {
   return null;
 }
 
-const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
+const LeafletMap: React.FC<LeafletMapProps> = ({
+  orders = [],
+  onOrderAddedToDelivery,
+  onRefreshRequested,
+}) => {
   const center =
     orders.length > 0 ? orders[0].location : { lat: 51.505, lng: -0.09 };
   const { highlightedOrderId } = useMarkerHighlight();
@@ -198,8 +204,9 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
                       await OrdersApi.updateOrder(order.id, {
                         deliveryId: "DEL-001",
                       });
-                      // Refresh the page to update the UI
-                      window.location.reload();
+                      // Use callback to refresh data instead of page reload
+                      onOrderAddedToDelivery?.(order.id);
+                      onRefreshRequested?.();
                     } catch (error) {
                       console.error("Failed to add order to delivery:", error);
                       alert("Failed to add order to delivery");
