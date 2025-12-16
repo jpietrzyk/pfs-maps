@@ -61,6 +61,7 @@ export const DeliveryRouteManager: React.FC<DeliveryRouteManagerProps> = ({
     result.push(
       <DeliveryOrderItem
         key={String(order.id)}
+        id={String(order.id)}
         order={order}
         arrivalTime={arrivalTime}
         departureTime={departureTime}

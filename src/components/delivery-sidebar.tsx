@@ -118,15 +118,15 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   return (
     <Sidebar
       side="right"
-      className="border-l bg-white text-gray-900 shadow-xl relative z-20 flex flex-col h-screen pointer-events-auto w-95 transition-all duration-300"
+      className="border-l bg-background text-foreground shadow-xl relative z-20 flex flex-col h-screen pointer-events-auto w-96 transition-all duration-300"
     >
       {/* Enhanced Header with Gradient */}
-      <SidebarHeader className="font-bold text-xl px-6 py-4 border-b bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-sm">
+      <SidebarHeader className="font-bold text-xl px-6 py-4 border-b bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-white"
+                className="w-5 h-5 text-primary-foreground"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -139,27 +139,27 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                 : "Route D-001"}
             </span>
           </div>
-          <div className="bg-white/30 text-white text-xs px-2 py-1 rounded-full">
+          <div className="bg-primary-foreground/30 text-primary-foreground text-xs px-2 py-1 rounded-full">
             {deliveryOrders.length} orders
           </div>
         </div>
       </SidebarHeader>
 
       {/* Enhanced Content with Better Spacing and Typography */}
-      <SidebarContent className="flex-1 overflow-y-auto bg-gray-50">
+      <SidebarContent className="flex-1 overflow-y-auto bg-muted/50">
         {isLoading ? (
           <div className="px-6 py-8 text-center">
-            <div className="animate-spin mx-auto w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mb-3"></div>
-            <p className="text-sm text-gray-600">Loading orders...</p>
+            <div className="animate-spin mx-auto w-6 h-6 border-2 border-primary border-t-transparent rounded-full mb-3"></div>
+            <p className="text-sm text-muted-foreground">Loading orders...</p>
           </div>
         ) : (
-          <div className="space-y-6 p-4">
+          <div className="space-y-4 p-4">
             {/* Delivery Orders Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+              <div className="px-5 py-4 border-b border-border">
+                <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-blue-600"
+                    className="w-5 h-5 text-primary"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -167,7 +167,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                   </svg>
                   Assigned Orders
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {deliveryOrders.length} orders in this delivery
                 </p>
               </div>
@@ -185,11 +185,11 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
 
             {/* Pool Orders Section */}
             {poolOrders.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <div className="bg-background rounded-xl shadow-sm border border-border overflow-hidden">
+                <div className="px-5 py-4 border-b border-border">
+                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-muted-foreground"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -201,7 +201,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     </svg>
                     Available Pool Orders
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {poolOrders.length} orders available to assign
                   </p>
                 </div>
@@ -219,11 +219,11 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       </SidebarContent>
 
       {/* Enhanced Footer */}
-      <SidebarFooter className="text-xs text-gray-500 px-6 py-4 border-t bg-white">
+      <SidebarFooter className="text-xs text-muted-foreground px-6 py-4 border-t bg-background">
         <div className="flex items-center justify-between">
           <span>© {new Date().getFullYear()} Delivery Manager</span>
           <div className="flex items-center gap-4">
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-muted-foreground hover:text-foreground transition-colors">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                 <path
@@ -233,7 +233,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                 />
               </svg>
             </button>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-muted-foreground hover:text-foreground transition-colors">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"

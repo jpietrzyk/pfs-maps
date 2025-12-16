@@ -62,51 +62,77 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
         style={style}
         {...attributes}
         {...listeners}
-        className={`rounded border p-2 bg-accent/40 ${
-          isHighlighted ? "ring-2 ring-blue-400" : ""
+        className={`group relative overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-md ${
+          isHighlighted ? "ring-2 ring-ring" : ""
         }`}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <div className="font-medium text-sm text-foreground">
-              {order.product?.name}
+        <div className="flex items-start justify-between gap-3 p-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <svg
+                  className="h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                </svg>
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="truncate text-sm font-medium text-foreground">
+                  {order.product?.name || "Unknown Product"}
+                </h4>
+                <p className="truncate text-xs text-muted-foreground">
+                  {order.customer}
+                </p>
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground">
-              {order.customer}
-            </div>
-            <div className="text-xs text-muted-foreground/80">
-              Status: {order.status}
-            </div>
-            <div className="text-xs text-muted-foreground/80 mt-1">
-              {arrivalTime && departureTime ? (
-                <>
-                  Przyjazd: {formatTimeHM(arrivalTime)} | Wyjazd:{" "}
-                  {formatTimeHM(departureTime)}
-                </>
-              ) : (
-                <>
-                  Location: ({order.location.lat.toFixed(4)},{" "}
-                  {order.location.lng.toFixed(4)})
-                </>
-              )}
+            <div className="mt-2 flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1 text-muted-foreground/80">
+                <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
+                <span>Status: {order.status}</span>
+              </div>
+              <div className="text-muted-foreground/60">
+                {arrivalTime && departureTime ? (
+                  <>
+                    <span className="font-medium text-foreground">
+                      {formatTimeHM(arrivalTime)} -{" "}
+                      {formatTimeHM(departureTime)}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-medium text-foreground">
+                      {order.location.lat.toFixed(4)},{" "}
+                      {order.location.lng.toFixed(4)}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
           {onRemove && (
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              onClick={handleRemove}
-              onMouseDown={(e) => e.stopPropagation()} // Prevent drag start on button
-              onPointerDown={(e) => e.stopPropagation()} // Prevent pointer events
-              className="shrink-0 mt-0.5 cursor-pointer"
-              aria-label={`Remove order ${order.id}`}
-            >
-              <Trash2 className="size-3" />
-            </Button>
+            <div className="flex flex-col items-end gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleRemove}
+                onMouseDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                className="h-6 w-6 shrink-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
+                aria-label={`Remove order ${order.id}`}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+              <div className="text-right text-xs text-muted-foreground/50">
+                Drag to reorder
+              </div>
+            </div>
           )}
         </div>
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/10 to-transparent"></div>
       </li>
     );
   }

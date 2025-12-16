@@ -14,6 +14,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -46,13 +47,19 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
     })
   );
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = orders.findIndex((order) => order.id === active.id);
-      const newIndex = orders.findIndex((order) => order.id === over.id);
-      const newOrders = arrayMove(orders, oldIndex, newIndex);
-      onReorder?.(newOrders);
+    if (active?.id !== over?.id) {
+      const oldIndex = orders.findIndex(
+        (order) => order.id === String(active?.id)
+      );
+      const newIndex = orders.findIndex(
+        (order) => order.id === String(over?.id)
+      );
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newOrders = arrayMove(orders, oldIndex, newIndex);
+        onReorder?.(newOrders);
+      }
     }
   };
 
@@ -63,12 +70,16 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={orders} strategy={verticalListSortingStrategy}>
-        <div className="px-4 py-2">
-          <div className="font-semibold text-sm mb-2 text-foreground/70">
-            {title}
-          </div>
+        <div className="p-2">
+          {title && (
+            <div className="font-semibold text-sm mb-3 text-muted-foreground px-2">
+              {title}
+            </div>
+          )}
           {orders.length === 0 ? (
-            <div className="text-xs text-muted-foreground">Brak zamówień</div>
+            <div className="text-xs text-muted-foreground/80 text-center py-4">
+              No orders assigned
+            </div>
           ) : (
             <ul className="space-y-2">
               {orders.map((order, idx) => (
