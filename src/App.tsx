@@ -3,17 +3,14 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
-import { DeliveriesApi } from "@/services/deliveriesApi";
 import type { Order } from "@/types/order";
 
 function App() {
-  const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [poolOrders, setPoolOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     OrdersApi.getOrders().then((fetchedOrders) => {
-      setAllOrders(fetchedOrders);
       // Initialize deliveryOrders with orders that are assigned to a delivery
       const initialDeliveryOrders = fetchedOrders.filter(
         (order) => order.deliveryId
@@ -30,7 +27,6 @@ function App() {
   // Refetch orders when an order is removed
   const handleOrderRemoved = () => {
     OrdersApi.getOrders().then((fetchedOrders) => {
-      setAllOrders(fetchedOrders);
       const initialDeliveryOrders = fetchedOrders.filter(
         (order) => order.deliveryId
       );
@@ -59,7 +55,23 @@ function App() {
       <main className="h-screen w-screen overflow-hidden relative flex">
         {/* Map layer at the bottom */}
         <div className="absolute inset-0 z-0">
-          <LeafletMap orders={[...deliveryOrders, ...poolOrders]} />
+          <LeafletMap
+            orders={[...deliveryOrders, ...poolOrders]}
+            onOrderAddedToDelivery={async () => {
+              // Refresh both delivery and pool orders
+              const allOrders = await OrdersApi.getOrders();
+              const updatedDeliveryOrders = allOrders.filter(
+                (order) => order.deliveryId
+              );
+              const updatedPoolOrders = allOrders.filter(
+                (order) => !order.deliveryId
+              );
+              setDeliveryOrders(updatedDeliveryOrders);
+              setPoolOrders(updatedPoolOrders);
+              handleDeliveryOrdersUpdated(updatedDeliveryOrders);
+            }}
+            onRefreshRequested={handleOrderRemoved}
+          />
         </div>
         {/* UI overlays above the map, pointer-events-none except sidebar */}
         <div className="relative w-full flex justify-end items-start z-10 pointer-events-none">
