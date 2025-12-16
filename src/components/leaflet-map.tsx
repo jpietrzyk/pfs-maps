@@ -21,9 +21,23 @@ function MapFitter({ orders }: { orders: Order[] }) {
   const map = useMap();
   React.useEffect(() => {
     if (orders.length === 0) return;
-    if (orders.length === 1) {
-      map.setView(orders[0].location, 13);
+
+    // Filter to get only delivery orders for primary focus
+    const deliveryOrders = orders.filter((order) => order.deliveryId);
+
+    if (deliveryOrders.length === 1) {
+      map.setView(deliveryOrders[0].location, 13);
+    } else if (deliveryOrders.length > 1) {
+      // Focus on delivery orders, but include pool orders in bounds for context
+      const allOrders = orders.filter(
+        (order) => order.deliveryId || (deliveryOrders.length === 0 && order) // Include pool orders if no delivery orders
+      );
+      const bounds = L.latLngBounds(
+        allOrders.map((o) => [o.location.lat, o.location.lng])
+      );
+      map.fitBounds(bounds, { padding: [40, 40] });
     } else {
+      // If no delivery orders, show all orders (pool orders)
       const bounds = L.latLngBounds(
         orders.map((o) => [o.location.lat, o.location.lng])
       );
@@ -100,13 +114,17 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ orders = [] }) => {
   // Use fixed threshold for orange marker
   const ORANGE_THRESHOLD = 13000;
 
-  // Draw straight lines between all consecutive order markers
+  // Draw straight lines between consecutive DELIVERY order markers only
   const polylinePositions: [number, number][][] = [];
-  if (orders.length >= 2) {
-    for (let i = 0; i < orders.length - 1; i++) {
+  const deliveryOrders = orders.filter((order) => order.deliveryId);
+  if (deliveryOrders.length >= 2) {
+    for (let i = 0; i < deliveryOrders.length - 1; i++) {
       polylinePositions.push([
-        [orders[i].location.lat, orders[i].location.lng],
-        [orders[i + 1].location.lat, orders[i + 1].location.lng],
+        [deliveryOrders[i].location.lat, deliveryOrders[i].location.lng],
+        [
+          deliveryOrders[i + 1].location.lat,
+          deliveryOrders[i + 1].location.lng,
+        ],
       ]);
     }
   }

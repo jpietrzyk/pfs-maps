@@ -6,28 +6,51 @@ import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 
 function App() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
+  const [poolOrders, setPoolOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     OrdersApi.getOrders().then((fetchedOrders) => {
-      setOrders(fetchedOrders);
+      setAllOrders(fetchedOrders);
       // Initialize deliveryOrders with orders that are assigned to a delivery
       const initialDeliveryOrders = fetchedOrders.filter(
         (order) => order.deliveryId
       );
       setDeliveryOrders(initialDeliveryOrders);
+      // Initialize poolOrders with orders that are NOT assigned to a delivery
+      const initialPoolOrders = fetchedOrders.filter(
+        (order) => !order.deliveryId
+      );
+      setPoolOrders(initialPoolOrders);
     });
   }, []);
 
   // Refetch orders when an order is removed
   const handleOrderRemoved = () => {
-    OrdersApi.getOrders().then(setOrders);
+    OrdersApi.getOrders().then((fetchedOrders) => {
+      setAllOrders(fetchedOrders);
+      const initialDeliveryOrders = fetchedOrders.filter(
+        (order) => order.deliveryId
+      );
+      setDeliveryOrders(initialDeliveryOrders);
+      const initialPoolOrders = fetchedOrders.filter(
+        (order) => !order.deliveryId
+      );
+      setPoolOrders(initialPoolOrders);
+    });
   };
 
-  // Update delivery orders when an order is removed
+  // Update delivery orders when an order is removed or added
   const handleDeliveryOrdersUpdated = (updatedOrders: Order[]) => {
     setDeliveryOrders(updatedOrders);
+    // When delivery orders are updated, we need to refresh pool orders too
+    OrdersApi.getOrders().then((fetchedOrders) => {
+      const initialPoolOrders = fetchedOrders.filter(
+        (order) => !order.deliveryId
+      );
+      setPoolOrders(initialPoolOrders);
+    });
   };
 
   return (
@@ -35,7 +58,7 @@ function App() {
       <main className="h-screen w-screen overflow-hidden relative flex">
         {/* Map layer at the bottom */}
         <div className="absolute inset-0 z-0">
-          <LeafletMap orders={deliveryOrders} />
+          <LeafletMap orders={[...deliveryOrders, ...poolOrders]} />
         </div>
         {/* UI overlays above the map, pointer-events-none except sidebar */}
         <div className="relative w-full flex justify-end items-start z-10 pointer-events-none">
