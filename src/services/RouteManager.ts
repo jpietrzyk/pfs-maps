@@ -266,4 +266,78 @@ export class RouteManager {
       (segment) => segment.status === status
     );
   }
+
+  /**
+   * Highlight a specific route segment
+   */
+  highlightSegment(segmentId: string): void {
+    const segment = this.segments.get(segmentId);
+    console.log(`Highlighting segment: ${segmentId}`, { segment, hasMapRoute: !!segment?.mapRoute });
+
+    if (segment && segment.mapRoute) {
+      // Store original style
+      if (!segment.mapRoute.originalStyle) {
+        segment.mapRoute.originalStyle = {
+          color: segment.mapRoute.color,
+          weight: segment.mapRoute.weight,
+          opacity: segment.mapRoute.opacity,
+        };
+      }
+
+      // Apply highlight style
+      segment.mapRoute.color = "#ef4444"; // Red color for highlight
+      segment.mapRoute.weight = 6;
+      segment.mapRoute.opacity = 1.0;
+
+      // Update the route on the map
+      if (this.mapProvider.updateRouteSegment) {
+        console.log(`Updating route style for segment: ${segmentId}`);
+        this.mapProvider.updateRouteSegment(segment.mapRoute, {
+          ...segment.routeData!,
+          color: segment.mapRoute.color,
+          weight: segment.mapRoute.weight,
+          opacity: segment.mapRoute.opacity,
+        });
+      }
+    }
+  }
+
+  /**
+   * Highlight a specific route segment by ID (more flexible version)
+   */
+  highlightSegmentById(segmentId: string): void {
+    const segment = this.segments.get(segmentId);
+    if (segment && segment.mapRoute) {
+      this.highlightSegment(segmentId);
+    }
+  }
+
+  /**
+   * Remove highlight from a specific route segment
+   */
+  unhighlightSegment(segmentId: string): void {
+    const segment = this.segments.get(segmentId);
+    console.log(`Unhighlighting segment: ${segmentId}`, { segment, hasOriginalStyle: !!segment?.mapRoute?.originalStyle });
+
+    if (segment && segment.mapRoute && segment.mapRoute.originalStyle) {
+      // Restore original style
+      segment.mapRoute.color = segment.mapRoute.originalStyle.color;
+      segment.mapRoute.weight = segment.mapRoute.originalStyle.weight;
+      segment.mapRoute.opacity = segment.mapRoute.originalStyle.opacity;
+
+      // Update the route on the map
+      if (this.mapProvider.updateRouteSegment) {
+        console.log(`Restoring route style for segment: ${segmentId}`);
+        this.mapProvider.updateRouteSegment(segment.mapRoute, {
+          ...segment.routeData!,
+          color: segment.mapRoute.color,
+          weight: segment.mapRoute.weight,
+          opacity: segment.mapRoute.opacity,
+        });
+      }
+
+      // Clean up
+      delete segment.mapRoute.originalStyle;
+    }
+  }
 }

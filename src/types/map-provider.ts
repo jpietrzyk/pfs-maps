@@ -63,6 +63,15 @@ export interface MapRoute {
   color?: string;
   weight?: number;
   opacity?: number;
+
+  /**
+   * Original style for highlighting functionality
+   */
+  originalStyle?: {
+    color?: string;
+    weight?: number;
+    opacity?: number;
+  };
 }
 
 /**
@@ -107,6 +116,13 @@ export interface RouteData {
    * Timestamp of calculation
    */
   calculatedAt?: Date;
+
+  /**
+   * Optional styling properties for route highlighting
+   */
+  color?: string;
+  weight?: number;
+  opacity?: number;
 }
 
 /**

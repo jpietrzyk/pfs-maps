@@ -266,8 +266,19 @@ export class LeafletMapProvider implements MapProvider {
     leafletRoute.setLatLngs(routeData.polyline as number[][]);
 
     // Update visual properties if provided
-    if ((routeData as any).color) {
-      leafletRoute.setStyle({ color: (routeData as any).color });
+    const styleUpdates: any = {};
+    if (routeData.color) {
+      styleUpdates.color = routeData.color;
+    }
+    if (routeData.weight) {
+      styleUpdates.weight = routeData.weight;
+    }
+    if (routeData.opacity) {
+      styleUpdates.opacity = routeData.opacity;
+    }
+
+    if (Object.keys(styleUpdates).length > 0) {
+      leafletRoute.setStyle(styleUpdates);
     }
   }
 

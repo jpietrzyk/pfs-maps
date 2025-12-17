@@ -2,11 +2,7 @@ import React, { useEffect } from "react";
 import type { Order } from "@/types/order";
 import { DeliveryOrderItem } from "@/components/delivery/delivery-order-item";
 import { DeliveryDriveSegment } from "@/components/delivery/delivery-drive-segment";
-import {
-  getDistanceKm,
-  getDriveMinutes,
-  getHandlingMinutes,
-} from "@/lib/delivery-time-utils";
+import { getDistanceKm, getDriveMinutes } from "@/lib/delivery-time-utils";
 import {
   DndContext,
   closestCenter,
@@ -116,8 +112,22 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
                     id={order.id}
                     order={order}
                     isHighlighted={highlightedOrderId === order.id}
-                    onMouseEnter={() => setHighlightedOrderId?.(order.id)}
-                    onMouseLeave={() => setHighlightedOrderId?.(null)}
+                    onMouseEnter={() => {
+                      setHighlightedOrderId?.(order.id);
+                      // Highlight the route segment to the next order
+                      if (routeManager && idx < orders.length - 1) {
+                        const segmentId = `${order.id}-${orders[idx + 1].id}`;
+                        routeManager.highlightSegment(segmentId);
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      setHighlightedOrderId?.(null);
+                      // Unhighlight the route segment to the next order
+                      if (routeManager && idx < orders.length - 1) {
+                        const segmentId = `${order.id}-${orders[idx + 1].id}`;
+                        routeManager.unhighlightSegment(segmentId);
+                      }
+                    }}
                     onRemove={onRemoveOrder}
                   />
                   {idx < orders.length - 1 && routeManager && (
@@ -142,6 +152,7 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
                       isCalculating={routeManager.isCalculating(
                         `${order.id}-${orders[idx + 1].id}`
                       )}
+                      routeManager={routeManager}
                     />
                   )}
                   {idx < orders.length - 1 && !routeManager && (
