@@ -2,11 +2,7 @@ import React, { useEffect } from "react";
 import type { Order } from "@/types/order";
 import { DeliveryOrderItem } from "@/components/delivery/delivery-order-item";
 import { DeliveryDriveSegment } from "@/components/delivery/delivery-drive-segment";
-import {
-  getDistanceKm,
-  getDriveMinutes,
-  getHandlingMinutes,
-} from "@/lib/delivery-time-utils";
+import { getDistanceKm, getDriveMinutes } from "@/lib/delivery-time-utils";
 import {
   DndContext,
   closestCenter,
@@ -142,6 +138,7 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
                       isCalculating={routeManager.isCalculating(
                         `${order.id}-${orders[idx + 1].id}`
                       )}
+                      routeManager={routeManager}
                     />
                   )}
                   {idx < orders.length - 1 && !routeManager && (

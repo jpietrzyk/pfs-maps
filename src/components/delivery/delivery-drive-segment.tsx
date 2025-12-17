@@ -1,11 +1,13 @@
 import React from "react";
 import type { RouteSegment } from "@/types/map-provider";
+import type { RouteManager } from "@/services/RouteManager";
 
 interface DeliveryDriveSegmentProps {
   segment: RouteSegment;
   onRecalculate?: () => void;
   isCalculating?: boolean;
   onHover?: () => void;
+  routeManager?: RouteManager;
 }
 
 export const DeliveryDriveSegment: React.FC<DeliveryDriveSegmentProps> = ({
@@ -13,6 +15,7 @@ export const DeliveryDriveSegment: React.FC<DeliveryDriveSegmentProps> = ({
   onRecalculate,
   isCalculating = false,
   onHover,
+  routeManager,
 }) => {
   const handleRecalculate = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -21,6 +24,15 @@ export const DeliveryDriveSegment: React.FC<DeliveryDriveSegmentProps> = ({
 
   const handleMouseEnter = () => {
     onHover?.();
+    if (routeManager && segment.mapRoute) {
+      routeManager.highlightSegment(segment.id);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (routeManager && segment.mapRoute) {
+      routeManager.unhighlightSegment(segment.id);
+    }
   };
 
   // Format duration from seconds to minutes
@@ -43,6 +55,7 @@ export const DeliveryDriveSegment: React.FC<DeliveryDriveSegmentProps> = ({
       key={`segment-${segment.id}`}
       className="flex items-center justify-center text-xs text-muted-foreground/80 py-1"
       onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {isCalculating ? (
         <span className="animate-pulse flex items-center gap-1">

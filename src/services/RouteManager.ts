@@ -266,4 +266,62 @@ export class RouteManager {
       (segment) => segment.status === status
     );
   }
+
+  /**
+   * Highlight a specific route segment
+   */
+  highlightSegment(segmentId: string): void {
+    const segment = this.segments.get(segmentId);
+    if (segment && segment.mapRoute) {
+      // Store original style
+      if (!segment.mapRoute.originalStyle) {
+        segment.mapRoute.originalStyle = {
+          color: segment.mapRoute.color,
+          weight: segment.mapRoute.weight,
+          opacity: segment.mapRoute.opacity,
+        };
+      }
+
+      // Apply highlight style
+      segment.mapRoute.color = "#ef4444"; // Red color for highlight
+      segment.mapRoute.weight = 6;
+      segment.mapRoute.opacity = 1.0;
+
+      // Update the route on the map
+      if (this.mapProvider.updateRouteSegment) {
+        this.mapProvider.updateRouteSegment(segment.mapRoute, {
+          ...segment.routeData!,
+          color: segment.mapRoute.color,
+          weight: segment.mapRoute.weight,
+          opacity: segment.mapRoute.opacity,
+        });
+      }
+    }
+  }
+
+  /**
+   * Remove highlight from a specific route segment
+   */
+  unhighlightSegment(segmentId: string): void {
+    const segment = this.segments.get(segmentId);
+    if (segment && segment.mapRoute && segment.mapRoute.originalStyle) {
+      // Restore original style
+      segment.mapRoute.color = segment.mapRoute.originalStyle.color;
+      segment.mapRoute.weight = segment.mapRoute.originalStyle.weight;
+      segment.mapRoute.opacity = segment.mapRoute.originalStyle.opacity;
+
+      // Update the route on the map
+      if (this.mapProvider.updateRouteSegment) {
+        this.mapProvider.updateRouteSegment(segment.mapRoute, {
+          ...segment.routeData!,
+          color: segment.mapRoute.color,
+          weight: segment.mapRoute.weight,
+          opacity: segment.mapRoute.opacity,
+        });
+      }
+
+      // Clean up
+      delete segment.mapRoute.originalStyle;
+    }
+  }
 }
