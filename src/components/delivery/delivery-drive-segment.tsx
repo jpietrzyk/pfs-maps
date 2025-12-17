@@ -24,13 +24,13 @@ export const DeliveryDriveSegment: React.FC<DeliveryDriveSegmentProps> = ({
 
   const handleMouseEnter = () => {
     onHover?.();
-    if (routeManager && segment.mapRoute) {
+    if (routeManager) {
       routeManager.highlightSegment(segment.id);
     }
   };
 
   const handleMouseLeave = () => {
-    if (routeManager && segment.mapRoute) {
+    if (routeManager) {
       routeManager.unhighlightSegment(segment.id);
     }
   };
@@ -53,7 +53,11 @@ export const DeliveryDriveSegment: React.FC<DeliveryDriveSegmentProps> = ({
   return (
     <li
       key={`segment-${segment.id}`}
-      className="flex items-center justify-center text-xs text-muted-foreground/80 py-1"
+      className={`flex items-center justify-center text-xs py-1 transition-colors duration-200 ${
+        routeManager && segment.mapRoute
+          ? "hover:bg-accent/50 cursor-pointer"
+          : "text-muted-foreground/80"
+      }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
