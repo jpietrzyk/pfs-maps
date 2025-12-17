@@ -1,4 +1,4 @@
-import LeafletMap from "@/components/leaflet-map";
+import LeafletMap from "@/components/maps/leaflet/leaflet-map";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { useEffect, useState } from "react";
