@@ -14,6 +14,169 @@ import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
 
+// Helper function to get status colors (consistent with pool markers)
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "pending":
+      return { bg: "#fef3c7", text: "#92400e" };
+    case "in-progress":
+      return { bg: "#dbeafe", text: "#1e40af" };
+    case "completed":
+      return { bg: "#d1fae5", text: "#065f46" };
+    case "cancelled":
+      return { bg: "#fee2e2", text: "#991b1b" };
+    default:
+      return { bg: "#f3f4f6", text: "#374151" };
+  }
+};
+
+// Create consistent popup content for both pool and delivery orders
+const createOrderPopupContent = (
+  order: Order,
+  isPool: boolean,
+  onToggle: () => void,
+  toggleText: string,
+  toggleColor: string
+) => {
+  const statusColors = getStatusColor(order.status);
+  return (
+    <div
+      style={{
+        padding: "16px",
+        maxWidth: "280px",
+        fontFamily: "system-ui, sans-serif",
+        background: "white",
+        borderRadius: "12px",
+        boxShadow:
+          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+        border: "1px solid #e5e7eb",
+      }}
+    >
+      <div
+        style={{
+          fontWeight: "600",
+          marginBottom: "12px",
+          fontSize: "16px",
+          color: "#111827",
+        }}
+      >
+        {order.product?.name || "Unknown Order"}
+      </div>
+      <div
+        style={{
+          padding: "8px 12px",
+          backgroundColor: isPool ? "#f3f4f6" : "#dbeafe",
+          borderRadius: "8px",
+          marginBottom: "12px",
+          borderLeft: "3px solid " + (isPool ? "#9ca3af" : "#3b82f6"),
+        }}
+      >
+        <div
+          style={{
+            fontSize: "12px",
+            color: "#6b7280",
+            textTransform: "uppercase",
+            fontWeight: "600",
+            letterSpacing: "0.5px",
+          }}
+        >
+          {isPool
+            ? "📦 Pool Order (Unassigned)"
+            : "🚛 Delivery Order (Assigned)"}
+        </div>
+      </div>
+      <div style={{ fontSize: "13px", color: "#4b5563", marginBottom: "8px" }}>
+        <strong style={{ color: "#374151" }}>👤 Customer:</strong>{" "}
+        {order.customer}
+      </div>
+      <div style={{ fontSize: "13px", marginBottom: "8px" }}>
+        <strong style={{ color: "#374151" }}>📋 Status:</strong>
+        <span
+          style={{
+            padding: "4px 10px",
+            borderRadius: "16px",
+            fontSize: "11px",
+            fontWeight: "600",
+            backgroundColor: statusColors.bg,
+            color: statusColors.text,
+          }}
+        >
+          {order.status.toUpperCase()}
+        </span>
+      </div>
+      <div style={{ fontSize: "13px", marginBottom: "8px" }}>
+        <strong style={{ color: "#374151" }}>⚡ Priority:</strong>
+        <span
+          style={{
+            textTransform: "uppercase",
+            fontWeight: "600",
+            color: "#3b82f6",
+          }}
+        >
+          {order.priority}
+        </span>
+      </div>
+      <div style={{ fontSize: "13px", color: "#10b981", marginBottom: "10px" }}>
+        <strong>📍 Location:</strong> {order.location.lat.toFixed(4)},{" "}
+        {order.location.lng.toFixed(4)}
+      </div>
+      {order.totalAmount && (
+        <div
+          style={{
+            fontSize: "13px",
+            paddingTop: "10px",
+            borderTop: "1px solid #e5e7eb",
+            marginBottom: "12px",
+          }}
+        >
+          <strong style={{ color: "#374151" }}>💰 Total:</strong> €
+          {order.totalAmount.toLocaleString()}
+        </div>
+      )}
+      <div
+        style={{
+          marginTop: "16px",
+          paddingTop: "12px",
+          borderTop: "1px solid #e5e7eb",
+        }}
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            backgroundColor: toggleColor,
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "all 0.2s",
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor =
+              toggleColor === "#3b82f6" ? "#2563eb" : "#dc2626";
+            e.currentTarget.style.transform = "translateY(-1px)";
+            e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.15)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = toggleColor;
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.1)";
+          }}
+        >
+          {toggleText}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 interface LeafletMapProps {
   orders?: Order[];
   onOrderAddedToDelivery?: (orderId: string) => void;
@@ -175,57 +338,41 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
             icon={icon as L.Icon}
           >
             <Popup>
-              {order.product?.name}
-              <br />
-              {order.customer}
-              <br />({order.location.lat}, {order.location.lng})
-              {isPool && (
-                <div style={{ color: "#888", marginBottom: "8px" }}>
-                  No delivery assigned
-                </div>
-              )}
-              {isPool && order.totalAmount !== undefined && (
-                <div
-                  style={{
-                    color:
-                      (order.totalAmount ?? 0) > ORANGE_THRESHOLD
-                        ? "#f59e42"
-                        : "#888",
-                    marginBottom: "8px",
-                  }}
-                >
-                  {`Order price: €${order.totalAmount.toLocaleString()} (threshold: €${ORANGE_THRESHOLD.toLocaleString()})`}
-                </div>
-              )}
-              {isPool && (
-                <button
-                  onClick={async () => {
-                    try {
+              {createOrderPopupContent(
+                order,
+                isPool,
+                async () => {
+                  try {
+                    if (isPool) {
+                      // Add to delivery
                       await OrdersApi.updateOrder(order.id, {
                         deliveryId: "DEL-001",
                       });
-                      // Use callback to refresh data instead of page reload
                       onOrderAddedToDelivery?.(order.id);
                       onRefreshRequested?.();
-                    } catch (error) {
-                      console.error("Failed to add order to delivery:", error);
-                      alert("Failed to add order to delivery");
+                    } else {
+                      // Remove from delivery
+                      await OrdersApi.updateOrder(order.id, {
+                        deliveryId: undefined,
+                      });
+                      onRefreshRequested?.();
                     }
-                  }}
-                  style={{
-                    backgroundColor: "#059669",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                    marginTop: "8px",
-                    fontSize: "12px",
-                    fontWeight: "600",
-                  }}
-                >
-                  ➕ Add to Delivery
-                </button>
+                  } catch (error) {
+                    console.error(
+                      isPool
+                        ? "Failed to add order to delivery:"
+                        : "Failed to remove order from delivery:",
+                      error
+                    );
+                    alert(
+                      isPool
+                        ? "Failed to add order to delivery"
+                        : "Failed to remove order from delivery"
+                    );
+                  }
+                },
+                isPool ? "➕ Add to Delivery" : "➖ Remove from Delivery",
+                isPool ? "#3b82f6" : "#dc2626"
               )}
             </Popup>
           </Marker>
