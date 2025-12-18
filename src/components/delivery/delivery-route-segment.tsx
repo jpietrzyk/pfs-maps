@@ -45,6 +45,15 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
     return (meters / 1000).toFixed(2) + " km";
   };
 
+  // Calculate drive time based on distance (80 km/h)
+  const calculateDriveTime = (distanceMeters: number): string => {
+    const distanceKm = distanceMeters / 1000;
+    const speedKmh = 80;
+    const hours = distanceKm / speedKmh;
+    const minutes = Math.round(hours * 60);
+    return minutes.toString();
+  };
+
   return (
     <div
       className="delivery-route-segment"
@@ -70,6 +79,12 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
         Distance:{" "}
         {segment.routeData?.distance
           ? formatDistance(segment.routeData.distance)
+          : "Nie dostępna"}
+      </div>
+      <div>
+        Drive Time (80 km/h):{" "}
+        {segment.routeData?.distance
+          ? calculateDriveTime(segment.routeData.distance) + " min"
           : "Nie dostępna"}
       </div>
       <button onClick={handleRecalculate} disabled={isCalculating}>
