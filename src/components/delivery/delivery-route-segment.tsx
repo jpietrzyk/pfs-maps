@@ -1,7 +1,7 @@
 import React from "react";
 import type { RouteSegment } from "@/types/map-provider";
 import type { RouteManager } from "@/services/RouteManager";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, Route, Clock } from "lucide-react";
 
 interface DeliveryRouteSegmentProps {
   segment: RouteSegment;
@@ -43,9 +43,9 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
     const minutes = totalMinutes % 60;
 
     if (hours > 0) {
-      return `${hours} hours ${minutes} minutes`;
+      return `${hours} h ${minutes} m`;
     } else {
-      return `${minutes} minutes`;
+      return `${minutes} m`;
     }
   };
 
@@ -56,7 +56,7 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
 
   return (
     <div
-      className="delivery-route-segment bg-card rounded-lg border border-border p-3 mb-2 shadow-sm hover:shadow-md transition-shadow duration-200"
+      className="delivery-route-segment bg-card/50 rounded-lg p-2 mb-1 hover:bg-card transition-colors duration-200"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -66,17 +66,16 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
             Route Segment:{" "}
             <span className="font-medium text-foreground">{segment.id}</span>
           </div>
-          <div className="space-y-1 text-sm">
+          <div className="text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Distance:</span>
+              <Route className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium text-foreground">
                 {segment.routeData?.distance
                   ? formatDistance(segment.routeData.distance)
                   : "Nie dostępna"}
               </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Duration:</span>
+              <span className="text-muted-foreground">|</span>
+              <Clock className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium text-foreground">
                 {segment.routeData?.duration
                   ? formatDuration(segment.routeData.duration)
