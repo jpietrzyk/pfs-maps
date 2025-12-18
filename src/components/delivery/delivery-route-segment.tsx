@@ -88,7 +88,7 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
           <button
             onClick={handleRecalculate}
             disabled={isCalculating}
-            className="p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-primary/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-primary hover:text-primary"
             aria-label={isCalculating ? "Recalculating..." : "Refresh route"}
           >
             <RefreshCcw className="h-4 w-4" />
