@@ -48,8 +48,18 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
     >
       <div>Segment ID: {segment.id}</div>
       <div>
+        Start: {segment.fromOrder.location.lat.toFixed(6)},{" "}
+        {segment.fromOrder.location.lng.toFixed(6)}
+      </div>
+      <div>
+        End: {segment.toOrder.location.lat.toFixed(6)},{" "}
+        {segment.toOrder.location.lng.toFixed(6)}
+      </div>
+      <div>
         Duration:{" "}
-        {segment.duration ? formatDuration(segment.duration) + " min" : "N/A"}
+        {segment.duration
+          ? formatDuration(segment.duration) + " min"
+          : "Nie dostępna"}
       </div>
       <button onClick={handleRecalculate} disabled={isCalculating}>
         {isCalculating ? "Recalculating..." : "Recalculate"}
