@@ -35,9 +35,22 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
     }
   };
 
-  // Format duration from seconds to minutes
+  // Format duration from seconds to hours and minutes
   const formatDuration = (seconds: number): string => {
-    return Math.round(seconds / 60).toString();
+    const totalMinutes = Math.round(seconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (hours > 0) {
+      return `${hours} hours ${minutes} minutes`;
+    } else {
+      return `${minutes} minutes`;
+    }
+  };
+
+  // Format distance from meters to kilometers
+  const formatDistance = (meters: number): string => {
+    return (meters / 1000).toFixed(2) + " km";
   };
 
   return (
@@ -48,10 +61,30 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
     >
       <div>Segment ID: {segment.id}</div>
       <div>
-        Duration:{" "}
-        {segment.duration ? formatDuration(segment.duration) + " min" : "N/A"}
+        Start: {segment.fromOrder.location.lat.toFixed(6)},{" "}
+        {segment.fromOrder.location.lng.toFixed(6)}
       </div>
-      <button onClick={handleRecalculate} disabled={isCalculating}>
+      <div>
+        End: {segment.toOrder.location.lat.toFixed(6)},{" "}
+        {segment.toOrder.location.lng.toFixed(6)}
+      </div>
+      <div>
+        Distance:{" "}
+        {segment.routeData?.distance
+          ? formatDistance(segment.routeData.distance)
+          : "Nie dostępna"}
+      </div>
+      <div>
+        Duration (from provider):{" "}
+        {segment.routeData?.duration
+          ? formatDuration(segment.routeData.duration)
+          : "Nie dostępna"}
+      </div>
+      <button
+        onClick={handleRecalculate}
+        disabled={isCalculating}
+        className="whitespace-nowrap overflow-visible"
+      >
         {isCalculating ? "Recalculating..." : "Recalculate"}
       </button>
     </div>
