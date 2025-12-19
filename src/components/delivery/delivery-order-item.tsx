@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Trash2, MapPin, Clock, Hammer } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 interface DeliveryOrderItemProps {
   order: Order;
@@ -78,6 +83,19 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
         <div className="flex items-start justify-between gap-3 p-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
+              {onRemove && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleRemove}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="h-6 w-6 shrink-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
+                  aria-label={`Remove order ${order.id}`}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              )}
               <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary">
                 <svg
                   className="h-3 w-3"
@@ -88,9 +106,27 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
                 </svg>
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="truncate text-sm font-medium text-foreground">
-                  {order.product?.name || order.comment || "Unknown Product"}
-                </h4>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <h4 className="truncate text-sm font-medium text-foreground cursor-help">
+                      {order.product?.name ||
+                        order.comment ||
+                        "Unknown Product"}
+                    </h4>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" align="start" sideOffset={4}>
+                    <div className="max-w-[300px] break-words">
+                      <p className="font-medium text-background">
+                        {order.product?.name || "Unknown Product"}
+                      </p>
+                      {order.comment && (
+                        <p className="mt-1 text-xs text-background/80">
+                          {order.comment}
+                        </p>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
                 <p className="truncate text-xs text-muted-foreground">
                   {order.customer}
                 </p>
@@ -133,24 +169,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
               </div>
             </div>
           </div>
-          {onRemove && (
-            <div className="flex flex-col items-end gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleRemove}
-                onMouseDown={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="h-6 w-6 shrink-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
-                aria-label={`Remove order ${order.id}`}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-              <div className="text-right text-xs text-muted-foreground/50">
-                Drag to reorder
-              </div>
-            </div>
-          )}
+          <div className="w-6">{/* Spacer to maintain layout balance */}</div>
         </div>
         <div className="h-1 w-full bg-linear-to-r from-transparent via-primary/10 to-transparent"></div>
       </li>
