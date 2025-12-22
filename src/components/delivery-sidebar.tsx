@@ -7,7 +7,11 @@ import {
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import { useDelivery } from "@/hooks/use-delivery";
 import { useEffect, useState } from "react";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 
 import type { Order } from "@/types/order";
 import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
@@ -155,7 +159,10 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
         ) : (
           <div className="space-y-6 p-4">
             {/* Delivery Orders Section */}
-            <Collapsible open={!isDeliveryCollapsed} onOpenChange={(open) => setIsDeliveryCollapsed(!open)}>
+            <Collapsible
+              open={!isDeliveryCollapsed}
+              onOpenChange={(open) => setIsDeliveryCollapsed(!open)}
+            >
               <div className="bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden">
                 <CollapsibleTrigger asChild>
                   <button
@@ -187,9 +194,33 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     </span>
                     <span className="ml-2 text-muted-foreground">
                       {isDeliveryCollapsed ? (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
                       ) : (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 15l7-7 7 7"
+                          />
+                        </svg>
                       )}
                     </span>
                   </button>
@@ -214,7 +245,10 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
 
             {/* Unassigned Orders Section */}
             {unassignedOrders.length > 0 && (
-              <Collapsible open={!isUnassignedCollapsed} onOpenChange={(open) => setIsUnassignedCollapsed(!open)}>
+              <Collapsible
+                open={!isUnassignedCollapsed}
+                onOpenChange={(open) => setIsUnassignedCollapsed(!open)}
+              >
                 <div className="bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden">
                   <CollapsibleTrigger asChild>
                     <button
@@ -239,9 +273,33 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                       </span>
                       <span className="ml-2 text-muted-foreground">
                         {isUnassignedCollapsed ? (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
                         ) : (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 15l7-7 7 7"
+                            />
+                          </svg>
                         )}
                       </span>
                     </button>
