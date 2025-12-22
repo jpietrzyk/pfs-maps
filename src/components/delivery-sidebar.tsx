@@ -171,9 +171,9 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     aria-controls="delivery-orders-section"
                     type="button"
                   >
-                    <span className="flex items-center gap-3 text-lg font-semibold text-foreground">
+                    <span className="flex items-center gap-2 text-base font-semibold text-foreground">
                       <svg
-                        className="w-5 h-5 text-primary"
+                        className="w-4 h-4 text-primary"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="1.5"
@@ -190,7 +190,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                           d="M15 11l3-3m-3 3l-3-3m3 3v-6"
                         />
                       </svg>
-                      #{currentDelivery?.id || "D-001"}
+                      Delivery #{currentDelivery?.id || "D-001"}
                     </span>
                     <span className="ml-2 text-muted-foreground">
                       {isDeliveryCollapsed ? (
@@ -230,14 +230,16 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     <p className="text-sm text-muted-foreground mb-2">
                       {deliveryOrders.length} orders assigned to this delivery
                     </p>
-                    <DeliveryOrderList
-                      orders={deliveryOrders}
-                      highlightedOrderId={highlightedOrderId}
-                      setHighlightedOrderId={setHighlightedOrderId}
-                      onRemoveOrder={handleRemoveOrder}
-                      onReorder={handleReorder}
-                      title=""
-                    />
+                    <div style={{ maxHeight: 260, overflowY: 'auto' }} className="custom-scrollbar">
+                      <DeliveryOrderList
+                        orders={deliveryOrders}
+                        highlightedOrderId={highlightedOrderId}
+                        setHighlightedOrderId={setHighlightedOrderId}
+                        onRemoveOrder={handleRemoveOrder}
+                        onReorder={handleReorder}
+                        title=""
+                      />
+                    </div>
                   </div>
                 </CollapsibleContent>
               </div>
@@ -257,9 +259,9 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                       aria-controls="unassigned-orders-section"
                       type="button"
                     >
-                      <span className="flex items-center gap-3 text-lg font-semibold text-foreground">
+                      <span className="flex items-center gap-2 text-base font-semibold text-foreground">
                         <svg
-                          className="w-6 h-6 text-muted-foreground"
+                          className="w-4 h-4 text-muted-foreground"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -269,7 +271,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                             clipRule="evenodd"
                           />
                         </svg>
-                        Available Unassigned Orders
+                        Unassigned
                       </span>
                       <span className="ml-2 text-muted-foreground">
                         {isUnassignedCollapsed ? (
@@ -309,11 +311,13 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                       <p className="text-sm text-muted-foreground mb-2">
                         {unassignedOrders.length} orders available to assign
                       </p>
-                      <UnassignedOrderList
-                        unassignedOrders={unassignedOrders}
-                        onAddToDelivery={onAddOrderToDelivery || (() => {})}
-                        title=""
-                      />
+                      <div style={{ maxHeight: 260, overflowY: 'auto' }} className="custom-scrollbar">
+                        <UnassignedOrderList
+                          unassignedOrders={unassignedOrders}
+                          onAddToDelivery={onAddOrderToDelivery || (() => {})}
+                          title=""
+                        />
+                      </div>
                     </div>
                   </CollapsibleContent>
                 </div>
