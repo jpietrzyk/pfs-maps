@@ -32,10 +32,10 @@ function App() {
         (order) => order.deliveryId
       );
       setDeliveryOrders(initialDeliveryOrders);
-      const initialPoolOrders = fetchedOrders.filter(
+      const initialUnassignedOrders = fetchedOrders.filter(
         (order) => !order.deliveryId
       );
-      setPoolOrders(initialPoolOrders);
+      setUnassignedOrders(initialUnassignedOrders);
       // Trigger sidebar refresh
       setRefreshTrigger((prev) => prev + 1);
     });
