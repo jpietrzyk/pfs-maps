@@ -1,0 +1,47 @@
+import type { MapProvider, MapMarker, MapRoute, RouteData, LatLng, Order } from "@/types/map-provider";
+import L from "leaflet";
+
+// This is a stub implementation. Real logic should be moved from LeafletMap component.
+export const LeafletMapProvider: MapProvider = {
+  createMarker(order: Order): MapMarker {
+    // TODO: Move marker creation logic from LeafletMap here
+    return {
+      id: order.id,
+      orderId: order.id,
+      nativeMarker: null,
+    };
+  },
+  updateMarker(marker: MapMarker, order: Order): void {
+    // TODO: Implement marker update logic
+  },
+  removeMarker(markerId: string): void {
+    // TODO: Implement marker removal logic
+  },
+  async createRouteSegment(from: Order, to: Order): Promise<RouteData> {
+    // TODO: Implement route calculation logic
+    return {
+      polyline: [],
+      distance: 0,
+      duration: 0,
+    };
+  },
+  drawRouteSegment(routeData: RouteData): MapRoute {
+    // TODO: Implement drawing logic
+    return {
+      id: "",
+      segmentId: "",
+    };
+  },
+  updateRouteSegment(route: MapRoute, routeData: RouteData): void {
+    // TODO: Implement update logic
+  },
+  removeRouteSegment(routeId: string): void {
+    // TODO: Implement removal logic
+  },
+  fitBounds(orders: Order[]): void {
+    // TODO: Implement fitBounds logic
+  },
+  setView(location: LatLng, zoom: number): void {
+    // TODO: Implement setView logic
+  },
+};

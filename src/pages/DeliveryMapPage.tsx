@@ -1,4 +1,4 @@
-import LeafletMap from "@/components/maps/leaflet/leaflet-map";
+import MapView from "@/components/maps/abstraction/map-view";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { useEffect, useState } from "react";
@@ -61,7 +61,7 @@ export default function DeliveryMapPage() {
       <main className="h-screen w-screen overflow-hidden relative flex">
         {/* Map layer at the bottom */}
         <div className="absolute inset-0 z-0">
-          <LeafletMap
+          <MapView
             orders={[...deliveryOrders, ...unassignedOrders]}
             onOrderAddedToDelivery={async () => {
               // Refresh both delivery and unassigned orders

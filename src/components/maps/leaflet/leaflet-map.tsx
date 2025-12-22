@@ -15,6 +15,7 @@ import { useDelivery } from "@/hooks/use-delivery";
 import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
 
+// DEPRECATED: Logic should be moved to provider abstraction layer.
 // Helper function to get status colors (consistent with pool markers)
 const getStatusColor = (status: string) => {
   switch (status) {
