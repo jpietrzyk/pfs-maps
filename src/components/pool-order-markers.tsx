@@ -1,20 +1,8 @@
 import { useEffect, useRef, useCallback } from "react";
-import { useHereMap } from "@/hooks/use-here-map";
 import { useDelivery } from "@/hooks/use-delivery";
 import { useOrderRoute } from "@/hooks/use-order-route";
 import { mapConfig } from "@/config/map.config";
 import type { Order } from "@/types/order";
-import type { MapMarker } from "@/types/here-maps";
-
-// Extend marker interface to include custom properties
-import type { HereMapsNamespace } from "@/types/here-maps";
-
-// Extend marker interface to include custom properties
-declare global {
-  interface Window {
-    H: HereMapsNamespace;
-  }
-}
 
 // Helper function to get status colors
 const getStatusColor = (status: string) => {
@@ -106,27 +94,17 @@ const createPoolOrderPopupContent = (order: Order, orderId: string): string => {
  * Handles 200+ markers efficiently by avoiding unnecessary DOM manipulation
  */
 const PoolOrderMarkers = () => {
-  const { isReady, mapRef } = useHereMap();
   const { poolOrders, currentDelivery, addOrderToDelivery } = useDelivery();
   const { refreshOrders } = useOrderRoute();
-  const markersRef = useRef<Map<string, MapMarker>>(new Map());
+  const markersRef = useRef<Map<string, any>>(new Map());
 
   // Create marker icon for pool orders (configurable: bitmap or SVG)
   const createPoolMarkerIcon = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const H = (window as any).H;
-    if (!H) {
-      console.error(
-        "[PoolOrderMarkers] H namespace not available for icon creation"
-      );
-      return null;
-    }
-
     // Check configuration: use bitmap or SVG
     if (mapConfig.poolMarkers.useBitmap) {
       // BITMAP MODE: PNG image for best performance with 200+ markers
       // 5-10x faster rendering, lower CPU usage
-      return new H.map.Icon("/markers/pool-marker.png");
+      return "/markers/pool-marker.png";
     } else {
       // SVG MODE: Vector graphics for perfect scaling
       // Slightly slower but better for dynamic styling
@@ -139,35 +117,17 @@ const PoolOrderMarkers = () => {
           </g>
         </svg>
       `;
-      const svgDataUri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
         svgMarkup
       )}`;
-      return new H.map.Icon(svgDataUri);
     }
   }, []);
 
   // Incremental marker updates - only add/remove what changed
   useEffect(() => {
-    if (!isReady || !mapRef.current) {
-      console.log("[PoolOrderMarkers] Not ready:", {
-        isReady,
-        hasMap: !!mapRef.current,
-      });
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const H = (window as any).H;
-    if (!H) {
-      console.error("[PoolOrderMarkers] HERE Maps SDK not available");
-      return;
-    }
-
     console.log("[PoolOrderMarkers] Rendering pool orders:", poolOrders.length);
 
-    const map = mapRef.current;
     const currentMarkers = markersRef.current;
-    const icon = createPoolMarkerIcon();
 
     // Get current vs existing order IDs
     const currentOrderIds = new Set(poolOrders.map((order) => order.id));
@@ -178,7 +138,6 @@ const PoolOrderMarkers = () => {
       if (!currentOrderIds.has(orderId)) {
         const marker = currentMarkers.get(orderId);
         if (marker) {
-          map.removeObject(marker);
           currentMarkers.delete(orderId);
         }
       }
@@ -193,123 +152,12 @@ const PoolOrderMarkers = () => {
           order.location
         );
 
-        const marker = new H.map.Marker(
-          { lat: order.location.lat, lng: order.location.lng },
-          { icon }
-        );
+        const marker = {
+          id: order.id,
+          location: order.location,
+          order: order,
+        };
 
-        // Store order data on marker for click handler
-        marker.setData({
-          orderId: order.id,
-          orderName: order.product?.name,
-          order: order, // Store full order object for popup
-        });
-
-        // Add click event listener to show popup
-        // TODO: Fix When add more abstraction over maps handling
-        marker.addEventListener("tap", (evt: { target: MapMarker }) => {
-          // Get order data from the marker itself to avoid closure issues
-          const markerData = evt.target.getData() as { order: Order };
-          const clickedOrder = markerData.order;
-
-          if (!clickedOrder) {
-            console.error("[PoolOrderMarkers] No order data found on marker");
-            return;
-          }
-
-          // Create popup content
-          const popupContent = createPoolOrderPopupContent(
-            clickedOrder,
-            clickedOrder.id
-          );
-
-          // Create a simple HTML overlay popup (DOM fallback method)
-          const bubbleDiv = document.createElement("div");
-          bubbleDiv.innerHTML = popupContent;
-          bubbleDiv.style.cssText =
-            "position: absolute; background: white; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000; max-width: 300px;";
-          document.body.appendChild(bubbleDiv);
-
-          // Position it near the click
-          const pixel = map.geoToScreen(marker.getGeometry());
-          bubbleDiv.style.left = pixel.x + 20 + "px";
-          bubbleDiv.style.top = pixel.y - 100 + "px";
-
-          // Attach click handler to assignment button
-          const assignBtn = bubbleDiv.querySelector(
-            ".assign-to-delivery-btn"
-          ) as HTMLButtonElement;
-          if (assignBtn) {
-            assignBtn.addEventListener("click", async (e) => {
-              e.stopPropagation(); // Prevent bubble close
-
-              // Check if current delivery exists
-              if (!currentDelivery) {
-                alert("Please select a delivery first");
-                return;
-              }
-
-              // Disable button and show loading state
-              assignBtn.disabled = true;
-              assignBtn.textContent = "⏳ Assigning...";
-              assignBtn.style.backgroundColor = "#6b7280";
-
-              try {
-                console.log(
-                  "[PoolOrderMarkers] Assigning order",
-                  clickedOrder.id,
-                  "to delivery",
-                  currentDelivery.id
-                );
-
-                // Add order to current delivery
-                await addOrderToDelivery(currentDelivery.id, clickedOrder.id);
-
-                console.log("[PoolOrderMarkers] Successfully assigned order");
-
-                // Refresh the order route context to update sidebar
-                await refreshOrders();
-
-                // Show success state briefly
-                assignBtn.textContent = "✓ Assigned!";
-                assignBtn.style.backgroundColor = "#10b981";
-
-                // Close popup after short delay to show success
-                setTimeout(() => {
-                  bubbleDiv.remove();
-                  document.removeEventListener("click", closeHandler);
-                }, 500);
-              } catch (error) {
-                console.error(
-                  "[PoolOrderMarkers] Failed to assign order:",
-                  error
-                );
-                alert("Failed to assign order to delivery");
-
-                // Restore button state
-                assignBtn.disabled = false;
-                assignBtn.textContent = "➕ Assign to Current Delivery";
-                assignBtn.style.backgroundColor = "#059669";
-              }
-            });
-          }
-
-          // Close on click outside
-          const closeHandler = (e: MouseEvent) => {
-            if (!bubbleDiv.contains(e.target as Node)) {
-              bubbleDiv.remove();
-              document.removeEventListener("click", closeHandler);
-            }
-          };
-          setTimeout(
-            () => document.addEventListener("click", closeHandler),
-            100
-          );
-
-          console.log("[PoolOrderMarkers] Popup opened for:", clickedOrder.id);
-        });
-
-        map.addObject(marker);
         currentMarkers.set(order.id, marker);
 
         console.log(
@@ -321,14 +169,9 @@ const PoolOrderMarkers = () => {
 
     // Cleanup: Remove all markers when component unmounts
     return () => {
-      currentMarkers.forEach((marker) => {
-        map.removeObject(marker);
-      });
       currentMarkers.clear();
     };
   }, [
-    isReady,
-    mapRef,
     poolOrders,
     createPoolMarkerIcon,
     addOrderToDelivery,
