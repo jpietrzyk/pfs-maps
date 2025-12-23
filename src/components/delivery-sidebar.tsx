@@ -161,7 +161,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       </SidebarHeader>
 
       {/* Content Area with Clear Separation */}
-      <SidebarContent className="flex-1 overflow-y-auto bg-background border-t border-border/30">
+      <SidebarContent className="flex-1 overflow-hidden bg-background border-t border-border/30">
         {isLoading ? (
           <div className="px-6 py-12 text-center">
             <div className="animate-spin mx-auto w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full mb-4"></div>
@@ -170,10 +170,54 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             </p>
           </div>
         ) : (
-          <div className="h-full flex flex-col">
-            {/* Delivery Orders Section - Full height when expanded */}
-            {!isDeliveryCollapsed && (
-              <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden">
+          <div className="h-full flex flex-col overflow-hidden">
+            {/* Delivery Orders Section - Always at top, full height when expanded */}
+            {isDeliveryCollapsed ? (
+              <button
+                onClick={() => handleDeliveryCollapseChange(true)}
+                className="w-full flex items-center justify-between px-6 py-5 rounded-2xl shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors m-4"
+                aria-expanded={false}
+                aria-controls="delivery-orders-section"
+              >
+                <span className="flex items-center gap-2 text-base font-semibold text-foreground">
+                  <svg
+                    className="w-4 h-4 text-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 11l3-3m-3 3l-3-3m3 3v-6"
+                    />
+                  </svg>
+                  Delivery #{currentDelivery?.id || "D-001"}
+                </span>
+                <span className="ml-2 text-muted-foreground">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </span>
+              </button>
+            ) : (
+              <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden m-4 w-full max-w-full">
                 <div className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-transparent">
                   <span className="flex items-center gap-2 text-base font-semibold text-foreground">
                     <svg
@@ -216,25 +260,66 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     </svg>
                   </button>
                 </div>
-                <div className="flex-1 p-2 overflow-y-auto">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {deliveryOrders.length} orders assigned to this delivery
-                  </p>
-                  <DeliveryOrderList
-                    orders={deliveryOrders}
-                    highlightedOrderId={highlightedOrderId}
-                    setHighlightedOrderId={setHighlightedOrderId}
-                    onRemoveOrder={handleRemoveOrder}
-                    onReorder={handleReorder}
-                    title=""
-                  />
+                <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
+                  <div className="w-full max-w-full">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {deliveryOrders.length} orders assigned to this delivery
+                    </p>
+                    <DeliveryOrderList
+                      orders={deliveryOrders}
+                      highlightedOrderId={highlightedOrderId}
+                      setHighlightedOrderId={setHighlightedOrderId}
+                      onRemoveOrder={handleRemoveOrder}
+                      onReorder={handleReorder}
+                      title=""
+                    />
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Unassigned Orders Section - Full height when expanded */}
-            {!isUnassignedCollapsed && unassignedOrders.length > 0 && (
-              <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden">
+            {/* Unassigned Orders Section - Always at bottom, full height when expanded */}
+            {isUnassignedCollapsed ? (
+              unassignedOrders.length > 0 && (
+                <button
+                  onClick={() => handleUnassignedCollapseChange(true)}
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-2xl shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors mx-4 mb-4"
+                  aria-expanded={false}
+                  aria-controls="unassigned-orders-section"
+                >
+                  <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <svg
+                      className="w-4 h-4 text-muted-foreground"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Unassigned ({unassignedOrders.length})
+                  </span>
+                  <span className="ml-2 text-muted-foreground">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              )
+            ) : (
+              <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden mx-4 mb-4 w-full max-w-full">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-transparent">
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <svg
@@ -270,105 +355,15 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     </svg>
                   </button>
                 </div>
-                <div className="flex-1 p-2 overflow-y-auto">
-                  <UnassignedOrderList
-                    unassignedOrders={unassignedOrders}
-                    onAddToDelivery={onAddOrderToDelivery || (() => {})}
-                    title=""
-                  />
+                <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
+                  <div className="w-full max-w-full">
+                    <UnassignedOrderList
+                      unassignedOrders={unassignedOrders}
+                      onAddToDelivery={onAddOrderToDelivery || (() => {})}
+                      title=""
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* Collapsed triggers - only show when both are collapsed or one is expanded */}
-            {(isDeliveryCollapsed || isUnassignedCollapsed) && (
-              <div className="space-y-4 p-4">
-                {/* Delivery Orders Trigger (collapsed) */}
-                {isDeliveryCollapsed && (
-                  <button
-                    onClick={() => handleDeliveryCollapseChange(true)}
-                    className="w-full flex items-center justify-between px-6 py-5 rounded-2xl shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors"
-                    aria-expanded={false}
-                    aria-controls="delivery-orders-section"
-                  >
-                    <span className="flex items-center gap-2 text-base font-semibold text-foreground">
-                      <svg
-                        className="w-4 h-4 text-primary"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 11l3-3m-3 3l-3-3m3 3v-6"
-                        />
-                      </svg>
-                      Delivery #{currentDelivery?.id || "D-001"}
-                    </span>
-                    <span className="ml-2 text-muted-foreground">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                )}
-
-                {/* Unassigned Orders Trigger (collapsed) */}
-                {isUnassignedCollapsed && unassignedOrders.length > 0 && (
-                  <button
-                    onClick={() => handleUnassignedCollapseChange(true)}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-2xl shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors"
-                    aria-expanded={false}
-                    aria-controls="unassigned-orders-section"
-                  >
-                    <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                      <svg
-                        className="w-4 h-4 text-muted-foreground"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      Unassigned ({unassignedOrders.length})
-                    </span>
-                    <span className="ml-2 text-muted-foreground">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                )}
               </div>
             )}
           </div>
