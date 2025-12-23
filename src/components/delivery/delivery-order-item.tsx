@@ -183,49 +183,73 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <div className="flex items-center justify-between gap-3 p-3">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            {onRemove && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleRemove}
-                onMouseDown={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="h-6 w-6 shrink-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
-                aria-label={`Remove order ${order.id}`}
+        <div className="flex items-center gap-2 p-2">
+          {onRemove && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRemove}
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="h-6 w-6 shrink-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
+              aria-label={`Remove order ${order.id}`}
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          )}
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+            </svg>
+          </div>
+          <div className="min-w-0 flex-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <h4 className="truncate text-sm font-medium text-foreground cursor-help flex items-center gap-2">
+                  {order.product?.name || order.product?.id || order.id}
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground ml-2">
+                    <svg
+                      className="inline h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="none"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 6v6l4 2"
+                      />
+                    </svg>
+                    {(() => {
+                      const complexity = order.product?.complexity ?? 0;
+                      const totalMinutes = complexity * 30;
+                      const hours = Math.floor(totalMinutes / 60);
+                      const minutes = totalMinutes % 60;
+                      return `${hours}:${minutes.toString().padStart(2, "0")}`;
+                    })()}
+                  </span>
+                </h4>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                align="start"
+                sideOffset={4}
+                className="p-0 overflow-hidden"
               >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            )}
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary">
-              <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-              </svg>
-            </div>
-            <div className="min-w-0 flex-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <h4 className="truncate text-sm font-medium text-foreground cursor-help">
-                    {order.product?.name || order.comment || "Unknown Product"}
-                  </h4>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="bottom"
-                  align="start"
-                  sideOffset={4}
-                  className="p-0 overflow-hidden"
-                >
-                  {createExpandedTooltipContent(order)}
-                </TooltipContent>
-              </Tooltip>
-              <p className="truncate text-xs text-muted-foreground">
-                {order.customer}
-              </p>
-            </div>
+                {createExpandedTooltipContent(order)}
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
-        <div className="h-1 w-full bg-linear-to-r from-transparent via-primary/10 to-transparent"></div>
       </li>
     );
   }
