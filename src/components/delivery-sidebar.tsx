@@ -215,7 +215,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                   className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-primary/5 hover:bg-primary/10 w-full text-left transition-colors"
                   aria-label="Collapse delivery orders"
                 >
-                  <span className="flex items-center gap-2 text-base font-semibold text-foreground">
+                  <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <svg
                       className="w-4 h-4 text-primary"
                       fill="none"
