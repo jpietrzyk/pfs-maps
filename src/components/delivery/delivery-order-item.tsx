@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import type { Order } from "@/types/order";
+import type { Product } from "@/types /order";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
@@ -9,6 +10,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { RouterProvider } from "react-router-dom";
 
 interface DeliveryOrderItemProps {
   order: Order;
@@ -229,13 +231,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
                         d="M12 6v6l4 2"
                       />
                     </svg>
-                    {(() => {
-                      const complexity = order.product?.complexity ?? 0;
-                      const totalMinutes = complexity * 30;
-                      const hours = Math.floor(totalMinutes / 60);
-                      const minutes = totalMinutes % 60;
-                      return `${hours}:${minutes.toString().padStart(2, "0")}`;
-                    })()}
+                    {order.product?.complexity ?? 0}
                   </span>
                 </h4>
               </TooltipTrigger>

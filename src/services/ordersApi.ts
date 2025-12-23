@@ -1,4 +1,4 @@
-import type { Order } from "@/types/order";
+import type { Order, Product } from "@/types/order";
 import ordersJson from "@/assets/orders.json";
 
 // Mock delay to simulate network request
@@ -7,7 +7,7 @@ const mockDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms)
 // Convert JSON data to Order[] with proper Date objects
 const sampleOrdersData: Order[] = ordersJson.map(order => ({
   id: order.id,
-  name: order.name,
+  product: order.product as Product,
   comment: order.comment,
   status: order.status as Order['status'],
   priority: order.priority as Order['priority'],
