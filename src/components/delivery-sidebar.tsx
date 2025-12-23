@@ -211,7 +211,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
+                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5"
                     />
                   </svg>
                 </span>
@@ -312,7 +312,12 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
+                        d="M12 19V5"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 12l7-7 7 7"
                       />
                     </svg>
                   </span>
