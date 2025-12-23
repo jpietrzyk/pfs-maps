@@ -224,7 +224,11 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
               </button>
             ) : (
               <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden m-4 w-full max-w-full">
-                <div className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-transparent">
+                <button
+                  onClick={() => handleDeliveryCollapseChange(false)}
+                  className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-transparent w-full text-left hover:bg-accent/10 transition-colors"
+                  aria-label="Collapse delivery orders"
+                >
                   <span className="flex items-center gap-2 text-base font-semibold text-foreground">
                     <svg
                       className="w-4 h-4 text-primary"
@@ -246,11 +250,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     </svg>
                     Delivery #{currentDelivery?.id || "D-001"}
                   </span>
-                  <button
-                    onClick={() => handleDeliveryCollapseChange(false)}
-                    className="ml-2 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="Collapse delivery orders"
-                  >
+                  <span className="ml-2 text-muted-foreground">
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -264,8 +264,8 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                         d="M5 15l7-7 7 7"
                       />
                     </svg>
-                  </button>
-                </div>
+                  </span>
+                </button>
                 <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
                   <div className="w-full max-w-full">
                     <p className="text-sm text-muted-foreground mb-2">
@@ -331,7 +331,11 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
               )
             ) : (
               <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden mx-4 mb-4 w-full max-w-full">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-transparent">
+                <button
+                  onClick={() => handleUnassignedCollapseChange(false)}
+                  className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-transparent w-full text-left hover:bg-accent/10 transition-colors"
+                  aria-label="Collapse unassigned orders"
+                >
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <svg
                       className="w-4 h-4 text-muted-foreground"
@@ -346,11 +350,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     </svg>
                     Unassigned ({unassignedOrders.length})
                   </span>
-                  <button
-                    onClick={() => handleUnassignedCollapseChange(false)}
-                    className="ml-2 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="Collapse unassigned orders"
-                  >
+                  <span className="ml-2 text-muted-foreground">
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -364,8 +364,8 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                         d="M5 15l7-7 7 7"
                       />
                     </svg>
-                  </button>
-                </div>
+                  </span>
+                </button>
                 <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
                   <div className="w-full max-w-full">
                     <UnassignedOrderList
