@@ -208,8 +208,12 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
             <Tooltip>
               <TooltipTrigger asChild>
                 <h4 className="truncate text-sm font-medium text-foreground cursor-help flex items-center gap-2">
-                  {order.product?.name || order.product?.id || order.id}
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground ml-2">
+                   <div className="flex flex-col">
+                     {order.product?.name || order.product?.id || order.id}
+                     <div className="text-xs text-muted-foreground">
+                       {order.id} | €{order.product?.price?.toLocaleString() ?? "0"} | {order.product?.complexity ? order.product.complexity * 30 : 0} min
+                     </div>
+                   </div>
                     <svg
                       className="inline h-4 w-4"
                       fill="none"
@@ -232,8 +236,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
                       />
                     </svg>
                     {order.product?.complexity ?? 0}
-                  </span>
-                </h4>
+                  </h4>
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"
