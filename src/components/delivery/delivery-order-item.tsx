@@ -211,7 +211,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
                    <div className="flex flex-col">
                      {order.product?.name || order.product?.id || order.id}
                      <div className="text-xs text-muted-foreground">
-                       {order.id} | €{order.product?.price?.toLocaleString() ?? "0"} | {order.product?.complexity ? order.product.complexity * 30 : 0} min
+                       {order.id} | {order.product?.complexity ? order.product.complexity * 30 : 0} min | {order.priority}
                      </div>
                    </div>
                     <svg
