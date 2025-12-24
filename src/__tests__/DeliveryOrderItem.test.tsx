@@ -27,9 +27,9 @@ describe("DeliveryOrderItem", () => {
 
     render(<DeliveryOrderItem id={order.id} order={order} />);
 
-    // Should render product name and customer
+    // Should render product name (customer is in tooltip, not main UI)
     expect(screen.getByText("Test Product")).toBeInTheDocument();
-    expect(screen.getByText("Test Customer")).toBeInTheDocument();
+    expect(screen.getByText(/order-1/)).toBeInTheDocument();
 
     // Should not render status, assembly time, or times (removed for compactness)
     expect(screen.queryByText("pending")).not.toBeInTheDocument();
@@ -158,8 +158,9 @@ describe("DeliveryOrderItem", () => {
       />
     );
 
-    // Should still render without crashing
-    expect(screen.getByText("Test Customer")).toBeInTheDocument();
+    // Should still render without crashing (customer is in tooltip, order ID is in main UI)
+    // Use getAllByText since there are multiple elements with order-1
+    expect(screen.getAllByText(/order-1/).length).toBeGreaterThan(0);
   });
 
   it("should handle orders with different statuses", () => {
