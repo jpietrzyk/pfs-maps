@@ -18,7 +18,6 @@ interface DeliverySidebarProps {
   onDeliveryOrdersUpdated?: (updatedOrders: Order[]) => void;
   unassignedOrders?: Order[];
   onAddOrderToDelivery?: (orderId: string) => void;
-  refreshTrigger?: number;
 }
 
 const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
@@ -26,7 +25,6 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   onDeliveryOrdersUpdated,
   unassignedOrders = [],
   onAddOrderToDelivery,
-  refreshTrigger = 0,
 }) => {
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
   const { currentDelivery, removeOrderFromDelivery } = useDelivery();
@@ -98,7 +96,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
     };
 
     updateDeliveryOrders();
-  }, [currentDelivery, refreshTrigger]);
+  }, [currentDelivery]);
 
   const handleRemoveOrder = async (orderId: string) => {
     if (!currentDelivery) {

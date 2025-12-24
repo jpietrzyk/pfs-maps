@@ -12,7 +12,6 @@ export default function DeliveryMapPage() {
   const { addOrderToDelivery } = useDelivery();
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [unassignedOrders, setUnassignedOrders] = useState<Order[]>([]);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     OrdersApi.getOrders().then((fetchedOrders) => {
@@ -41,8 +40,6 @@ export default function DeliveryMapPage() {
         (order) => !order.deliveryId
       );
       setUnassignedOrders(initialUnassignedOrders);
-      // Trigger sidebar refresh
-      setRefreshTrigger((prev) => prev + 1);
     });
   };
 
@@ -92,7 +89,6 @@ export default function DeliveryMapPage() {
             onOrderRemoved={handleOrderRemoved}
             onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
             unassignedOrders={unassignedOrders}
-            refreshTrigger={refreshTrigger}
             onAddOrderToDelivery={async (orderId: string) => {
               try {
                 // Use the delivery context's addOrderToDelivery method

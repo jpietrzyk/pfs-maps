@@ -99,7 +99,6 @@ describe("DeliverySidebar - Assigned Count Update", () => {
                 // Simulate the refresh that should happen
                 return;
               }}
-              refreshTrigger={0}
             />
           </DeliveryProvider>
         </MarkerHighlightProvider>
@@ -133,10 +132,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
       <SidebarProvider>
         <MarkerHighlightProvider>
           <DeliveryProvider>
-            <DeliverySidebar
-              unassignedOrders={[mockOrders[1]]}
-              refreshTrigger={0}
-            />
+            <DeliverySidebar unassignedOrders={[mockOrders[1]]} />
           </DeliveryProvider>
         </MarkerHighlightProvider>
       </SidebarProvider>
