@@ -153,7 +153,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
         <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-primary/10"></div>
         <div className="relative z-10 flex items-center justify-center">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-primary text-primary-foreground rounded-lg flex items-center justify-center shadow-md">
+            <div className="w-9 h-5 bg-primary text-primary-foreground rounded-sm flex items-center justify-center shadow-s">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" />
               </svg>
@@ -181,7 +181,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             {isDeliveryCollapsed ? (
               <button
                 onClick={() => handleDeliveryCollapseChange(true)}
-                className="w-full flex items-center justify-between px-6 py-5 rounded-2xl shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors m-4"
+                className="max-w-full flex items-center justify-between px-6 py-5 rounded-2sm shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors m-4"
                 aria-expanded={false}
                 aria-controls="delivery-orders-section"
               >
@@ -204,15 +204,16 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                       d="M15 11l3-3m-3 3l-3-3m3 3v-6"
                     />
                   </svg>
-                  Delivery #{currentDelivery?.id || "D-001"}
+                  {deliveryOrders.length} assigned to{" "}
+                  {currentDelivery?.id || "D-001"}
                 </span>
                 <span className="ml-2 text-muted-foreground"></span>
               </button>
             ) : (
-              <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden m-4  max-w-full">
+              <div className="flex-1 flex flex-col bg-background rounded-2sm shadow-sm border border-border/50 overflow-hidden m-4  max-w-full">
                 <button
                   onClick={() => handleDeliveryCollapseChange(false)}
-                  className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-primary/5 hover:bg-primary/10  text-left transition-colors"
+                  className="max-w-full flex items-center justify-between px-6 py-5 border-b border-border/50 bg-primary/5 hover:bg-primary/10  text-left transition-colors"
                   aria-label="Collapse delivery orders"
                 >
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -234,15 +235,13 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                         d="M15 11l3-3m-3 3l-3-3m3 3v-6"
                       />
                     </svg>
-                    Delivery #{currentDelivery?.id || "D-001"}
+                    {deliveryOrders.length} assigned to{" "}
+                    {currentDelivery?.id || "D-001"}
                   </span>
                 </button>
                 <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
-                  <div className="w-full max-w-full">
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {deliveryOrders.length} orders assigned to this delivery
-                    </p>
-                    <div className="w-full max-w-full overflow-hidden">
+                  <div className="max-w-full">
+                    <div className="max-w-full overflow-hidden">
                       <DeliveryOrderList
                         orders={deliveryOrders}
                         highlightedOrderId={highlightedOrderId}
@@ -262,7 +261,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
               unassignedOrders.length > 0 && (
                 <button
                   onClick={() => handleUnassignedCollapseChange(true)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-2xl shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors mx-4 mb-4"
+                  className="max-w-full flex items-center justify-between px-4 py-3 rounded-2sm shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors mx-4 mb-4"
                   aria-expanded={false}
                   aria-controls="unassigned-orders-section"
                 >
@@ -303,7 +302,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                 </button>
               )
             ) : (
-              <div className="flex-1 flex flex-col bg-background rounded-2xl shadow-sm border border-border/50 overflow-hidden mx-4 mb-4 max-w-full">
+              <div className="flex-1 flex flex-col bg-background rounded-2sm shadow-sm border border-border/50 overflow-hidden mx-4 mb-4 max-w-full">
                 <button
                   onClick={() => handleUnassignedCollapseChange(false)}
                   className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-transparent text-left hover:bg-accent/10 transition-colors"

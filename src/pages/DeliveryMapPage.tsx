@@ -109,6 +109,8 @@ export default function DeliveryMapPage() {
                 setDeliveryOrders(updatedDeliveryOrders);
                 setUnassignedOrders(updatedUnassignedOrders);
                 handleDeliveryOrdersUpdated(updatedDeliveryOrders);
+                // Trigger sidebar refresh to update the assigned count
+                setRefreshTrigger((prev) => prev + 1);
               } catch (error) {
                 console.error("Failed to add order to delivery:", error);
                 alert("Failed to add order to delivery");
