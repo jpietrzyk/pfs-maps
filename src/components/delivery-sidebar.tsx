@@ -32,30 +32,24 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   const { currentDelivery, removeOrderFromDelivery } = useDelivery();
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDeliveryCollapsed, setIsDeliveryCollapsed] = useState(false);
+  const [isDeliveryExpanded, setIsDeliveryExpanded] = useState(true);
   const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(true); // collapsed by default
 
-  // Handle delivery collapsible state change
-  const handleDeliveryCollapseChange = (open: boolean) => {
-    setIsDeliveryCollapsed(!open);
-    // If delivery is being opened, close unassigned
-    if (open) {
+  // Handle delivery expand/collapse state change
+  const handleDeliveryExpandChange = (expanded: boolean) => {
+    setIsDeliveryExpanded(expanded);
+    // If delivery is being expanded, close unassigned
+    if (expanded) {
       setIsUnassignedCollapsed(true);
-    } else {
-      // If delivery is being closed, open unassigned (always one expanded)
-      setIsUnassignedCollapsed(false);
     }
   };
 
   // Handle unassigned collapsible state change
   const handleUnassignedCollapseChange = (open: boolean) => {
     setIsUnassignedCollapsed(!open);
-    // If unassigned is being opened, close delivery
+    // If unassigned is being opened, expand delivery
     if (open) {
-      setIsDeliveryCollapsed(true);
-    } else {
-      // If unassigned is being closed, open delivery (always one expanded)
-      setIsDeliveryCollapsed(false);
+      setIsDeliveryExpanded(true);
     }
   };
 
@@ -177,15 +171,22 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
           </div>
         ) : (
           <div className="h-full flex flex-col overflow-hidden">
-            {/* Delivery Orders Section - Always at top, full height when expanded */}
-            {isDeliveryCollapsed ? (
+            {/* Delivery Orders Section - Always partially visible, can expand to full height */}
+            <div
+              className={`flex flex-col bg-background rounded-2sm shadow-sm border border-border/50 overflow-hidden m-4 max-w-full ${
+                isDeliveryExpanded ? "flex-1" : "h-1/2 min-h-[200px]"
+              }`}
+            >
               <button
-                onClick={() => handleDeliveryCollapseChange(true)}
-                className="max-w-full flex items-center justify-between px-6 py-5 rounded-2sm shadow-sm border border-border/50 bg-background hover:bg-accent/10 transition-colors m-4"
-                aria-expanded={false}
-                aria-controls="delivery-orders-section"
+                onClick={() => handleDeliveryExpandChange(!isDeliveryExpanded)}
+                className="max-w-full flex items-center justify-between px-6 py-5 border-b border-border/50 bg-primary/5 hover:bg-primary/10 text-left transition-colors"
+                aria-label={
+                  isDeliveryExpanded
+                    ? "Collapse delivery orders"
+                    : "Expand delivery orders"
+                }
               >
-                <span className="flex items-center gap-2 text-base font-semibold text-foreground">
+                <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                   <svg
                     className="w-4 h-4 text-primary"
                     fill="none"
@@ -207,54 +208,39 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                   {deliveryOrders.length} assigned to{" "}
                   {currentDelivery?.id || "D-001"}
                 </span>
-                <span className="ml-2 text-muted-foreground"></span>
+                <span className="ml-2 text-muted-foreground">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d={
+                        isDeliveryExpanded ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"
+                      }
+                    />
+                  </svg>
+                </span>
               </button>
-            ) : (
-              <div className="flex-1 flex flex-col bg-background rounded-2sm shadow-sm border border-border/50 overflow-hidden m-4  max-w-full">
-                <button
-                  onClick={() => handleDeliveryCollapseChange(false)}
-                  className="max-w-full flex items-center justify-between px-6 py-5 border-b border-border/50 bg-primary/5 hover:bg-primary/10  text-left transition-colors"
-                  aria-label="Collapse delivery orders"
-                >
-                  <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <svg
-                      className="w-4 h-4 text-primary"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 11l3-3m-3 3l-3-3m3 3v-6"
-                      />
-                    </svg>
-                    {deliveryOrders.length} assigned to{" "}
-                    {currentDelivery?.id || "D-001"}
-                  </span>
-                </button>
-                <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
-                  <div className="max-w-full">
-                    <div className="max-w-full overflow-hidden">
-                      <DeliveryOrderList
-                        orders={deliveryOrders}
-                        highlightedOrderId={highlightedOrderId}
-                        setHighlightedOrderId={setHighlightedOrderId}
-                        onRemoveOrder={handleRemoveOrder}
-                        onReorder={handleReorder}
-                        title=""
-                      />
-                    </div>
+              <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
+                <div className="max-w-full">
+                  <div className="max-w-full overflow-hidden">
+                    <DeliveryOrderList
+                      orders={deliveryOrders}
+                      highlightedOrderId={highlightedOrderId}
+                      setHighlightedOrderId={setHighlightedOrderId}
+                      onRemoveOrder={handleRemoveOrder}
+                      onReorder={handleReorder}
+                      title=""
+                    />
                   </div>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Unassigned Orders Section - Always at bottom, full height when expanded */}
             {isUnassignedCollapsed ? (
