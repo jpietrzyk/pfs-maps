@@ -33,7 +33,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeliveryExpanded, setIsDeliveryExpanded] = useState(true);
-  const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(true); // collapsed by default
+  const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(false); // expanded by default
 
   // Handle delivery expand/collapse state change
   const handleDeliveryExpandChange = (expanded: boolean) => {
@@ -77,12 +77,8 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
           "All order IDs:",
           allOrders.map((o) => o.id)
         );
-        const currentDeliveryOrderIds = currentDelivery.orders.map(
-          (deliveryOrder) => deliveryOrder.orderId
-        );
-        console.log("Current delivery order IDs:", currentDeliveryOrderIds);
-        const ordersInDelivery = allOrders.filter((order) =>
-          currentDeliveryOrderIds.includes(order.id)
+        const ordersInDelivery = allOrders.filter(
+          (order) => order.deliveryId === currentDelivery.id
         );
         console.log("Orders in delivery:", ordersInDelivery);
         console.log("Orders in delivery count:", ordersInDelivery.length);
@@ -90,7 +86,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
 
         // Debug: Check if any order IDs match
         const matchingIds = allOrders
-          .filter((order) => currentDeliveryOrderIds.includes(order.id))
+          .filter((order) => order.deliveryId === currentDelivery.id)
           .map((o) => o.id);
         console.log("Matching order IDs:", matchingIds);
         setDeliveryOrders(ordersInDelivery);
@@ -127,6 +123,15 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       console.error("Failed to remove order:", error);
       // TODO: Revert optimistic update on error (would need to refetch or cache previous state)
     }
+  };
+
+  const handleAddOrderToDelivery = async (orderId: string) => {
+    // Optimistic update
+    const orderToAdd = unassignedOrders.find((order) => order.id === orderId);
+    if (orderToAdd) {
+      setDeliveryOrders((prev) => [...prev, orderToAdd]);
+    }
+    await onAddOrderToDelivery?.(orderId);
   };
 
   const handleReorder = (newOrders: Order[]) => {
@@ -205,8 +210,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                       d="M15 11l3-3m-3 3l-3-3m3 3v-6"
                     />
                   </svg>
-                  {deliveryOrders.length} assigned to{" "}
-                  {currentDelivery?.id || "D-001"}
+                  {deliveryOrders.length} orders assigned to this delivery
                 </span>
                 <span className="ml-2 text-muted-foreground">
                   <svg
@@ -329,7 +333,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     <div className="max-w-full overflow-hidden">
                       <UnassignedOrderList
                         unassignedOrders={unassignedOrders}
-                        onAddToDelivery={onAddOrderToDelivery || (() => {})}
+                        onAddToDelivery={handleAddOrderToDelivery}
                         title=""
                         highlightedOrderId={highlightedOrderId}
                         setHighlightedOrderId={setHighlightedOrderId}

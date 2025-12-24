@@ -1,12 +1,17 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DeliverySidebar from "@/components/delivery-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import MarkerHighlightProvider from "@/contexts/marker-highlight-provider";
 import DeliveryProvider from "@/contexts/delivery-provider";
+import { DeliveriesApi } from "@/services/deliveriesApi";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 
 // Mock the OrdersApi
 jest.mock("@/services/ordersApi");
+// Mock the DeliveriesApi
+jest.mock("@/services/deliveriesApi");
 
 const mockOrders: Order[] = [
   {
@@ -37,6 +42,35 @@ const mockOrders: Order[] = [
 ];
 
 describe("DeliverySidebar - Assigned Count Update", () => {
+  beforeAll(() => {
+    // Mock getDeliveries to return a delivery with one assigned order
+    (DeliveriesApi.getDeliveries as jest.Mock).mockResolvedValue([
+      {
+        id: "delivery-1",
+        name: "Test Delivery",
+        status: "scheduled",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        orders: [{ orderId: "order-1", sequence: 0, status: "pending" }],
+      },
+    ]);
+    // Optionally, mock addOrderToDelivery if needed
+    (DeliveriesApi.addOrderToDelivery as jest.Mock).mockImplementation(
+      (deliveryId, orderId) => {
+        return {
+          id: "delivery-1",
+          name: "Test Delivery",
+          status: "scheduled",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          orders: [
+            { orderId: "order-1", sequence: 0, status: "pending" },
+            { orderId, sequence: 1, status: "pending" },
+          ],
+        };
+      }
+    );
+  });
   beforeEach(() => {
     // Mock the getOrders method
     (OrdersApi.getOrders as jest.Mock).mockResolvedValue(mockOrders);
@@ -54,17 +88,23 @@ describe("DeliverySidebar - Assigned Count Update", () => {
     });
 
     render(
-      <DeliveryProvider>
-        <DeliverySidebar
-          unassignedOrders={[mockOrders[1]]}
-          onAddOrderToDelivery={async (orderId: string) => {
-            await OrdersApi.updateOrder(orderId, { deliveryId: "delivery-1" });
-            // Simulate the refresh that should happen
-            return;
-          }}
-          refreshTrigger={0}
-        />
-      </DeliveryProvider>
+      <SidebarProvider>
+        <MarkerHighlightProvider>
+          <DeliveryProvider>
+            <DeliverySidebar
+              unassignedOrders={[mockOrders[1]]}
+              onAddOrderToDelivery={async (orderId: string) => {
+                await OrdersApi.updateOrder(orderId, {
+                  deliveryId: "delivery-1",
+                });
+                // Simulate the refresh that should happen
+                return;
+              }}
+              refreshTrigger={0}
+            />
+          </DeliveryProvider>
+        </MarkerHighlightProvider>
+      </SidebarProvider>
     );
 
     // Wait for initial loading
@@ -76,7 +116,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
 
     // Find the unassigned order and click the add button
     const addButton = screen.getByLabelText(
-      `Add order ${mockOrders[1].id} to delivery`
+      new RegExp(`Add order ${mockOrders[1].id} to delivery`, "i")
     );
     fireEvent.click(addButton);
 
@@ -84,31 +124,30 @@ describe("DeliverySidebar - Assigned Count Update", () => {
     await waitFor(() => {
       // The assigned count should be updated to 2 (from 1)
       expect(
-        screen.getByText("2 orders assigned to this delivery")
+        screen.getByText(/2\s+orders assigned to this delivery/i)
       ).toBeInTheDocument();
     });
   });
 
   it("should show correct initial assigned count", async () => {
     render(
-      <DeliveryProvider>
-        <DeliverySidebar
-          unassignedOrders={[mockOrders[1]]}
-          refreshTrigger={0}
-        />
-      </DeliveryProvider>
+      <SidebarProvider>
+        <MarkerHighlightProvider>
+          <DeliveryProvider>
+            <DeliverySidebar
+              unassignedOrders={[mockOrders[1]]}
+              refreshTrigger={0}
+            />
+          </DeliveryProvider>
+        </MarkerHighlightProvider>
+      </SidebarProvider>
     );
 
-    // Wait for initial loading
+    // Wait for the assigned count to be updated
     await waitFor(() => {
       expect(
-        screen.queryByText("Loading delivery orders...")
-      ).not.toBeInTheDocument();
+        screen.getByText(/1\s+orders assigned to this delivery/i)
+      ).toBeInTheDocument();
     });
-
-    // Should show 1 order assigned initially
-    expect(
-      screen.getByText("1 orders assigned to this delivery")
-    ).toBeInTheDocument();
   });
 });
