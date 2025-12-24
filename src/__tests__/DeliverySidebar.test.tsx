@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -56,7 +55,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
     ]);
     // Optionally, mock addOrderToDelivery if needed
     (DeliveriesApi.addOrderToDelivery as jest.Mock).mockImplementation(
-      (deliveryId, orderId) => {
+      (_deliveryId, orderId) => {
         return {
           id: "delivery-1",
           name: "Test Delivery",

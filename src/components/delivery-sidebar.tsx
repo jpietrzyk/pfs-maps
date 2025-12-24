@@ -179,7 +179,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             {/* Delivery Orders Section - Always partially visible, can expand to full height */}
             <div
               className={`flex flex-col bg-background rounded-2sm shadow-sm border border-border/50 overflow-hidden m-4 max-w-full ${
-                isDeliveryExpanded ? "flex-1" : "h-1/2 min-h-[200px]"
+                isDeliveryExpanded ? "flex-1" : "h-1/2 min-h-50"
               }`}
             >
               <button
