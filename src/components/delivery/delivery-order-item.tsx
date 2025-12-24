@@ -40,7 +40,7 @@ const createExpandedTooltipContent = (order: Order) => {
   const statusColors = getStatusColor(order.status);
 
   return (
-    <div className="p-4 max-w-[320px] bg-background border border-border rounded-sm shadow-sm">
+    <div className="p-4 max-w-[320px] bg-background/95 backdrop-blur-sm border border-border rounded-sm shadow-sm">
       <div className="font-semibold text-lg mb-3 text-foreground">
         {order.product?.name || "Unknown Order"}
       </div>
@@ -249,9 +249,9 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
                 </div>
               </TooltipTrigger>
               <TooltipContent
-                side="bottom"
-                align="start"
-                sideOffset={4}
+                side="left"
+                align="center"
+                sideOffset={12}
                 className="p-0 overflow-hidden"
               >
                 {createExpandedTooltipContent(order)}
