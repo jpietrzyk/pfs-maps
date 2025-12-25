@@ -5,12 +5,13 @@ import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 import { useParams } from "react-router-dom";
+import { useDelivery } from "@/hooks/use-delivery";
 
 export default function DeliveryMapPage() {
   const { deliveryId } = useParams<{ deliveryId: string }>();
+  const { addOrderToDelivery } = useDelivery();
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [unassignedOrders, setUnassignedOrders] = useState<Order[]>([]);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     OrdersApi.getOrders().then((fetchedOrders) => {
@@ -39,8 +40,6 @@ export default function DeliveryMapPage() {
         (order) => !order.deliveryId
       );
       setUnassignedOrders(initialUnassignedOrders);
-      // Trigger sidebar refresh
-      setRefreshTrigger((prev) => prev + 1);
     });
   };
 
@@ -90,15 +89,13 @@ export default function DeliveryMapPage() {
             onOrderRemoved={handleOrderRemoved}
             onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
             unassignedOrders={unassignedOrders}
-            refreshTrigger={refreshTrigger}
             onAddOrderToDelivery={async (orderId: string) => {
               try {
-                // Update the order to assign it to the current delivery or default
+                // Use the delivery context's addOrderToDelivery method
                 const targetDeliveryId = deliveryId || "DEL-001";
-                await OrdersApi.updateOrder(orderId, {
-                  deliveryId: targetDeliveryId,
-                });
-                // Refresh both delivery and unassigned orders
+                await addOrderToDelivery(targetDeliveryId, orderId);
+
+                // Refresh local state to match the updated context
                 const allOrders = await OrdersApi.getOrders();
                 const updatedDeliveryOrders = allOrders.filter(
                   (order) => order.deliveryId === deliveryId || !deliveryId

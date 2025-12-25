@@ -15,17 +15,27 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { createExpandedTooltipContent } from "./order-tooltip-utils";
 
 interface UnassignedOrderListProps {
   unassignedOrders: Order[];
   onAddToDelivery: (orderId: string) => void;
   title?: string;
+  highlightedOrderId?: string | null;
+  setHighlightedOrderId?: (orderId: string | null) => void;
 }
 
 export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
   unassignedOrders,
   onAddToDelivery,
   title = "Available Unassigned Orders",
+  highlightedOrderId,
+  setHighlightedOrderId,
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -53,12 +63,19 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
               {unassignedOrders.map((order) => (
                 <li
                   key={order.id}
-                  className="group relative overflow-hidden rounded border border-border bg-card shadow-sm transition-all hover:shadow-md cursor-pointer p-2"
+                  className={`group relative overflow-hidden rounded border border-border bg-card shadow-sm transition-all hover:shadow-md cursor-pointer p-2 ${
+                    highlightedOrderId === order.id ? "ring-2 ring-ring" : ""
+                  }`}
                   onClick={() => onAddToDelivery(order.id)}
+                  onMouseEnter={() => setHighlightedOrderId?.(order.id)}
+                  onMouseLeave={() => setHighlightedOrderId?.(null)}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0" data-testid="product-icon">
+                      <div
+                        className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0"
+                        data-testid="product-icon"
+                      >
                         <svg
                           className="h-3 w-3"
                           fill="currentColor"
@@ -68,9 +85,21 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
                         </svg>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="truncate text-xs font-medium text-foreground">
-                          {order.product?.name || `Order ${order.id}`}
-                        </h4>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <h4 className="truncate text-xs font-medium text-foreground cursor-help">
+                              {order.product?.name || `Order ${order.id}`}
+                            </h4>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="left"
+                            align="center"
+                            sideOffset={12}
+                            className="p-0 overflow-hidden"
+                          >
+                            {createExpandedTooltipContent(order)}
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                     <Button

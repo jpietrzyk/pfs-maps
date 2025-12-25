@@ -47,9 +47,9 @@ describe("DeliveryOrderList", () => {
     const order = createMockOrder("order-1", "Customer 1");
     render(<DeliveryOrderList orders={[order]} />);
 
-    // Should render the order
+    // Should render the order (customer name is in tooltip, not main UI)
     expect(screen.getByText("Test Product")).toBeInTheDocument();
-    expect(screen.getByText("Customer 1")).toBeInTheDocument();
+    expect(screen.getByText(/order-1/)).toBeInTheDocument();
   });
 
   it("should render multiple orders correctly", () => {
@@ -58,10 +58,10 @@ describe("DeliveryOrderList", () => {
 
     render(<DeliveryOrderList orders={[order1, order2]} />);
 
-    // Should render both orders
+    // Should render both orders (customer names are in tooltips, not main UI)
     expect(screen.getAllByText("Test Product")).toHaveLength(2);
-    expect(screen.getByText("Customer 1")).toBeInTheDocument();
-    expect(screen.getByText("Customer 2")).toBeInTheDocument();
+    expect(screen.getByText(/order-1/)).toBeInTheDocument();
+    expect(screen.getByText(/order-2/)).toBeInTheDocument();
   });
 
   it("should render route segments between orders when routeManager is not provided", () => {
@@ -94,10 +94,10 @@ describe("DeliveryOrderList", () => {
 
     render(<DeliveryOrderList orders={[order1, order2, order3]} />);
 
-    // Should render all orders (statuses are now shown in tooltips, not main UI)
-    expect(screen.getByText("Customer 1")).toBeInTheDocument();
-    expect(screen.getByText("Customer 2")).toBeInTheDocument();
-    expect(screen.getByText("Customer 3")).toBeInTheDocument();
+    // Should render all orders (statuses and customer names are in tooltips, not main UI)
+    expect(screen.getByText(/order-1/)).toBeInTheDocument();
+    expect(screen.getByText(/order-2/)).toBeInTheDocument();
+    expect(screen.getByText(/order-3/)).toBeInTheDocument();
   });
 
   it("should handle orders with different priorities", () => {
@@ -118,9 +118,12 @@ describe("DeliveryOrderList", () => {
 
     render(<DeliveryOrderList orders={[order1, order2, order3]} />);
 
-    // Should render all orders (priorities are not visually displayed in this component)
-    expect(screen.getByText("Customer 1")).toBeInTheDocument();
-    expect(screen.getByText("Customer 2")).toBeInTheDocument();
-    expect(screen.getByText("Customer 3")).toBeInTheDocument();
+    // Should render all orders (priorities are shown in main UI, customer names are in tooltips)
+    expect(screen.getByText(/order-1/)).toBeInTheDocument();
+    expect(screen.getByText(/order-2/)).toBeInTheDocument();
+    expect(screen.getByText(/order-3/)).toBeInTheDocument();
+    expect(screen.getByText(/high/)).toBeInTheDocument();
+    expect(screen.getByText(/medium/)).toBeInTheDocument();
+    expect(screen.getByText(/low/)).toBeInTheDocument();
   });
 });

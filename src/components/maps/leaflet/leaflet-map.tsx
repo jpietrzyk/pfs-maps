@@ -215,13 +215,11 @@ function MapFitter({ orders }: { orders: Order[] }) {
   return null;
 }
 
-const LeafletMap: React.FC<LeafletMapProps> = ({
+const LeafletMap = ({
   orders = [],
   onOrderAddedToDelivery,
   onRefreshRequested,
-}) => {
-  const center =
-    orders.length > 0 ? orders[0].location : { lat: 51.505, lng: -0.09 };
+}: LeafletMapProps) => {
   const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDelivery();
@@ -304,13 +302,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
   }
 
   return (
-    <MapContainer
-      center={center}
-      zoom={13}
-      style={{ width: "100%", height: "100%" }}
-      engineType="DEFAULT"
-      pixelRatio={window.devicePixelRatio || 1}
-    >
+    <MapContainer style={{ width: "100%", height: "100%" }}>
       <MapFitter orders={orders} />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {polylinePositions.length > 0 &&
