@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import type { Order } from "@/types/order";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Minus } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -184,19 +184,6 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
         onMouseLeave={onMouseLeave}
       >
         <div className="flex items-center gap-2 p-2">
-          {onRemove && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleRemove}
-              onMouseDown={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="h-6 w-6 shrink-0 text-destructive/80 hover:bg-destructive/10 hover:text-destructive"
-              aria-label={`Remove order ${order.id}`}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          )}
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary">
             <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
               <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
@@ -219,32 +206,6 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
                         min | {order.priority}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 6v6l4 2"
-                        />
-                      </svg>
-                      <span className="text-xs text-muted-foreground">
-                        {order.product?.complexity ?? 0}
-                      </span>
-                    </div>
                   </h4>
                 </div>
               </TooltipTrigger>
@@ -258,6 +219,18 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
               </TooltipContent>
             </Tooltip>
           </div>
+          {onRemove && (
+            <Button
+              onClick={handleRemove}
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              size="icon"
+              className="shrink-0 h-6 w-6 p-1 bg-primary hover:bg-primary/90"
+              aria-label={`Remove order ${order.id}`}
+            >
+              <Minus className="h-3 w-3" />
+            </Button>
+          )}
         </div>
       </li>
     );
