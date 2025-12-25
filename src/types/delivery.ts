@@ -16,7 +16,7 @@ export interface Delivery {
   completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
-  orders: DeliveryOrder[]; // Orders in this delivery with their sequence
+  orders: DeliveryRouteItem[]; // Orders in this delivery with their sequence
   notes?: string;
   estimatedDistance?: number; // in kilometers
   estimatedDuration?: number; // in minutes
@@ -28,9 +28,9 @@ export interface Delivery {
 }
 
 /**
- * DeliveryOrder represents an order within a delivery with its position and status.
+ * DeliveryRouteItem represents an order within a delivery with its position and status.
  */
-export interface DeliveryOrder {
+export interface DeliveryRouteItem {
   orderId: string;
   sequence: number; // Position in the delivery route (0-based)
   status: 'pending' | 'in-transit' | 'delivered' | 'failed';
@@ -79,7 +79,7 @@ export function addOrderToDelivery(
   orderId: string,
   atIndex?: number
 ): Delivery {
-  const newDeliveryOrder: DeliveryOrder = {
+  const newDeliveryRouteItem: DeliveryRouteItem = {
     orderId,
     sequence: atIndex ?? delivery.orders.length,
     status: 'pending',
@@ -88,13 +88,13 @@ export function addOrderToDelivery(
   const updatedOrders = [...delivery.orders];
 
   if (atIndex !== undefined && atIndex >= 0 && atIndex <= delivery.orders.length) {
-    updatedOrders.splice(atIndex, 0, newDeliveryOrder);
+    updatedOrders.splice(atIndex, 0, newDeliveryRouteItem);
     // Resequence all orders
     updatedOrders.forEach((order, index) => {
       order.sequence = index;
     });
   } else {
-    updatedOrders.push(newDeliveryOrder);
+    updatedOrders.push(newDeliveryRouteItem);
   }
 
   return {
@@ -149,7 +149,7 @@ export function reorderDeliveryOrders(
 export function updateDeliveryOrderStatus(
   delivery: Delivery,
   orderId: string,
-  status: DeliveryOrder['status'],
+  status: DeliveryRouteItem['status'],
   deliveredAt?: Date,
   notes?: string
 ): Delivery {
