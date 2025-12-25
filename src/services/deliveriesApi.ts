@@ -1,4 +1,4 @@
-import type { Delivery, DeliveryOrder } from '@/types/delivery';
+import type { Delivery, DeliveryRouteItem } from '@/types/delivery';
 import { sampleDeliveries } from '@/types/delivery';
 import type { Order } from '@/types/order';
 
@@ -36,7 +36,7 @@ class DeliveriesApiClass {
   async getDeliveryWithOrders(
     id: string,
     orders: Order[]
-  ): Promise<(Delivery & { orders: (DeliveryOrder & { order: Order })[] }) | null> {
+  ): Promise<(Delivery & { orders: (DeliveryRouteItem & { order: Order })[] }) | null> {
     const delivery = await this.getDelivery(id);
     if (!delivery) return null;
 
@@ -51,7 +51,7 @@ class DeliveriesApiClass {
           order,
         };
       })
-      .filter((order): order is DeliveryOrder & { order: Order } => order !== null);
+      .filter((order): order is DeliveryRouteItem & { order: Order } => order !== null);
 
     return {
       ...delivery,
@@ -112,7 +112,7 @@ class DeliveriesApiClass {
     const delivery = await this.getDelivery(deliveryId);
     if (!delivery) return null;
 
-    const newDeliveryOrder: DeliveryOrder = {
+    const newDeliveryRouteItem: DeliveryRouteItem = {
       orderId,
       sequence: atIndex ?? delivery.orders.length,
       status: 'pending',
@@ -121,13 +121,13 @@ class DeliveriesApiClass {
     const updatedOrders = [...delivery.orders];
 
     if (atIndex !== undefined && atIndex >= 0 && atIndex <= delivery.orders.length) {
-      updatedOrders.splice(atIndex, 0, newDeliveryOrder);
+      updatedOrders.splice(atIndex, 0, newDeliveryRouteItem);
       // Resequence
       updatedOrders.forEach((order, index) => {
         order.sequence = index;
       });
     } else {
-      updatedOrders.push(newDeliveryOrder);
+      updatedOrders.push(newDeliveryRouteItem);
     }
 
     return this.updateDelivery(deliveryId, { orders: updatedOrders });
@@ -173,7 +173,7 @@ class DeliveriesApiClass {
   async updateDeliveryOrderStatus(
     deliveryId: string,
     orderId: string,
-    status: DeliveryOrder['status'],
+    status: DeliveryRouteItem['status'],
     deliveredAt?: Date,
     notes?: string
   ): Promise<Delivery | null> {
