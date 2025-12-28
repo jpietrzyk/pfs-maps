@@ -57,23 +57,26 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   // Sync delivery orders with current delivery and all orders
   useEffect(() => {
     const updateDeliveryOrders = async () => {
-      console.log("Updating delivery orders...");
+      console.log("DeliverySidebar: Updating delivery orders...");
       setIsLoading(true);
 
       if (!currentDelivery) {
-        console.log("No current delivery");
+        console.log("DeliverySidebar: No current delivery");
         setDeliveryOrders([]);
         setIsLoading(false);
         return;
       }
 
       try {
-        console.log("Current delivery orders:", currentDelivery.orders);
+        console.log(
+          "DeliverySidebar: Current delivery orders:",
+          currentDelivery.orders
+        );
         // Get all orders and filter to only those in current delivery
         const allOrders = await OrdersApi.getOrders();
-        console.log("All orders:", allOrders);
+        console.log("DeliverySidebar: All orders:", allOrders.length);
         console.log(
-          "All order IDs:",
+          "DeliverySidebar: All order IDs:",
           allOrders.map((o) => o.id)
         );
 
@@ -83,18 +86,27 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
         const ordersInDelivery = ordersWithPendingUpdates.filter(
           (order) => order.deliveryId === currentDelivery.id
         );
-        console.log("Orders in delivery:", ordersInDelivery);
-        console.log("Orders in delivery count:", ordersInDelivery.length);
-        console.log("All orders count:", allOrders.length);
+        console.log(
+          "DeliverySidebar: Orders in delivery:",
+          ordersInDelivery.length
+        );
+        console.log(
+          "DeliverySidebar: Orders in delivery count:",
+          ordersInDelivery.length
+        );
+        console.log("DeliverySidebar: All orders count:", allOrders.length);
 
         // Debug: Check if any order IDs match
         const matchingIds = ordersWithPendingUpdates
           .filter((order) => order.deliveryId === currentDelivery.id)
           .map((o) => o.id);
-        console.log("Matching order IDs:", matchingIds);
+        console.log("DeliverySidebar: Matching order IDs:", matchingIds);
         setDeliveryOrders(ordersInDelivery);
       } catch (error) {
-        console.error("Error updating delivery orders:", error);
+        console.error(
+          "DeliverySidebar: Error updating delivery orders:",
+          error
+        );
       } finally {
         setIsLoading(false);
       }
