@@ -43,6 +43,9 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
     // If delivery is being expanded, close unassigned
     if (expanded) {
       setIsUnassignedCollapsed(true);
+    } else {
+      // If delivery is being collapsed, open unassigned
+      setIsUnassignedCollapsed(false);
     }
   };
 
