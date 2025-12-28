@@ -2,6 +2,7 @@ import React from "react";
 import type { RouteSegment } from "@/types/map-provider";
 import type { RouteManager } from "@/services/RouteManager";
 import { RefreshCcw, Route, Clock, ArrowRight } from "lucide-react";
+import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 
 interface DeliveryRouteSegmentProps {
   segment: RouteSegment;
@@ -18,6 +19,8 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
   onHover,
   routeManager,
 }) => {
+  const { setHighlightedOrderId } = useMarkerHighlight();
+
   const handleRecalculate = (e: React.MouseEvent) => {
     e.stopPropagation();
     onRecalculate?.();
@@ -25,12 +28,21 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
 
   const handleMouseEnter = () => {
     onHover?.();
+    // Highlight the polyline by setting the fromOrder as highlighted
+    // This will trigger the same polyline highlighting as order hover, but without marker highlight
+    setHighlightedOrderId(segment.fromOrder.id);
+
+    // Also try the RouteManager approach if available
     if (routeManager) {
       routeManager.highlightSegment(segment.id);
     }
   };
 
   const handleMouseLeave = () => {
+    // Clear the polyline highlight
+    setHighlightedOrderId(null);
+
+    // Also try the RouteManager approach if available
     if (routeManager) {
       routeManager.unhighlightSegment(segment.id);
     }
