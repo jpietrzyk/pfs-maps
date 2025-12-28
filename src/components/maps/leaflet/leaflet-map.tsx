@@ -11,6 +11,8 @@ import {
 import L from "leaflet";
 import React from "react";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
+import { useOrderHighlight } from "@/hooks/use-order-highlight";
+import { usePolylineHighlight } from "@/hooks/use-polyline-highlight";
 import { useDelivery } from "@/hooks/use-delivery";
 import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
@@ -232,8 +234,19 @@ const LeafletMap = ({
     unassignedOrders.length
   );
   const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
+  const { currentOrderId, previousOrderId } = useOrderHighlight();
+  const { highlightedPolylineOrderId } = usePolylineHighlight();
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDelivery();
+
+  // Debug logging for order highlighting
+  console.log("LeafletMap: highlightedOrderId:", highlightedOrderId);
+  console.log(
+    "LeafletMap: highlightedPolylineOrderId:",
+    highlightedPolylineOrderId
+  );
+  console.log("LeafletMap: currentOrderId:", currentOrderId);
+  console.log("LeafletMap: previousOrderId:", previousOrderId);
 
   // Preload icons
   const defaultIcon = React.useMemo(
@@ -294,8 +307,45 @@ const LeafletMap = ({
     []
   );
 
+  // Current order icon (blue)
+  const currentOrderIcon = React.useMemo(
+    () =>
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+      }),
+    []
+  );
+
+  // Previous order icon (yellow)
+  const previousOrderIcon = React.useMemo(
+    () =>
+      L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+      }),
+    []
+  );
+
   // Use fixed threshold for orange marker
   const ORANGE_THRESHOLD = 13000;
+
+  // State for tracking which polyline is currently hovered
+  const [hoveredPolylineIndex, setHoveredPolylineIndex] = React.useState<
+    number | null
+  >(null);
 
   // Draw straight lines between consecutive DELIVERY order markers only
   const polylinePositions: [number, number][][] = [];
@@ -320,7 +370,19 @@ const LeafletMap = ({
         polylinePositions.map((positions, index) => {
           // Determine if this segment should be highlighted
           const fromOrderId = deliveryOrders[index]?.id;
-          const isHighlighted = highlightedOrderId === fromOrderId;
+          const toOrderId = deliveryOrders[index + 1]?.id;
+          const segmentId = `${fromOrderId}-${toOrderId}`;
+          // Check if this polyline should be highlighted from existing contexts or direct hover
+          const isHighlighted =
+            highlightedOrderId === fromOrderId ||
+            highlightedOrderId === toOrderId ||
+            highlightedPolylineOrderId === fromOrderId ||
+            highlightedPolylineOrderId === toOrderId ||
+            hoveredPolylineIndex === index;
+
+          console.log(
+            `LeafletMap: Polyline ${segmentId} - fromOrderId: ${fromOrderId}, toOrderId: ${toOrderId}, highlightedOrderId: ${highlightedOrderId}, highlightedPolylineOrderId: ${highlightedPolylineOrderId}, hoveredPolylineIndex: ${hoveredPolylineIndex}, isHighlighted: ${isHighlighted}`
+          );
 
           return (
             <Polyline
@@ -330,6 +392,18 @@ const LeafletMap = ({
                 color: isHighlighted ? "#10b981" : "#2563eb", // Highlighted segment green, others blue
                 weight: isHighlighted ? 6 : 4, // Highlighted segment thicker
                 opacity: isHighlighted ? 1.0 : 0.8, // Highlighted segment more opaque
+              }}
+              eventHandlers={{
+                mouseover: () => {
+                  console.log("Polyline mouseover:", segmentId);
+                  // Only highlight the polyline directly, don't trigger segment or order highlighting
+                  setHoveredPolylineIndex(index);
+                },
+                mouseout: () => {
+                  console.log("Polyline mouseout:", segmentId);
+                  // Only clear the polyline hover, don't affect segment or order highlighting
+                  setHoveredPolylineIndex(null);
+                },
               }}
             />
           );
@@ -346,6 +420,10 @@ const LeafletMap = ({
         }
         if (highlightedOrderId === order.id) {
           icon = highlightIcon;
+        } else if (currentOrderId === order.id) {
+          icon = currentOrderIcon;
+        } else if (previousOrderId === order.id) {
+          icon = previousOrderIcon;
         }
         return (
           <Marker

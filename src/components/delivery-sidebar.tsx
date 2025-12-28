@@ -5,6 +5,7 @@ import {
   SidebarContent,
 } from "@/components/ui/sidebar";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
+import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { useDelivery } from "@/hooks/use-delivery";
 import { useEffect, useState } from "react";
 
@@ -16,7 +17,6 @@ import {
   applyPendingOrderUpdates,
   resetLocalStorageAndFetchData,
 } from "@/lib/local-storage-utils";
-import { Button } from "@/components/ui/button";
 
 interface DeliverySidebarProps {
   onOrderRemoved?: () => void;
@@ -32,11 +32,13 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   onAddOrderToDelivery,
 }) => {
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
+  const { currentOrderId, setCurrentOrderId, setPreviousOrderId } =
+    useOrderHighlight();
   const { currentDelivery, removeOrderFromDelivery } = useDelivery();
   const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeliveryExpanded, setIsDeliveryExpanded] = useState(true);
-  const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(false); // expanded by default
+  const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(true); // collapsed by default
 
   // Handle delivery expand/collapse state change
   const handleDeliveryExpandChange = (expanded: boolean) => {
@@ -44,6 +46,9 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
     // If delivery is being expanded, close unassigned
     if (expanded) {
       setIsUnassignedCollapsed(true);
+    } else {
+      // If delivery is being collapsed, open unassigned
+      setIsUnassignedCollapsed(false);
     }
   };
 
@@ -188,7 +193,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       {/* Distinctive Header with Brand Accent */}
       <SidebarHeader className="px-6 py-5 border-b-0 relative overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-primary/10"></div>
-        <div className="relative z-10 flex items-center justify-center">
+        <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-5 bg-primary text-primary-foreground rounded-sm flex items-center justify-center shadow-s">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -198,6 +203,73 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             <span className="text-xl font-bold text-foreground tracking-wide">
               Profi-Stahl
             </span>
+          </div>
+          {/* Order Highlight Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                console.log(
+                  "Next button clicked, deliveryOrders:",
+                  deliveryOrders
+                );
+                console.log("Current currentOrderId:", currentOrderId);
+                // Set previous order to current, then set current to next in sequence
+                if (deliveryOrders.length > 0) {
+                  const currentIndex = deliveryOrders.findIndex(
+                    (order) => order.id === currentOrderId
+                  );
+                  console.log("Current index:", currentIndex);
+                  if (
+                    currentIndex >= 0 &&
+                    currentIndex < deliveryOrders.length - 1
+                  ) {
+                    console.log(
+                      "Setting previous to:",
+                      currentOrderId,
+                      "and current to:",
+                      deliveryOrders[currentIndex + 1].id
+                    );
+                    setPreviousOrderId(currentOrderId);
+                    setCurrentOrderId(deliveryOrders[currentIndex + 1].id);
+                  } else if (currentIndex === -1) {
+                    // No current order set, set first order as current
+                    console.log(
+                      "No current order, setting first order:",
+                      deliveryOrders[0].id
+                    );
+                    setCurrentOrderId(deliveryOrders[0].id);
+                  }
+                }
+              }}
+              className="p-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors text-primary"
+              title="Set Next Order as Current"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={() => {
+                console.log("Clear button clicked");
+                // Clear current and previous order highlights
+                setCurrentOrderId(null);
+                setPreviousOrderId(null);
+              }}
+              className="p-1.5 rounded-full bg-destructive/10 hover:bg-destructive/20 transition-colors text-destructive"
+              title="Clear Highlights"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/20 to-transparent"></div>
@@ -221,7 +293,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                   ? isUnassignedCollapsed
                     ? "flex-1"
                     : "h-[67%] min-h-75"
-                  : "h-1/2 min-h-50"
+                  : "h-[67%] min-h-75"
               }`}
             >
               <button
@@ -396,29 +468,15 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             © {new Date().getFullYear()} Delivery Manager
           </span>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={resetLocalStorageAndFetchData}
-              className="text-xs px-2 py-1 h-6"
+              className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+              aria-label="Reset Data"
             >
-              Reset Data
-            </Button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fillRule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors duration-200">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
-                  d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
                   clipRule="evenodd"
                 />
               </svg>

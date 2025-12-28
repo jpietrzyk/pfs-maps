@@ -21,8 +21,8 @@ export const createExpandedTooltipContent = (order: Order) => {
   const statusColors = getStatusColor(order.status);
 
   return (
-    <div className="p-4 max-w-[320px] bg-white/90 backdrop-blur-sm border border-border rounded-sm shadow-sm">
-      <div className="font-semibold text-sm mb-3 text-foreground">
+    <div className="p-4 max-w-[320px] bg-white border border-border rounded-sm shadow-sm">
+      <div className="font-semibold text-sm mb-3 text-foreground truncate">
         {order.product?.name || "Unknown Order"} (ID: {order.id})
       </div>
 
