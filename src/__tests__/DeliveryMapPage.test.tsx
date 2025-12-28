@@ -2,8 +2,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DeliveryMapPage from "@/pages/DeliveryMapPage";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import DeliveryProvider from "@/contexts/delivery-provider";
-import MarkerHighlightProvider from "@/contexts/marker-highlight-provider";
+import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 
@@ -60,16 +59,11 @@ describe("DeliveryMapPage - Assigned Count Update Fix", () => {
   it("should increment refreshTrigger when order is added to delivery", async () => {
     render(
       <MemoryRouter initialEntries={["/delivery/delivery-1"]}>
-        <DeliveryProvider>
-          <MarkerHighlightProvider>
-            <Routes>
-              <Route
-                path="/delivery/:deliveryId"
-                element={<DeliveryMapPage />}
-              />
-            </Routes>
-          </MarkerHighlightProvider>
-        </DeliveryProvider>
+        <DeliveryRouteManagerProvider>
+          <Routes>
+            <Route path="/delivery/:deliveryId" element={<DeliveryMapPage />} />
+          </Routes>
+        </DeliveryRouteManagerProvider>
       </MemoryRouter>
     );
 
@@ -104,16 +98,11 @@ describe("DeliveryMapPage - Assigned Count Update Fix", () => {
   it("should update both delivery and unassigned orders when adding order", async () => {
     render(
       <MemoryRouter initialEntries={["/delivery/delivery-1"]}>
-        <DeliveryProvider>
-          <MarkerHighlightProvider>
-            <Routes>
-              <Route
-                path="/delivery/:deliveryId"
-                element={<DeliveryMapPage />}
-              />
-            </Routes>
-          </MarkerHighlightProvider>
-        </DeliveryProvider>
+        <DeliveryRouteManagerProvider>
+          <Routes>
+            <Route path="/delivery/:deliveryId" element={<DeliveryMapPage />} />
+          </Routes>
+        </DeliveryRouteManagerProvider>
       </MemoryRouter>
     );
 

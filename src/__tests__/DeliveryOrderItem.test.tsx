@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { DeliveryOrderItem } from "@/components/delivery/delivery-order-item";
 import type { Order } from "@/types/order";
+import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
 describe("DeliveryOrderItem", () => {
   const createMockOrder = (
@@ -22,10 +23,17 @@ describe("DeliveryOrderItem", () => {
     location: { lat: 51.505, lng: -0.09 },
   });
 
+  // Wrapper component to provide required contexts
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <DeliveryRouteManagerProvider>{children}</DeliveryRouteManagerProvider>
+  );
+
   it("should render basic order information", () => {
     const order = createMockOrder();
 
-    render(<DeliveryOrderItem id={order.id} order={order} />);
+    render(<DeliveryOrderItem id={order.id} order={order} />, {
+      wrapper: Wrapper,
+    });
 
     // Should render product name (customer is in tooltip, not main UI)
     expect(screen.getByText("Test Product")).toBeInTheDocument();
@@ -42,7 +50,8 @@ describe("DeliveryOrderItem", () => {
     const order1 = createMockOrder("order-1", 1);
 
     const { rerender } = render(
-      <DeliveryOrderItem id={order1.id} order={order1} />
+      <DeliveryOrderItem id={order1.id} order={order1} />,
+      { wrapper: Wrapper }
     );
 
     // Assembly time is no longer shown in compact view
@@ -62,7 +71,9 @@ describe("DeliveryOrderItem", () => {
   it("should not show location icon or times in compact view", () => {
     const order = createMockOrder();
 
-    render(<DeliveryOrderItem id={order.id} order={order} />);
+    render(<DeliveryOrderItem id={order.id} order={order} />, {
+      wrapper: Wrapper,
+    });
 
     // Should not show location icon or times (removed for compactness)
     expect(screen.queryByTestId("location-icon")).not.toBeInTheDocument();
@@ -73,7 +84,8 @@ describe("DeliveryOrderItem", () => {
     const order = createMockOrder();
 
     const { container } = render(
-      <DeliveryOrderItem id={order.id} order={order} isHighlighted={true} />
+      <DeliveryOrderItem id={order.id} order={order} isHighlighted={true} />,
+      { wrapper: Wrapper }
     );
 
     // Should have ring class when highlighted
@@ -92,7 +104,8 @@ describe("DeliveryOrderItem", () => {
         order={order}
         onMouseEnter={mockMouseEnter}
         onMouseLeave={mockMouseLeave}
-      />
+      />,
+      { wrapper: Wrapper }
     );
 
     const listItem = container.querySelector("li");
@@ -110,7 +123,8 @@ describe("DeliveryOrderItem", () => {
     const mockRemove = jest.fn();
 
     render(
-      <DeliveryOrderItem id={order.id} order={order} onRemove={mockRemove} />
+      <DeliveryOrderItem id={order.id} order={order} onRemove={mockRemove} />,
+      { wrapper: Wrapper }
     );
 
     // Find and click the remove button
@@ -123,7 +137,9 @@ describe("DeliveryOrderItem", () => {
   it("should not show remove button when onRemove is not provided", () => {
     const order = createMockOrder();
 
-    render(<DeliveryOrderItem id={order.id} order={order} />);
+    render(<DeliveryOrderItem id={order.id} order={order} />, {
+      wrapper: Wrapper,
+    });
 
     // Should not find remove button
     expect(
@@ -155,7 +171,8 @@ describe("DeliveryOrderItem", () => {
       <DeliveryOrderItem
         id={orderWithoutProductName.id}
         order={orderWithoutProductName}
-      />
+      />,
+      { wrapper: Wrapper }
     );
 
     // Should still render without crashing (customer is in tooltip, order ID is in main UI)
@@ -178,7 +195,8 @@ describe("DeliveryOrderItem", () => {
     };
 
     const { rerender } = render(
-      <DeliveryOrderItem id={order.id} order={order} />
+      <DeliveryOrderItem id={order.id} order={order} />,
+      { wrapper: Wrapper }
     );
 
     // Status is no longer shown in compact view

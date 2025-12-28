@@ -3,8 +3,7 @@ import "@testing-library/jest-dom";
 import { DeliveryRouteSegment } from "@/components/delivery/delivery-route-segment";
 import type { RouteSegment, RouteData } from "@/types/map-provider";
 import type { Order } from "@/types/order";
-import PolylineHighlightProvider from "@/contexts/polyline-highlight-provider";
-import SegmentHighlightProvider from "@/contexts/segment-highlight-provider";
+import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
 describe("DeliveryRouteSegment", () => {
   const createMockOrder = (id: string = "order-1"): Order => ({
@@ -53,9 +52,7 @@ describe("DeliveryRouteSegment", () => {
 
   // Wrapper component to provide required contexts
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <PolylineHighlightProvider>
-      <SegmentHighlightProvider>{children}</SegmentHighlightProvider>
-    </PolylineHighlightProvider>
+    <DeliveryRouteManagerProvider>{children}</DeliveryRouteManagerProvider>
   );
 
   it("should render segment ID and basic structure", () => {
