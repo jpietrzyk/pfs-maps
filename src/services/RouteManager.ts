@@ -288,7 +288,7 @@ export class RouteManager {
       }
 
       // Apply highlight style
-      segment.mapRoute.color = "#ef4444"; // Red color for highlight
+      segment.mapRoute.color = "#10b981"; // Green color for highlight (same as polyline highlighting)
       segment.mapRoute.weight = 6;
       segment.mapRoute.opacity = 1.0;
 

@@ -2,7 +2,6 @@ import React from "react";
 import type { RouteSegment } from "@/types/map-provider";
 import type { RouteManager } from "@/services/RouteManager";
 import { RefreshCcw, Route, Clock, ArrowRight } from "lucide-react";
-import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { usePolylineHighlight } from "@/hooks/use-polyline-highlight";
 

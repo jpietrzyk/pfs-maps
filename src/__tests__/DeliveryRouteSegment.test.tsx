@@ -3,6 +3,8 @@ import "@testing-library/jest-dom";
 import { DeliveryRouteSegment } from "@/components/delivery/delivery-route-segment";
 import type { RouteSegment, RouteData } from "@/types/map-provider";
 import type { Order } from "@/types/order";
+import PolylineHighlightProvider from "@/contexts/polyline-highlight-provider";
+import SegmentHighlightProvider from "@/contexts/segment-highlight-provider";
 
 describe("DeliveryRouteSegment", () => {
   const createMockOrder = (id: string = "order-1"): Order => ({
@@ -49,10 +51,17 @@ describe("DeliveryRouteSegment", () => {
     calculatedAt: new Date(),
   });
 
+  // Wrapper component to provide required contexts
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <PolylineHighlightProvider>
+      <SegmentHighlightProvider>{children}</SegmentHighlightProvider>
+    </PolylineHighlightProvider>
+  );
+
   it("should render segment ID and basic structure", () => {
     const segment = createMockRouteSegment();
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should render N/A for distance and duration when no route data
     expect(screen.getAllByText("N/A")).toHaveLength(2);
@@ -69,7 +78,7 @@ describe("DeliveryRouteSegment", () => {
     const routeData = createMockRouteData(5000, 900); // 5km, 15 minutes
     const segment = createMockRouteSegment("order-1", "order-2", routeData);
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display formatted distance (5.00 km)
     expect(screen.getByText("5.00 km")).toBeInTheDocument();
@@ -81,7 +90,7 @@ describe("DeliveryRouteSegment", () => {
   it("should display 'N/A' when route data is missing", () => {
     const segment = createMockRouteSegment();
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display "N/A" for both distance and duration
     const notAvailableElements = screen.getAllByText("N/A");
@@ -93,7 +102,7 @@ describe("DeliveryRouteSegment", () => {
     const routeData = createMockRouteData(100000, 9000);
     const segment = createMockRouteSegment("order-1", "order-2", routeData);
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display "2 h 30 m"
     expect(screen.getByText("2 h 30 m")).toBeInTheDocument();
@@ -104,7 +113,7 @@ describe("DeliveryRouteSegment", () => {
     const routeData = createMockRouteData(5000, 900);
     const segment = createMockRouteSegment("order-1", "order-2", routeData);
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display "15 m"
     expect(screen.getByText("15 m")).toBeInTheDocument();
@@ -115,7 +124,11 @@ describe("DeliveryRouteSegment", () => {
     const mockRecalculate = jest.fn();
 
     render(
-      <DeliveryRouteSegment segment={segment} onRecalculate={mockRecalculate} />
+      <DeliveryRouteSegment
+        segment={segment}
+        onRecalculate={mockRecalculate}
+      />,
+      { wrapper: Wrapper }
     );
 
     const refreshButton = screen.getByLabelText("Refresh route");
@@ -127,7 +140,9 @@ describe("DeliveryRouteSegment", () => {
   it("should disable refresh button when isCalculating is true", () => {
     const segment = createMockRouteSegment();
 
-    render(<DeliveryRouteSegment segment={segment} isCalculating={true} />);
+    render(<DeliveryRouteSegment segment={segment} isCalculating={true} />, {
+      wrapper: Wrapper,
+    });
 
     const refreshButton = screen.getByLabelText("Recalculating...");
     expect(refreshButton).toBeDisabled();
@@ -138,7 +153,8 @@ describe("DeliveryRouteSegment", () => {
     const mockHover = jest.fn();
 
     const { container } = render(
-      <DeliveryRouteSegment segment={segment} onHover={mockHover} />
+      <DeliveryRouteSegment segment={segment} onHover={mockHover} />,
+      { wrapper: Wrapper }
     );
 
     const segmentElement = container.querySelector(".delivery-route-segment");
@@ -153,7 +169,7 @@ describe("DeliveryRouteSegment", () => {
     const routeData = createMockRouteData(500000, 4500); // 500km, 75 minutes
     const segment = createMockRouteSegment("order-1", "order-2", routeData);
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display formatted distance
     expect(screen.getByText("500.00 km")).toBeInTheDocument();
@@ -167,7 +183,7 @@ describe("DeliveryRouteSegment", () => {
     const routeData = createMockRouteData(100, 60);
     const segment = createMockRouteSegment("order-1", "order-2", routeData);
 
-    render(<DeliveryRouteSegment segment={segment} />);
+    render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display formatted distance
     expect(screen.getByText("0.10 km")).toBeInTheDocument();
@@ -180,7 +196,9 @@ describe("DeliveryRouteSegment", () => {
     const segment1 = createMockRouteSegment("order-A", "order-B");
     const segment2 = createMockRouteSegment("order-X", "order-Y");
 
-    const { rerender } = render(<DeliveryRouteSegment segment={segment1} />);
+    const { rerender } = render(<DeliveryRouteSegment segment={segment1} />, {
+      wrapper: Wrapper,
+    });
 
     // Should show N/A for both segments since they have no route data
     expect(screen.getAllByText("N/A")).toHaveLength(2);
