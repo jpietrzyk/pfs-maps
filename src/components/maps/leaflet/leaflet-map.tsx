@@ -344,6 +344,11 @@ const LeafletMap = ({
   // Use fixed threshold for orange marker
   const ORANGE_THRESHOLD = 13000;
 
+  // State for tracking which polyline is currently hovered
+  const [hoveredPolylineIndex, setHoveredPolylineIndex] = React.useState<
+    number | null
+  >(null);
+
   // Draw straight lines between consecutive DELIVERY order markers only
   const polylinePositions: [number, number][][] = [];
   const deliveryOrders = orders;
@@ -369,9 +374,17 @@ const LeafletMap = ({
           const fromOrderId = deliveryOrders[index]?.id;
           const toOrderId = deliveryOrders[index + 1]?.id;
           const segmentId = `${fromOrderId}-${toOrderId}`;
+          // Check if this polyline should be highlighted from existing contexts or direct hover
           const isHighlighted =
             highlightedOrderId === fromOrderId ||
-            highlightedPolylineOrderId === fromOrderId;
+            highlightedOrderId === toOrderId ||
+            highlightedPolylineOrderId === fromOrderId ||
+            highlightedPolylineOrderId === toOrderId ||
+            hoveredPolylineIndex === index;
+
+          console.log(
+            `LeafletMap: Polyline ${segmentId} - fromOrderId: ${fromOrderId}, toOrderId: ${toOrderId}, highlightedOrderId: ${highlightedOrderId}, highlightedPolylineOrderId: ${highlightedPolylineOrderId}, hoveredPolylineIndex: ${hoveredPolylineIndex}, isHighlighted: ${isHighlighted}`
+          );
 
           return (
             <Polyline
@@ -385,10 +398,12 @@ const LeafletMap = ({
               eventHandlers={{
                 mouseover: () => {
                   console.log("Polyline mouseover:", segmentId);
+                  setHoveredPolylineIndex(index);
                   setHighlightedSegmentId(segmentId);
                 },
                 mouseout: () => {
                   console.log("Polyline mouseout:", segmentId);
+                  setHoveredPolylineIndex(null);
                   setHighlightedSegmentId(null);
                 },
               }}
