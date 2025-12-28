@@ -3,6 +3,7 @@ import type { RouteSegment } from "@/types/map-provider";
 import type { RouteManager } from "@/services/RouteManager";
 import { RefreshCcw, Route, Clock, ArrowRight } from "lucide-react";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
+import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 
 interface DeliveryRouteSegmentProps {
   segment: RouteSegment;
@@ -20,6 +21,7 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
   routeManager,
 }) => {
   const { setHighlightedOrderId } = useMarkerHighlight();
+  const { highlightedSegmentId } = useSegmentHighlight();
 
   const handleRecalculate = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -48,6 +50,9 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
     }
   };
 
+  // Determine if this segment should be highlighted (from polyline hover)
+  const isSegmentHighlighted = highlightedSegmentId === segment.id;
+
   // Format duration from seconds to hours and minutes
   const formatDuration = (seconds: number): string => {
     const totalMinutes = Math.round(seconds / 60);
@@ -68,7 +73,9 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
 
   return (
     <div
-      className="delivery-route-segment bg-card/30 border-l-2 border-border/50 rounded p-1 ml-4 mb-1 hover:bg-card/50 transition-colors duration-200 flex items-center gap-2"
+      className={`delivery-route-segment bg-card/30 border-l-2 border-border/50 rounded p-1 ml-4 mb-1 hover:bg-card/50 transition-colors duration-200 flex items-center gap-2 ${
+        isSegmentHighlighted ? "bg-primary/10 border-primary/50" : ""
+      }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

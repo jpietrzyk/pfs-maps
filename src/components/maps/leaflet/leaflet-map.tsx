@@ -12,6 +12,7 @@ import L from "leaflet";
 import React from "react";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import { useOrderHighlight } from "@/hooks/use-order-highlight";
+import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDelivery } from "@/hooks/use-delivery";
 import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
@@ -234,6 +235,7 @@ const LeafletMap = ({
   );
   const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, previousOrderId } = useOrderHighlight();
+  const { setHighlightedSegmentId } = useSegmentHighlight();
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDelivery();
 
@@ -359,6 +361,8 @@ const LeafletMap = ({
         polylinePositions.map((positions, index) => {
           // Determine if this segment should be highlighted
           const fromOrderId = deliveryOrders[index]?.id;
+          const toOrderId = deliveryOrders[index + 1]?.id;
+          const segmentId = `${fromOrderId}-${toOrderId}`;
           const isHighlighted = highlightedOrderId === fromOrderId;
 
           return (
@@ -369,6 +373,16 @@ const LeafletMap = ({
                 color: isHighlighted ? "#10b981" : "#2563eb", // Highlighted segment green, others blue
                 weight: isHighlighted ? 6 : 4, // Highlighted segment thicker
                 opacity: isHighlighted ? 1.0 : 0.8, // Highlighted segment more opaque
+              }}
+              eventHandlers={{
+                mouseover: () => {
+                  console.log("Polyline mouseover:", segmentId);
+                  setHighlightedSegmentId(segmentId);
+                },
+                mouseout: () => {
+                  console.log("Polyline mouseout:", segmentId);
+                  setHighlightedSegmentId(null);
+                },
               }}
             />
           );

@@ -10,6 +10,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { createExpandedTooltipContent } from "./order-tooltip-utils";
+import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 
 interface DeliveryOrderItemProps {
   order: Order;
@@ -38,6 +39,13 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
       isDragging,
     } = useSortable({ id });
 
+    const { highlightedSegmentId } = useSegmentHighlight();
+
+    // Determine if this order is the "fromOrder" of the currently highlighted segment
+    const isPreviousOrderInSegment = highlightedSegmentId
+      ? highlightedSegmentId.startsWith(`${order.id}-`)
+      : false;
+
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
@@ -60,7 +68,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
         {...listeners}
         className={`group relative overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-md hover:cursor-grab ${
           isHighlighted ? "ring-2 ring-ring" : ""
-        }`}
+        } ${isPreviousOrderInSegment ? "ring-2 ring-primary/50" : ""}`}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
