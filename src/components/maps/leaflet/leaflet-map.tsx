@@ -237,7 +237,8 @@ const LeafletMap = ({
   const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, previousOrderId } = useOrderHighlight();
   const { highlightedPolylineOrderId } = usePolylineHighlight();
-  const { highlightedSegmentId } = useSegmentHighlight();
+  const { highlightedSegmentId, setHighlightedSegmentId } =
+    useSegmentHighlight();
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDelivery();
 
@@ -397,13 +398,15 @@ const LeafletMap = ({
               eventHandlers={{
                 mouseover: () => {
                   console.log("Polyline mouseover:", segmentId);
-                  // Only highlight the polyline directly, don't trigger segment or order highlighting
+                  // Highlight the polyline and corresponding segment
                   setHoveredPolylineIndex(index);
+                  setHighlightedSegmentId(segmentId);
                 },
                 mouseout: () => {
                   console.log("Polyline mouseout:", segmentId);
-                  // Only clear the polyline hover, don't affect segment or order highlighting
+                  // Clear both polyline and segment highlighting
                   setHoveredPolylineIndex(null);
+                  setHighlightedSegmentId(null);
                 },
               }}
             />
