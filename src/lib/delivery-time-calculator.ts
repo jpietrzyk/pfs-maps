@@ -1,4 +1,3 @@
-import type { Delivery } from '@/types/delivery';
 import type { Order } from '@/types/order';
 import { getDistanceKm, getDriveMinutes, getHandlingMinutes } from './delivery-time-utils';
 
