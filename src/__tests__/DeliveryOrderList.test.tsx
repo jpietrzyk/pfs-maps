@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
 import type { Order } from "@/types/order";
+import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
 describe("DeliveryOrderList", () => {
   const createMockOrder = (
@@ -20,8 +21,13 @@ describe("DeliveryOrderList", () => {
     location: { lat: 51.505, lng: -0.09 },
   });
 
+  // Wrapper component to provide required contexts
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <DeliveryRouteManagerProvider>{children}</DeliveryRouteManagerProvider>
+  );
+
   it("should render empty state when no orders are provided", () => {
-    render(<DeliveryOrderList orders={[]} />);
+    render(<DeliveryOrderList orders={[]} />, { wrapper: Wrapper });
 
     // Should show "No orders assigned" message
     expect(screen.getByText("No orders assigned")).toBeInTheDocument();
@@ -29,7 +35,7 @@ describe("DeliveryOrderList", () => {
 
   it("should render default title when no title is provided", () => {
     const order = createMockOrder();
-    render(<DeliveryOrderList orders={[order]} />);
+    render(<DeliveryOrderList orders={[order]} />, { wrapper: Wrapper });
 
     // Should show default title "Zamówienia"
     expect(screen.getByText("Zamówienia")).toBeInTheDocument();
@@ -37,7 +43,9 @@ describe("DeliveryOrderList", () => {
 
   it("should render custom title when provided", () => {
     const order = createMockOrder();
-    render(<DeliveryOrderList orders={[order]} title="Custom Title" />);
+    render(<DeliveryOrderList orders={[order]} title="Custom Title" />, {
+      wrapper: Wrapper,
+    });
 
     // Should show custom title
     expect(screen.getByText("Custom Title")).toBeInTheDocument();
@@ -45,7 +53,7 @@ describe("DeliveryOrderList", () => {
 
   it("should render single order correctly", () => {
     const order = createMockOrder("order-1", "Customer 1");
-    render(<DeliveryOrderList orders={[order]} />);
+    render(<DeliveryOrderList orders={[order]} />, { wrapper: Wrapper });
 
     // Should render the order (customer name is in tooltip, not main UI)
     expect(screen.getByText("Test Product")).toBeInTheDocument();
@@ -56,7 +64,9 @@ describe("DeliveryOrderList", () => {
     const order1 = createMockOrder("order-1", "Customer 1");
     const order2 = createMockOrder("order-2", "Customer 2");
 
-    render(<DeliveryOrderList orders={[order1, order2]} />);
+    render(<DeliveryOrderList orders={[order1, order2]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should render both orders (customer names are in tooltips, not main UI)
     expect(screen.getAllByText("Test Product")).toHaveLength(2);
@@ -68,7 +78,9 @@ describe("DeliveryOrderList", () => {
     const order1 = createMockOrder("order-1", "Customer 1");
     const order2 = createMockOrder("order-2", "Customer 2");
 
-    render(<DeliveryOrderList orders={[order1, order2]} />);
+    render(<DeliveryOrderList orders={[order1, order2]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should render route segment between orders
     // The segment should be present with route data calculated from the order locations
@@ -92,7 +104,9 @@ describe("DeliveryOrderList", () => {
       status: "completed" as const,
     };
 
-    render(<DeliveryOrderList orders={[order1, order2, order3]} />);
+    render(<DeliveryOrderList orders={[order1, order2, order3]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should render all orders (statuses and customer names are in tooltips, not main UI)
     expect(screen.getByText(/order-1/)).toBeInTheDocument();
@@ -116,7 +130,9 @@ describe("DeliveryOrderList", () => {
       priority: "low" as const,
     };
 
-    render(<DeliveryOrderList orders={[order1, order2, order3]} />);
+    render(<DeliveryOrderList orders={[order1, order2, order3]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should render all orders (priorities are shown in main UI, customer names are in tooltips)
     expect(screen.getByText(/order-1/)).toBeInTheDocument();

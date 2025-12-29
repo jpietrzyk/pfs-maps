@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { DeliveryRouteManager } from "@/components/delivery-route-manager";
 import type { Order, Product } from "@/types/order";
+import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
 describe("DeliveryRouteManager", () => {
   const createMockOrder = (
@@ -23,14 +24,19 @@ describe("DeliveryRouteManager", () => {
     location: { lat, lng },
   });
 
+  // Wrapper component to provide required contexts
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <DeliveryRouteManagerProvider>{children}</DeliveryRouteManagerProvider>
+  );
+
   it("should render empty state when no orders are provided", () => {
-    render(<DeliveryRouteManager orders={[]} />);
+    render(<DeliveryRouteManager orders={[]} />, { wrapper: Wrapper });
     expect(screen.getByText("Brak zamówień")).toBeInTheDocument();
   });
 
   it("should render a single order correctly", () => {
     const order = createMockOrder("order-1", 51.505, -0.09);
-    render(<DeliveryRouteManager orders={[order]} />);
+    render(<DeliveryRouteManager orders={[order]} />, { wrapper: Wrapper });
 
     expect(screen.getByText("Test Product")).toBeInTheDocument();
     expect(screen.getByText(/order-1/)).toBeInTheDocument();
@@ -40,7 +46,9 @@ describe("DeliveryRouteManager", () => {
     const order1 = createMockOrder("order-1", 51.505, -0.09, 1);
     const order2 = createMockOrder("order-2", 51.51, -0.1, 2);
 
-    render(<DeliveryRouteManager orders={[order1, order2]} />);
+    render(<DeliveryRouteManager orders={[order1, order2]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should render both orders
     expect(screen.getAllByText("Test Product")).toHaveLength(2);
@@ -55,7 +63,9 @@ describe("DeliveryRouteManager", () => {
     const order2 = createMockOrder("order-2", 51.51, -0.1, 2); // 40 minutes handling
     const order3 = createMockOrder("order-3", 51.515, -0.11, 3); // 60 minutes handling
 
-    render(<DeliveryRouteManager orders={[order1, order2, order3]} />);
+    render(<DeliveryRouteManager orders={[order1, order2, order3]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should show different handling times
     const handlingTimes = screen.getAllByText(/obsługa:\d+min/);
@@ -97,7 +107,8 @@ describe("DeliveryRouteManager", () => {
     };
 
     render(
-      <DeliveryRouteManager orders={[orderWithComplexity, modifiedOrder]} />
+      <DeliveryRouteManager orders={[orderWithComplexity, modifiedOrder]} />,
+      { wrapper: Wrapper }
     );
 
     // Should still render without errors
@@ -108,7 +119,9 @@ describe("DeliveryRouteManager", () => {
     const order1 = createMockOrder("order-1", 51.505, -0.09);
     const order2 = createMockOrder("order-2", 51.505, -0.09); // Same location
 
-    render(<DeliveryRouteManager orders={[order1, order2]} />);
+    render(<DeliveryRouteManager orders={[order1, order2]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should show 0 minutes drive time
     const driveTimeElement = screen.getByText(/czas przejazdu: 0min/);
@@ -119,7 +132,9 @@ describe("DeliveryRouteManager", () => {
     const order1 = createMockOrder("order-1", 51.505, -0.09); // London
     const order2 = createMockOrder("order-2", 48.8566, 2.3522); // Paris
 
-    render(<DeliveryRouteManager orders={[order1, order2]} />);
+    render(<DeliveryRouteManager orders={[order1, order2]} />, {
+      wrapper: Wrapper,
+    });
 
     // Should show significant drive time
     const driveTimeElement = screen.getByText(/czas przejazdu: \d+min/);

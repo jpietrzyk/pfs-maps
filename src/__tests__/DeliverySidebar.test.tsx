@@ -1,8 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import MarkerHighlightProvider from "@/contexts/marker-highlight-provider";
-import DeliveryProvider from "@/contexts/delivery-provider";
+import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 import { DeliveriesApi } from "@/services/deliveriesApi";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
@@ -122,21 +121,19 @@ describe("DeliverySidebar - Assigned Count Update", () => {
 
     render(
       <SidebarProvider>
-        <MarkerHighlightProvider>
-          <DeliveryProvider>
-            <DeliverySidebar
-              unassignedOrders={[mockOrders[1]]}
-              onAddOrderToDelivery={async (orderId: string) => {
-                await OrdersApi.updateOrder(orderId, {
-                  deliveryId: "delivery-1",
-                });
-                // Force refresh of deliveries by calling getDeliveries again
-                await DeliveriesApi.getDeliveries();
-                return;
-              }}
-            />
-          </DeliveryProvider>
-        </MarkerHighlightProvider>
+        <DeliveryRouteManagerProvider>
+          <DeliverySidebar
+            unassignedOrders={[mockOrders[1]]}
+            onAddOrderToDelivery={async (orderId: string) => {
+              await OrdersApi.updateOrder(orderId, {
+                deliveryId: "delivery-1",
+              });
+              // Force refresh of deliveries by calling getDeliveries again
+              await DeliveriesApi.getDeliveries();
+              return;
+            }}
+          />
+        </DeliveryRouteManagerProvider>
       </SidebarProvider>
     );
 
@@ -170,11 +167,9 @@ describe("DeliverySidebar - Assigned Count Update", () => {
   it("should show correct initial assigned count", async () => {
     render(
       <SidebarProvider>
-        <MarkerHighlightProvider>
-          <DeliveryProvider>
-            <DeliverySidebar unassignedOrders={[mockOrders[1]]} />
-          </DeliveryProvider>
-        </MarkerHighlightProvider>
+        <DeliveryRouteManagerProvider>
+          <DeliverySidebar unassignedOrders={[mockOrders[1]]} />
+        </DeliveryRouteManagerProvider>
       </SidebarProvider>
     );
 

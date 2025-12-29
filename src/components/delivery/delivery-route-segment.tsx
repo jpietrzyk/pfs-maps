@@ -3,7 +3,6 @@ import type { RouteSegment } from "@/types/map-provider";
 import type { RouteManager } from "@/services/RouteManager";
 import { RefreshCcw, Route, Clock, ArrowRight } from "lucide-react";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
-import { usePolylineHighlight } from "@/hooks/use-polyline-highlight";
 
 interface DeliveryRouteSegmentProps {
   segment: RouteSegment;
@@ -20,8 +19,8 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
   onHover,
   routeManager,
 }) => {
-  const { setHighlightedPolylineOrderId } = usePolylineHighlight();
-  const { highlightedSegmentId } = useSegmentHighlight();
+  const { highlightedSegmentId, setHighlightedSegmentId } =
+    useSegmentHighlight();
 
   const handleRecalculate = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -30,9 +29,8 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
 
   const handleMouseEnter = () => {
     onHover?.();
-    // Highlight the polyline by setting the fromOrder as highlighted
-    // This will trigger the same polyline highlighting as order hover, but without marker highlight
-    setHighlightedPolylineOrderId(segment.fromOrder.id);
+    // Highlight the specific segment by setting its ID
+    setHighlightedSegmentId(segment.id);
 
     // Also try the RouteManager approach if available
     if (routeManager) {
@@ -41,8 +39,8 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
   };
 
   const handleMouseLeave = () => {
-    // Clear the polyline highlight
-    setHighlightedPolylineOrderId(null);
+    // Clear the segment highlight
+    setHighlightedSegmentId(null);
 
     // Also try the RouteManager approach if available
     if (routeManager) {
@@ -73,11 +71,12 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
 
   return (
     <div
-      className={`delivery-route-segment bg-card/30 border-l-2 border-border/50 rounded p-1 ml-4 mb-1 hover:bg-card/50 transition-colors duration-200 flex items-center gap-2 ${
+      className={`delivery-route-segment bg-card/30 border-l-2 border-border/50 rounded p-1 ml-4 mb-1 hover:bg-card/50 transition-colors duration-200 flex items-center gap-2 cursor-pointer ${
         isSegmentHighlighted ? "bg-primary/10 border-primary/50" : ""
       }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={{ userSelect: "none", WebkitUserSelect: "none" }}
     >
       <ArrowRight
         data-testid="connection-icon"
