@@ -8,6 +8,7 @@ import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { useDelivery } from "@/hooks/use-delivery";
 import { useEffect, useState } from "react";
+import { Package, Clock } from "lucide-react";
 
 import type { Order } from "@/types/order";
 import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
@@ -17,6 +18,10 @@ import {
   applyPendingOrderUpdates,
   resetLocalStorageAndFetchData,
 } from "@/lib/local-storage-utils";
+import {
+  calculateTotalEstimatedTime,
+  formatDuration,
+} from "@/lib/delivery-time-calculator";
 
 interface DeliverySidebarProps {
   onOrderRemoved?: () => void;
@@ -39,6 +44,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isDeliveryExpanded, setIsDeliveryExpanded] = useState(true);
   const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(true); // collapsed by default
+  const [totalEstimatedTime, setTotalEstimatedTime] = useState<number>(0);
 
   // Handle delivery expand/collapse state change
   const handleDeliveryExpandChange = (expanded: boolean) => {
@@ -72,6 +78,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       if (!currentDelivery) {
         console.log("DeliverySidebar: No current delivery");
         setDeliveryOrders([]);
+        setTotalEstimatedTime(0);
         setIsLoading(false);
         return;
       }
@@ -111,6 +118,15 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
           .map((o) => o.id);
         console.log("DeliverySidebar: Matching order IDs:", matchingIds);
         setDeliveryOrders(ordersInDelivery);
+
+        // Calculate total estimated time
+        const totalTime = calculateTotalEstimatedTime(ordersInDelivery);
+        setTotalEstimatedTime(totalTime);
+        console.log(
+          "DeliverySidebar: Total estimated time:",
+          totalTime,
+          "minutes"
+        );
       } catch (error) {
         console.error(
           "DeliverySidebar: Error updating delivery orders:",
@@ -305,27 +321,22 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     : "Expand delivery orders"
                 }
               >
-                <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <svg
-                    className="w-4 h-4 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 11l3-3m-3 3l-3-3m3 3v-6"
-                    />
-                  </svg>
-                  {deliveryOrders.length} orders assigned to this delivery
-                </span>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <Package className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground">
+                      {deliveryOrders.length}
+                    </span>
+                  </div>
+                  {totalEstimatedTime > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {formatDuration(totalEstimatedTime)}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <span className="ml-2 text-muted-foreground">
                   <svg
                     className="w-4 h-4"
