@@ -237,18 +237,10 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       className="bg-background/95 backdrop-blur-sm text-foreground shadow-2xl relative z-20 flex flex-col h-screen pointer-events-auto w-96 transition-all duration-300"
     >
       {/* Distinctive Header with Brand Accent */}
-      <SidebarHeader className="px-6 py-5 border-b-0 relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-primary/10"></div>
-        <div className="relative z-10 flex items-center justify-between">
+      <SidebarHeader className="px-6 py-4 border-b-0 bg-card/30">
+        <div className="flex items-center justify-between h-full">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-5 bg-primary text-primary-foreground rounded-sm flex items-center justify-center shadow-s">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-foreground tracking-wide">
-              Profi-Stahl
-            </span>
+            <Route className="w-6 h-6 text-primary" />
           </div>
           {/* Order Highlight Controls */}
           <div className="flex items-center gap-2">
@@ -318,7 +310,6 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             </button>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/20 to-transparent"></div>
       </SidebarHeader>
 
       {/* Content Area with Clear Separation */}
