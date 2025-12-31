@@ -4,6 +4,7 @@ import DeliverySidebar from "@/components/delivery-sidebar";
 import OrdersCountDisplay from "@/components/ui/orders-count-display";
 import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
+import { DeliveriesApi } from "@/services/deliveriesApi";
 import type { Order } from "@/types/order";
 import { useParams } from "react-router-dom";
 import { useDelivery } from "@/hooks/use-delivery";
@@ -17,64 +18,88 @@ export default function DeliveryMapPage() {
 
   useEffect(() => {
     console.log("DeliveryMapPage: Fetching orders for deliveryId:", deliveryId);
-    OrdersApi.getOrders().then((fetchedOrders) => {
-      console.log("DeliveryMapPage: Fetched orders:", fetchedOrders.length);
+    Promise.all([OrdersApi.getOrders(), DeliveriesApi.getDeliveries()]).then(
+      ([fetchedOrders, deliveries]) => {
+        console.log("DeliveryMapPage: Fetched orders:", fetchedOrders.length);
 
-      // Use delivery model to get orders in proper sequence
-      const deliveryOrderIds =
-        currentDelivery?.orders?.map((item) => item.orderId) || [];
-      console.log("DeliveryMapPage: Delivery order IDs:", deliveryOrderIds);
+        // Use delivery model to get orders in proper sequence
+        const deliveryOrderIds =
+          currentDelivery?.orders?.map((item) => item.orderId) || [];
+        console.log("DeliveryMapPage: Delivery order IDs:", deliveryOrderIds);
 
-      // Filter and sort orders according to delivery sequence
-      const deliveryOrders = deliveryOrderIds
-        .map((orderId) => fetchedOrders.find((order) => order.id === orderId))
-        .filter((order): order is Order => order !== undefined);
+        // Filter and sort orders according to delivery sequence
+        const deliveryOrders = deliveryOrderIds
+          .map((orderId) => fetchedOrders.find((order) => order.id === orderId))
+          .filter((order): order is Order => order !== undefined);
 
-      console.log("DeliveryMapPage: Delivery orders:", deliveryOrders.length);
-      setDeliveryOrders(deliveryOrders);
+        console.log("DeliveryMapPage: Delivery orders:", deliveryOrders.length);
+        setDeliveryOrders(deliveryOrders);
 
-      // Get unassigned orders
-      const initialUnassignedOrders = fetchedOrders.filter(
-        (order) => !order.deliveryId
-      );
-      console.log(
-        "DeliveryMapPage: Unassigned orders:",
-        initialUnassignedOrders.length
-      );
-      setUnassignedOrders(initialUnassignedOrders);
+        // Get unassigned orders by subtracting delivery orders from all orders
+        const allAssignedOrderIds = new Set(
+          deliveries.flatMap((delivery) =>
+            delivery.orders.map((order) => order.orderId)
+          )
+        );
+        const initialUnassignedOrders = fetchedOrders.filter(
+          (order) => !allAssignedOrderIds.has(order.id)
+        );
+        console.log(
+          "DeliveryMapPage: Unassigned orders:",
+          initialUnassignedOrders.length
+        );
+        setUnassignedOrders(initialUnassignedOrders);
 
-      // Calculate total orders count (both assigned and unassigned)
-      setTotalOrdersCount(fetchedOrders.length);
-    });
+        // Calculate total orders count (both assigned and unassigned)
+        setTotalOrdersCount(fetchedOrders.length);
+      }
+    );
   }, [deliveryId, currentDelivery]);
 
   // Refetch orders when an order is removed
   const handleOrderRemoved = () => {
-    OrdersApi.getOrders().then((fetchedOrders) => {
-      // Use delivery model to get orders in proper sequence
-      const deliveryOrderIds =
-        currentDelivery?.orders?.map((item) => item.orderId) || [];
-      const deliveryOrders = deliveryOrderIds
-        .map((orderId) => fetchedOrders.find((order) => order.id === orderId))
-        .filter((order): order is Order => order !== undefined);
-      setDeliveryOrders(deliveryOrders);
-      const initialUnassignedOrders = fetchedOrders.filter(
-        (order) => !order.deliveryId
-      );
-      setUnassignedOrders(initialUnassignedOrders);
-    });
+    Promise.all([OrdersApi.getOrders(), DeliveriesApi.getDeliveries()]).then(
+      ([fetchedOrders, deliveries]) => {
+        // Use delivery model to get orders in proper sequence
+        const deliveryOrderIds =
+          currentDelivery?.orders?.map((item) => item.orderId) || [];
+        const deliveryOrders = deliveryOrderIds
+          .map((orderId) => fetchedOrders.find((order) => order.id === orderId))
+          .filter((order): order is Order => order !== undefined);
+        setDeliveryOrders(deliveryOrders);
+
+        // Get unassigned orders by subtracting delivery orders from all orders
+        const allAssignedOrderIds = new Set(
+          deliveries.flatMap((delivery) =>
+            delivery.orders.map((order) => order.orderId)
+          )
+        );
+        const initialUnassignedOrders = fetchedOrders.filter(
+          (order) => !allAssignedOrderIds.has(order.id)
+        );
+        setUnassignedOrders(initialUnassignedOrders);
+      }
+    );
   };
 
   // Update delivery orders when an order is removed or added
   const handleDeliveryOrdersUpdated = (updatedOrders: Order[]) => {
     setDeliveryOrders(updatedOrders);
     // When delivery orders are updated, we need to refresh unassigned orders too
-    OrdersApi.getOrders().then((fetchedOrders) => {
-      const initialUnassignedOrders = fetchedOrders.filter(
-        (order) => !order.deliveryId
-      );
-      setUnassignedOrders(initialUnassignedOrders);
-    });
+    Promise.all([OrdersApi.getOrders(), DeliveriesApi.getDeliveries()]).then(
+      ([fetchedOrders, deliveries]) => {
+        // Get unassigned orders by subtracting delivery orders from all orders
+        const allAssignedOrderIds = new Set(
+          deliveries.flatMap((delivery) =>
+            delivery.orders.map((order) => order.orderId)
+          )
+        );
+        const initialUnassignedOrders = fetchedOrders.filter(
+          (order) => !allAssignedOrderIds.has(order.id)
+        );
+        setUnassignedOrders(initialUnassignedOrders);
+      }
+    );
   };
 
   return (
@@ -90,7 +115,10 @@ export default function DeliveryMapPage() {
             }
             onOrderAddedToDelivery={async () => {
               // Refresh both delivery and unassigned orders
-              const allOrders = await OrdersApi.getOrders();
+              const [allOrders, deliveries] = await Promise.all([
+                OrdersApi.getOrders(),
+                DeliveriesApi.getDeliveries(),
+              ]);
               // Use delivery model to get orders in proper sequence
               const deliveryOrderIds =
                 currentDelivery?.orders?.map((item) => item.orderId) || [];
@@ -99,8 +127,15 @@ export default function DeliveryMapPage() {
                   allOrders.find((order) => order.id === orderId)
                 )
                 .filter((order): order is Order => order !== undefined);
+
+              // Get unassigned orders by subtracting delivery orders from all orders
+              const allAssignedOrderIds = new Set(
+                deliveries.flatMap((delivery) =>
+                  delivery.orders.map((order) => order.orderId)
+                )
+              );
               const updatedUnassignedOrders = allOrders.filter(
-                (order) => !order.deliveryId
+                (order) => !allAssignedOrderIds.has(order.id)
               );
               setDeliveryOrders(updatedDeliveryOrders);
               setUnassignedOrders(updatedUnassignedOrders);
@@ -133,7 +168,10 @@ export default function DeliveryMapPage() {
                 await addOrderToDelivery(targetDeliveryId, orderId);
 
                 // Refresh local state to match the updated context
-                const allOrders = await OrdersApi.getOrders();
+                const [allOrders, deliveries] = await Promise.all([
+                  OrdersApi.getOrders(),
+                  DeliveriesApi.getDeliveries(),
+                ]);
                 // Use delivery model to get orders in proper sequence
                 const deliveryOrderIds =
                   currentDelivery?.orders?.map((item) => item.orderId) || [];
@@ -142,8 +180,15 @@ export default function DeliveryMapPage() {
                     allOrders.find((order) => order.id === orderId)
                   )
                   .filter((order): order is Order => order !== undefined);
+
+                // Get unassigned orders by subtracting delivery orders from all orders
+                const allAssignedOrderIds = new Set(
+                  deliveries.flatMap((delivery) =>
+                    delivery.orders.map((order) => order.orderId)
+                  )
+                );
                 const updatedUnassignedOrders = allOrders.filter(
-                  (order) => !order.deliveryId
+                  (order) => !allAssignedOrderIds.has(order.id)
                 );
                 setDeliveryOrders(updatedDeliveryOrders);
                 setUnassignedOrders(updatedUnassignedOrders);

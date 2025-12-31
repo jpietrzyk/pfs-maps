@@ -51,11 +51,23 @@ export default function DeliveryRouteManagerProvider({
   const refreshUnassignedOrders = useCallback(async () => {
     try {
       const orders = await OrdersApi.getOrders();
+      const deliveries = await DeliveriesApi.getDeliveries();
+
       // Apply pending optimistic updates
       const ordersWithPendingUpdates = applyPendingOrderUpdates(orders);
-      const unassigned = ordersWithPendingUpdates.filter(
-        (order) => !order.deliveryId
+
+      // Get all order IDs that are assigned to any delivery
+      const assignedOrderIds = new Set(
+        deliveries.flatMap((delivery) =>
+          delivery.orders.map((order) => order.orderId)
+        )
       );
+
+      // Unassigned orders = all orders - assigned orders
+      const unassigned = ordersWithPendingUpdates.filter(
+        (order) => !assignedOrderIds.has(order.id)
+      );
+
       console.log(
         "[DeliveryRouteManagerProvider] Unassigned orders:",
         unassigned.length,
