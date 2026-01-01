@@ -146,6 +146,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypointStatus(
+        'DEL-001',
         'ORD-001',
         'delivered'
       );
@@ -163,6 +164,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypointStatus(
+        'DEL-001',
         'ORD-002',
         'delivered'
       );
@@ -177,6 +179,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypointStatus(
+        'DEL-001',
         'ORD-003',
         'failed'
       );
@@ -192,6 +195,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypointStatus(
+        'DEL-001',
         'ORD-999',
         'delivered'
       );
@@ -211,6 +215,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       const departureTime = new Date('2026-01-01T10:25:00');
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypointTiming(
+        'DEL-001',
         'ORD-001',
         {
           arrivalTime,
@@ -231,6 +236,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypointTiming(
+        'DEL-001',
         'ORD-999',
         { driveTimeActual: 15 }
       );
@@ -247,6 +253,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypoint(
+        'DEL-001',
         'ORD-001',
         {
           status: 'delivered',
@@ -268,6 +275,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypoint(
+        'DEL-001',
         'ORD-002',
         {
           orderId: 'ORD-999', // Attempt to change orderId
@@ -285,6 +293,7 @@ describe('DeliveryRouteWaypointsApi', () => {
       });
 
       const updatedWaypoint = await DeliveryRouteWaypointsApi.updateWaypoint(
+        'DEL-001',
         'ORD-999',
         { status: 'delivered' }
       );
