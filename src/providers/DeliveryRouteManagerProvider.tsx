@@ -282,7 +282,9 @@ export default function DeliveryRouteManagerProvider({
         // Optimistic update - add to deliveryOrders list for consumers
         setDeliveryOrders((prev) => {
           if (prev.some((order) => order.id === orderId)) return prev;
-          const fromPool = unassignedOrders.find((order) => order.id === orderId);
+          const fromPool = unassignedOrders.find(
+            (order) => order.id === orderId
+          );
           if (!fromPool) return prev;
           const insertAt = atIndex ?? prev.length;
           const next = [...prev];
@@ -313,13 +315,22 @@ export default function DeliveryRouteManagerProvider({
           markDeliveryUpdateFailed(deliveryId, orderId);
           markOrderUpdateFailed(orderId);
 
-          // TODO: Revert optimistic updates (would need to refetch data)
+          // Revert optimistic updates by refetching canonical data
+          await refreshDeliveryOrders(deliveryId);
+          await refreshUnassignedOrders();
+          await refreshDeliveries();
         }
       } catch (error) {
         console.error("Error adding order to delivery:", error);
       }
     },
-    [currentDelivery, unassignedOrders]
+    [
+      currentDelivery,
+      unassignedOrders,
+      refreshDeliveryOrders,
+      refreshUnassignedOrders,
+      refreshDeliveries,
+    ]
   );
 
   // Remove an order from a delivery (returns to unassigned)
@@ -415,13 +426,21 @@ export default function DeliveryRouteManagerProvider({
           markDeliveryUpdateFailed(deliveryId, orderId);
           markOrderUpdateFailed(orderId);
 
-          // TODO: Revert optimistic updates (would need to refetch data)
+          // Revert optimistic updates by refetching canonical data
+          await refreshDeliveryOrders(deliveryId);
+          await refreshUnassignedOrders();
+          await refreshDeliveries();
         }
       } catch (error) {
         console.error("Error removing order from delivery:", error);
       }
     },
-    [currentDelivery]
+    [
+      currentDelivery,
+      refreshDeliveryOrders,
+      refreshUnassignedOrders,
+      refreshDeliveries,
+    ]
   );
 
   // Reorder orders in a delivery

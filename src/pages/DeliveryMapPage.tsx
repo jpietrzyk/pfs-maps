@@ -12,6 +12,9 @@ export default function DeliveryMapPage() {
     addOrderToDelivery,
     unassignedOrders,
     deliveryOrders,
+    deliveries,
+    currentDelivery,
+    setCurrentDelivery,
     refreshUnassignedOrders,
     refreshDeliveryOrders,
   } = useDelivery();
@@ -22,6 +25,15 @@ export default function DeliveryMapPage() {
     void refreshDeliveryOrders(deliveryId);
     void refreshUnassignedOrders();
   }, [deliveryId, refreshDeliveryOrders, refreshUnassignedOrders]);
+
+  // Keep context currentDelivery in sync with the route param when present
+  useEffect(() => {
+    if (!deliveryId) return;
+    const match = deliveries.find((d) => d.id === deliveryId);
+    if (match && match.id !== currentDelivery?.id) {
+      setCurrentDelivery(match);
+    }
+  }, [deliveryId, deliveries, currentDelivery, setCurrentDelivery]);
 
   // Refetch orders when an order is removed
   const handleOrderRemoved = () => {
@@ -70,7 +82,10 @@ export default function DeliveryMapPage() {
             onAddOrderToDelivery={async (orderId: string) => {
               try {
                 // Use the delivery context's addOrderToDelivery method
-                const targetDeliveryId = deliveryId || "DEL-001";
+                const targetDeliveryId = deliveryId || currentDelivery?.id;
+                if (!targetDeliveryId) {
+                  throw new Error("No delivery selected");
+                }
                 await addOrderToDelivery(targetDeliveryId, orderId);
 
                 await refreshDeliveryOrders(deliveryId);
