@@ -5,6 +5,7 @@ import {
   Marker,
   Popup,
   Polyline,
+  useMap,
 } from "react-leaflet";
 
 import L from "leaflet";
@@ -191,6 +192,22 @@ interface LeafletMapProps {
   onMapReady?: (mapInstance: unknown) => void;
 }
 
+// Component that uses react-leaflet's useMap hook to capture the map instance
+const MapInitializer: React.FC<{ onMapReady: (map: unknown) => void }> = ({
+  onMapReady,
+}) => {
+  const map = useMap();
+
+  React.useEffect(() => {
+    console.log("MapInitializer: useMap hook fired, map instance:", !!map);
+    if (map) {
+      onMapReady(map);
+    }
+  }, [map, onMapReady]);
+
+  return null;
+};
+
 const LeafletMap = ({
   orders = [],
   unassignedOrders = [],
@@ -199,11 +216,13 @@ const LeafletMap = ({
   onMapReady,
 }: LeafletMapProps) => {
   const { mapProvider } = useMapProvider();
-  console.log("LeafletMap: Rendering with delivery orders:", orders.length);
-  console.log(
-    "LeafletMap: Rendering with unassigned orders:",
-    unassignedOrders.length
-  );
+  const onMapReadyRef = React.useRef(onMapReady);
+
+  // Update ref whenever onMapReady changes, without triggering callback recreation
+  React.useEffect(() => {
+    onMapReadyRef.current = onMapReady;
+  }, [onMapReady]);
+
   const { highlightedOrderId, setHighlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, previousOrderId } = useOrderHighlight();
   const { highlightedPolylineOrderId } = usePolylineHighlight();
@@ -212,45 +231,41 @@ const LeafletMap = ({
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDelivery();
 
+  const mapCreatedRef = React.useRef(false);
+
   const handleMapCreated = React.useCallback(
     (mapInstance: unknown) => {
-      onMapReady?.(mapInstance);
+      console.log(
+        "LeafletMap: handleMapCreated called with mapInstance:",
+        !!mapInstance
+      );
+      mapCreatedRef.current = true;
+      onMapReadyRef.current?.(mapInstance);
     },
-    [onMapReady]
+    [] // No dependencies needed since we use ref
   );
 
+  console.log(
+    "LeafletMap: handleMapCreated callback ready:",
+    !!handleMapCreated
+  );
+
+  // Debug: log when LeafletMap component mounts
   React.useEffect(() => {
-    if (!mapProvider) return;
-    if (orders.length === 0 && unassignedOrders.length === 0) return;
+    console.log("LeafletMap: component mounted, awaiting mapCreated callback");
+    return () => {
+      console.log(
+        "LeafletMap: component unmounting, mapCreated was called:",
+        mapCreatedRef.current
+      );
+    };
+  }, []);
 
-    const deliveryOrders = orders.filter((order) => order.deliveryId);
+  // fitBounds is now handled by MapView's provider-ready effect to avoid race conditions
 
-    if (deliveryOrders.length === 1) {
-      mapProvider.setView(deliveryOrders[0].location, 13);
-    } else if (deliveryOrders.length > 1) {
-      // Focus on the active route only; avoid pool orders shrinking zoom
-      mapProvider.fitBounds(deliveryOrders);
-    } else {
-      mapProvider.fitBounds(unassignedOrders);
-    }
-  }, [mapProvider, orders, unassignedOrders]);
-
-  const initialCenter = React.useMemo(() => {
-    if (orders.length > 0) {
-      return orders[0].location;
-    }
-    if (unassignedOrders.length > 0) {
-      return unassignedOrders[0].location;
-    }
-    return mapConfig.defaultView.center;
-  }, [orders, unassignedOrders]);
-
-  const initialZoom = React.useMemo(() => {
-    if (orders.length > 0 || unassignedOrders.length > 0) {
-      return 13;
-    }
-    return mapConfig.defaultView.zoom;
-  }, [orders, unassignedOrders]);
+  // Always use default view; provider fitBounds will override once data arrives
+  const initialCenter = mapConfig.defaultView.center;
+  const initialZoom = mapConfig.defaultView.zoom;
 
   // Debug logging for order highlighting
   console.log("LeafletMap: highlightedOrderId:", highlightedOrderId);
@@ -375,13 +390,18 @@ const LeafletMap = ({
     }
   }
 
+  console.log(
+    "LeafletMap: About to render MapContainer with handleMapCreated:",
+    !!handleMapCreated
+  );
+
   return (
     <MapContainer
       style={{ width: "100%", height: "100%" }}
       center={[initialCenter.lat, initialCenter.lng]}
       zoom={initialZoom}
-      whenCreated={handleMapCreated}
     >
+      <MapInitializer onMapReady={handleMapCreated} />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {polylinePositions.length > 0 &&
         polylinePositions.map((positions, index) => {

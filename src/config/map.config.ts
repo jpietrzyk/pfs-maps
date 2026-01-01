@@ -14,8 +14,8 @@ export const mapConfig = {
    * Default initial view if no orders are available yet
    */
   defaultView: {
-    center: { lat: 51.1657, lng: 10.4515 },
-    zoom: 6,
+    center: { lat: 47.5, lng: 19.0 },
+    zoom: 7,
   },
 
   /**

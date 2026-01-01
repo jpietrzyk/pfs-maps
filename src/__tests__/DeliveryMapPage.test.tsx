@@ -21,7 +21,7 @@ const mockOrders: Order[] = [
     updatedAt: new Date(),
     customer: "Customer 1",
     totalAmount: 100,
-    location: { lat: 52.52, lng: 13.405 },
+    location: { lat: 51.5, lng: 10.0 },
   },
   {
     id: "order-2",
@@ -33,7 +33,7 @@ const mockOrders: Order[] = [
     updatedAt: new Date(),
     customer: "Customer 2",
     totalAmount: 150,
-    location: { lat: 52.52, lng: 13.405 },
+    location: { lat: 51.5, lng: 10.0 },
   },
 ];
 

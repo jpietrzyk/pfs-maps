@@ -17,28 +17,80 @@ interface MapViewProps {
 
 // Render MapView using the configured provider and expose it via context
 const MapView: React.FC<MapViewProps> = (props) => {
-  const { setRouteManager } = useRouteManager();
+  const { setRouteManager: setRouteManagerContext } = useRouteManager();
   const [mapProvider, setMapProvider] = React.useState<MapProvider | null>(
     null
   );
+  const [mapInstance, setMapInstance] = React.useState<unknown>(null);
   const providerRef = React.useRef<MapProvider | null>(null);
-  const providerName = (mapConfig.provider ?? "leaflet") as const;
+  const setRouteManagerRef = React.useRef(setRouteManagerContext);
 
-  const handleMapReady = React.useCallback(
-    async (mapInstance: unknown) => {
-      if (providerRef.current) return;
+  // Update ref whenever setRouteManager changes
+  React.useEffect(() => {
+    setRouteManagerRef.current = setRouteManagerContext;
+  }, [setRouteManagerContext]);
 
+  // Initialize provider once we have a map instance
+  React.useEffect(() => {
+    if (!mapInstance || providerRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const initializeProvider = async () => {
       try {
-        const provider = await getMapProvider(mapInstance, providerName);
-        providerRef.current = provider;
-        setMapProvider(provider);
-        setRouteManager(new RouteManager(provider));
+        console.log(
+          "MapView: initializeProvider starting with mapInstance:",
+          !!mapInstance
+        );
+        const provider = await getMapProvider(
+          mapInstance,
+          (mapConfig.provider ?? "leaflet") as const
+        );
+        if (!cancelled) {
+          console.log("MapView: provider initialized, provider:", !!provider);
+          providerRef.current = provider;
+          setMapProvider(provider);
+          setRouteManagerRef.current(new RouteManager(provider));
+        }
       } catch (error) {
-        console.error("Failed to initialize map provider", error);
+        console.error("MapView: Failed to initialize map provider", error);
       }
-    },
-    [providerName, setRouteManager]
-  );
+    };
+
+    initializeProvider();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mapInstance]);
+
+  const handleMapReady = React.useCallback((mapInstance: unknown) => {
+    setMapInstance(mapInstance);
+  }, []);
+
+  // Keep map view fitted to current data once provider is ready
+  React.useEffect(() => {
+    if (!mapProvider) return;
+
+    // Small delay to ensure map is fully rendered before fitBounds
+    const timeoutId = requestAnimationFrame(() => {
+      if (props.orders?.length) {
+        if (props.orders.length > 1) {
+          mapProvider.fitBounds(props.orders);
+          return;
+        }
+        mapProvider.setView(props.orders[0].location, 13);
+        return;
+      }
+      if (props.unassignedOrders?.length) {
+        mapProvider.fitBounds(props.unassignedOrders);
+      }
+    });
+
+    return () => cancelAnimationFrame(timeoutId);
+  }, [mapProvider, props.orders, props.unassignedOrders]);
 
   return (
     <MapProviderContext.Provider value={{ mapProvider }}>
