@@ -19,6 +19,14 @@ class DeliveriesApiClass {
   private deliveries: DeliveryRoute[] = [];
   private loaded = false;
 
+  /**
+   * Reset the loaded state - useful for testing
+   */
+  resetCache(): void {
+    this.deliveries = [];
+    this.loaded = false;
+  }
+
   constructor() {
     this.initialize();
   }

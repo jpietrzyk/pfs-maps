@@ -43,6 +43,14 @@ async function loadOrders(): Promise<void> {
 
 export class OrdersApi {
   /**
+   * Reset the loaded state - useful for testing
+   */
+  static resetCache(): void {
+    ordersLoaded = false;
+    sampleOrdersData = [];
+  }
+
+  /**
    * Fetch all orders
    * In the future, this will make a real HTTP request to the backend
    */
