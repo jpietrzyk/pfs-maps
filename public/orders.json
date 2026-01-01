@@ -184,29 +184,6 @@
    "deliveryId": ""
 },
  {
-   "id": "ORD-009",
-   "product": {
-      "name": "7x6 dwuspad 2 x brama uchylna szeroki panel + drzwiczki 0,90 szeroki panel na prawym boku z przodu + ZMF + 2 x okno 80x50 na lewym i prawym boku z tyłu 1 m od tylnych słupków + okucia przód dachu + 4 x narożne + rynny + 2 X AUTOMAT CAŁY GARAŻ PANEL POZIOMY ZŁOTY DĄB 1",
-      "price": "1,57900",
-      "complexity": 2
-   },
-   "comment": "FAKTURA Hiména House Kft 2120 Dunakeszi, István utca 4 NIP 32070992-2-13",
-   "status": "pending",
-   "priority": "medium",
-   "active": true,
-   "createdAt": "2025-11-29T18:30:50.000Z",
-   "updatedAt": "2025-11-29T18:30:50.000Z",
-   "customer": "FIRMA",
-   "totalAmmount": "1,57900",
-   "items": [],
-   "location": {
-      "lat": 47.650062,
-      "lng": 19.125517
-   },
-   "address": "liget utca 22 2120 Dunakeszi",
-   "deliveryId": ""
-},
- {
    "id": "ORD-010",
    "product": {
       "name": "3x5 spad do tyłu 2 klasa",
