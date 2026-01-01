@@ -1,7 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { DeliveryContext } from "./delivery-context";
 import { DeliveriesApi } from "@/services/deliveriesApi";
+import { DeliveryRouteWaypointsApi } from "@/services/deliveryRouteWaypointsApi";
 import { OrdersApi } from "@/services/ordersApi";
+import {
+  getOrdersForDelivery,
+  canOrderBeAddedToDelivery,
+} from "@/lib/delivery-route-helpers";
 import type { DeliveryRoute } from "@/types/delivery";
 import type { Order } from "@/types/order";
 import {
@@ -24,7 +29,46 @@ export default function DeliveryProvider({
   const [currentDelivery, setCurrentDelivery] = useState<DeliveryRoute | null>(
     null
   );
+  const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [unassignedOrders, setUnassignedOrders] = useState<Order[]>([]);
+
+  // Refs to avoid dependency cycles and prevent unnecessary re-renders
+  const isReorderingRef = useRef(false);
+  const deliveriesRef = useRef<DeliveryRoute[]>([]);
+  const currentDeliveryRef = useRef<DeliveryRoute | null>(null);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    deliveriesRef.current = deliveries;
+  }, [deliveries]);
+
+  useEffect(() => {
+    currentDeliveryRef.current = currentDelivery;
+  }, [currentDelivery]);
+
+  // Fetch orders for current delivery using waypoint API
+  const refreshDeliveryOrders = useCallback(async () => {
+    if (!currentDeliveryRef.current || isReorderingRef.current) return;
+
+    try {
+      console.log(
+        "[DeliveryProvider] Fetching orders for delivery:",
+        currentDeliveryRef.current.id
+      );
+      const allOrders = await OrdersApi.getOrders();
+      const orders = await getOrdersForDelivery(
+        currentDeliveryRef.current.id,
+        allOrders
+      );
+      console.log(
+        "[DeliveryProvider] Orders in sequence:",
+        orders.map((o) => o.id)
+      );
+      setDeliveryOrders(orders);
+    } catch (error) {
+      console.error("Error fetching delivery orders:", error);
+    }
+  }, []);
 
   // Fetch unassigned orders
   const refreshUnassignedOrders = useCallback(async () => {
@@ -73,16 +117,10 @@ export default function DeliveryProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
 
-  // POC: Auto-select first delivery as current delivery
+  // Refresh delivery orders when current delivery changes
   useEffect(() => {
-    if (deliveries.length > 0 && !currentDelivery) {
-      console.log(
-        "[DeliveryProvider] POC: Auto-selecting first delivery as current:",
-        deliveries[0].id
-      );
-      setCurrentDelivery(deliveries[0]);
-    }
-  }, [deliveries, currentDelivery]);
+    refreshDeliveryOrders();
+  }, [currentDelivery, refreshDeliveryOrders]);
 
   // Create a new delivery
   const createDelivery = useCallback(
@@ -146,114 +184,51 @@ export default function DeliveryProvider({
           orderId,
           action: "add",
         });
-        addOptimisticOrderUpdate({
-          orderId,
-          deliveryId,
-        });
 
         // Optimistic UI update - update local state immediately
-        setDeliveries((prev) => {
-          return prev.map((d) => {
-            if (d.id === deliveryId) {
-              // Add the order to the delivery
-              const updatedOrders = [...d.orders];
-              const newIndex = atIndex ?? updatedOrders.length;
-
-              // Check if order is already in delivery
-              const orderAlreadyInDelivery = updatedOrders.some(
-                (order) => order.orderId === orderId
-              );
-
-              if (!orderAlreadyInDelivery) {
-                updatedOrders.splice(newIndex, 0, {
-                  orderId,
-                  sequence: newIndex,
-                  status: "pending",
-                });
-
-                // Resequence
-                updatedOrders.forEach((order, index) => {
-                  order.sequence = index;
-                });
-              }
-
-              return {
-                ...d,
-                orders: updatedOrders,
-              };
-            }
-            return d;
-          });
+        setDeliveryOrders((prev) => {
+          const allOrders = [...prev];
+          // Order will be fetched and inserted by refreshDeliveryOrders after API call
+          return allOrders;
         });
-
-        // Update current delivery if it's the one being modified
-        if (currentDelivery?.id === deliveryId) {
-          setCurrentDelivery((prev) => {
-            if (!prev) return null;
-
-            const updatedOrders = [...prev.orders];
-            const newIndex = atIndex ?? updatedOrders.length;
-
-            // Check if order is already in delivery
-            const orderAlreadyInDelivery = updatedOrders.some(
-              (order) => order.orderId === orderId
-            );
-
-            if (!orderAlreadyInDelivery) {
-              updatedOrders.splice(newIndex, 0, {
-                orderId,
-                sequence: newIndex,
-                status: "pending",
-              });
-
-              // Resequence
-              updatedOrders.forEach((order, index) => {
-                order.sequence = index;
-              });
-            }
-
-            return {
-              ...prev,
-              orders: updatedOrders,
-            };
-          });
-        }
 
         // Optimistic update - remove from unassigned orders
         setUnassignedOrders((prev) =>
           prev.filter((order) => order.id !== orderId)
         );
 
-        // Perform API calls in background
+        // Perform API call in background
         try {
-          // First, mark the order as assigned to this delivery
-          await OrdersApi.updateOrder(orderId, { deliveryId });
-
-          // Then add it to the delivery
-          const updatedDelivery = await DeliveriesApi.addOrderToDelivery(
+          // Add waypoint (order to delivery assignment)
+          await DeliveryRouteWaypointsApi.addWaypoint(
             deliveryId,
             orderId,
             atIndex
           );
 
-          if (updatedDelivery) {
-            // Mark updates as completed
-            markDeliveryUpdateCompleted(deliveryId, orderId);
-            markOrderUpdateCompleted(orderId);
+          // Mark updates as completed
+          markDeliveryUpdateCompleted(deliveryId, orderId);
+
+          // Refresh orders for current delivery if it's the one being modified
+          if (currentDeliveryRef.current?.id === deliveryId) {
+            await refreshDeliveryOrders();
           }
+
+          // Refresh all deliveries to get updated metadata
+          await refreshDeliveries();
         } catch (error) {
           console.error("Error adding order to delivery:", error);
           // Mark updates as failed
           markDeliveryUpdateFailed(deliveryId, orderId);
-          markOrderUpdateFailed(orderId);
-
-          // TODO: Revert optimistic updates (would need to refetch data)
+          // Refresh to revert optimistic updates
+          await refreshDeliveryOrders();
+          await refreshUnassignedOrders();
         }
       } catch (error) {
         console.error("Error adding order to delivery:", error);
       }
     },
-    [currentDelivery]
+    [] // No dependencies - uses refs
   );
 
   // Remove an order from a delivery (returns to unassigned)
@@ -266,120 +241,97 @@ export default function DeliveryProvider({
           orderId,
           action: "remove",
         });
-        addOptimisticOrderUpdate({
-          orderId,
-          deliveryId: undefined,
-        });
 
-        // Optimistic UI update - update local state immediately
-        setDeliveries((prev) => {
-          return prev.map((d) => {
-            if (d.id === deliveryId) {
-              // Remove the order from the delivery
-              const updatedOrders = d.orders
-                .filter((order) => order.orderId !== orderId)
-                .map((order, index) => ({
-                  ...order,
-                  sequence: index,
-                }));
-
-              return {
-                ...d,
-                orders: updatedOrders,
-              };
-            }
-            return d;
-          });
-        });
-
-        // Update current delivery if it's the one being modified
-        if (currentDelivery?.id === deliveryId) {
-          setCurrentDelivery((prev) => {
-            if (!prev) return null;
-
-            const updatedOrders = prev.orders
-              .filter((order) => order.orderId !== orderId)
-              .map((order, index) => ({
-                ...order,
-                sequence: index,
-              }));
-
-            return {
-              ...prev,
-              orders: updatedOrders,
-            };
-          });
-        }
+        // Optimistic UI update - remove from delivery orders
+        setDeliveryOrders((prev) =>
+          prev.filter((order) => order.id !== orderId)
+        );
 
         // Optimistic update - add back to unassigned orders
-        // We need to find the order from the original orders data
-        const allOrders = await OrdersApi.getAllOrders();
+        const allOrders = await OrdersApi.getOrders();
         const orderToRestore = allOrders.find((order) => order.id === orderId);
         if (orderToRestore) {
-          setUnassignedOrders((prev) => [
-            ...prev,
-            { ...orderToRestore, deliveryId: undefined },
-          ]);
+          setUnassignedOrders((prev) => [...prev, orderToRestore]);
         }
 
-        // Perform API calls in background
+        // Perform API call in background
         try {
-          // First, remove delivery assignment from order (returns to unassigned)
-          await OrdersApi.updateOrder(orderId, { deliveryId: undefined });
+          // Remove waypoint (unassign order from delivery)
+          await DeliveryRouteWaypointsApi.removeWaypoint(deliveryId, orderId);
 
-          // Then remove from delivery
-          const updatedDelivery = await DeliveriesApi.removeOrderFromDelivery(
-            deliveryId,
-            orderId
-          );
+          // Mark updates as completed
+          markDeliveryUpdateCompleted(deliveryId, orderId);
 
-          if (updatedDelivery) {
-            // Mark updates as completed
-            markDeliveryUpdateCompleted(deliveryId, orderId);
-            markOrderUpdateCompleted(orderId);
+          // Refresh orders for current delivery if it's the one being modified
+          if (currentDeliveryRef.current?.id === deliveryId) {
+            await refreshDeliveryOrders();
           }
+
+          // Refresh all deliveries
+          await refreshDeliveries();
         } catch (error) {
           console.error("Error removing order from delivery:", error);
           // Mark updates as failed
           markDeliveryUpdateFailed(deliveryId, orderId);
-          markOrderUpdateFailed(orderId);
-
-          // TODO: Revert optimistic updates (would need to refetch data)
+          // Refresh to revert optimistic updates
+          await refreshDeliveryOrders();
+          await refreshUnassignedOrders();
         }
       } catch (error) {
         console.error("Error removing order from delivery:", error);
       }
     },
-    [currentDelivery]
+    [] // No dependencies - uses refs
   );
 
-  // Reorder orders in a delivery
+  // Reorder orders in a delivery using waypoint API
   const reorderDeliveryOrders = useCallback(
     async (deliveryId: string, fromIndex: number, toIndex: number) => {
       try {
-        const updatedDelivery = await DeliveriesApi.reorderDeliveryOrders(
-          deliveryId,
-          fromIndex,
-          toIndex
-        );
-        if (updatedDelivery) {
-          setDeliveries((prev) =>
-            prev.map((d) => (d.id === deliveryId ? updatedDelivery : d))
+        isReorderingRef.current = true;
+
+        // Optimistic UI update - reorder local delivery orders
+        setDeliveryOrders((prev) => {
+          const updated = [...prev];
+          const [removed] = updated.splice(fromIndex, 1);
+          updated.splice(toIndex, 0, removed);
+          return updated;
+        });
+
+        // Perform API call in background
+        try {
+          const updatedWaypoints = await DeliveryRouteWaypointsApi.reorderWaypoints(
+            deliveryId,
+            fromIndex,
+            toIndex
           );
-          if (currentDelivery?.id === deliveryId) {
-            setCurrentDelivery(updatedDelivery);
-          }
+
+          console.log(
+            "[DeliveryProvider] Reordered waypoints:",
+            updatedWaypoints.map((wp) => wp.orderId)
+          );
+
+          // Refresh to ensure consistency
+          await refreshDeliveryOrders();
+        } catch (error) {
+          console.error("Error reordering delivery orders:", error);
+          // Refresh to revert optimistic updates
+          await refreshDeliveryOrders();
+        } finally {
+          isReorderingRef.current = false;
         }
       } catch (error) {
         console.error("Error reordering delivery orders:", error);
+        isReorderingRef.current = false;
       }
     },
-    [currentDelivery]
+    [refreshDeliveryOrders]
   );
 
   const value = {
     deliveries,
     currentDelivery,
+    deliveryOrders,
     unassignedOrders,
     setCurrentDelivery,
     setDeliveries,
@@ -391,6 +343,7 @@ export default function DeliveryProvider({
     reorderDeliveryOrders,
     refreshDeliveries,
     refreshUnassignedOrders,
+    refreshDeliveryOrders,
   };
 
   return (
