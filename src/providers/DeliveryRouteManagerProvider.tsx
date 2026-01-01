@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { DeliveryContext } from "@/contexts/delivery-context";
 import { RouteManagerContext } from "@/contexts/route-manager-context";
 import { MarkerHighlightContext } from "@/contexts/marker-highlight-context";
@@ -50,6 +50,22 @@ export default function DeliveryRouteManagerProvider({
     string | null
   >(null);
 
+  // Ref to track if we're in a reorder operation to skip automatic refresh
+  const isReorderingRef = useRef(false);
+
+  // Refs to avoid dependency on state in callbacks
+  const deliveriesRef = useRef<DeliveryRoute[]>([]);
+  const currentDeliveryRef = useRef<DeliveryRoute | null>(null);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    deliveriesRef.current = deliveries;
+  }, [deliveries]);
+
+  useEffect(() => {
+    currentDeliveryRef.current = currentDelivery;
+  }, [currentDelivery]);
+
   // Fetch unassigned orders
   const refreshUnassignedOrders = useCallback(async () => {
     try {
@@ -91,17 +107,27 @@ export default function DeliveryRouteManagerProvider({
   const refreshDeliveryOrders = useCallback(
     async (deliveryId?: string) => {
       try {
-        const targetId = deliveryId ?? currentDelivery?.id;
-        if (!targetId) {
+        const targetId = deliveryId ?? currentDeliveryRef.current?.id;
+        const targetDelivery = deliveryId
+          ? deliveriesRef.current.find((d) => d.id === deliveryId)
+          : currentDeliveryRef.current;
+
+        if (!targetId || !targetDelivery) {
           setDeliveryOrders([]);
           return [];
         }
 
         const allOrders = await OrdersApi.getOrders();
         const ordersWithPending = applyPendingOrderUpdates(allOrders);
-        const inDelivery = ordersWithPending.filter(
-          (order) => order.deliveryId === targetId
-        );
+
+        // Build orders list based on the delivery's waypoint sequence
+        // This ensures the order is preserved when reordering
+        const inDelivery = targetDelivery.orders
+          .map((waypoint) =>
+            ordersWithPending.find((o) => o.id === waypoint.orderId)
+          )
+          .filter((order): order is Order => order !== undefined);
+
         setDeliveryOrders(inDelivery);
         return inDelivery;
       } catch (error) {
@@ -109,7 +135,7 @@ export default function DeliveryRouteManagerProvider({
         return [];
       }
     },
-    [currentDelivery]
+    [] // No dependencies - uses refs instead
   );
 
   // Load deliveries and unassigned orders on mount
@@ -136,8 +162,21 @@ export default function DeliveryRouteManagerProvider({
 
   // Refresh delivery orders when current delivery changes
   useEffect(() => {
+    // Skip refresh if we're in the middle of a reorder operation
+    // The reorderDeliveryOrders function already updates the local state
+    if (isReorderingRef.current) {
+      console.log(
+        "[DeliveryRouteManagerProvider] Skipping refresh during reorder"
+      );
+      isReorderingRef.current = false;
+      return;
+    }
+    console.log(
+      "[DeliveryRouteManagerProvider] Refreshing delivery orders for:",
+      currentDelivery?.id
+    );
     void refreshDeliveryOrders();
-  }, [currentDelivery, refreshDeliveryOrders]);
+  }, [currentDelivery]); // Only depend on currentDelivery, not refreshDeliveryOrders
 
   // Create a new delivery
   const createDelivery = useCallback(
@@ -445,6 +484,9 @@ export default function DeliveryRouteManagerProvider({
   const reorderDeliveryOrders = useCallback(
     async (deliveryId: string, fromIndex: number, toIndex: number) => {
       try {
+        // Set flag before updating state to prevent automatic refresh
+        isReorderingRef.current = true;
+
         const updatedDelivery = await DeliveriesApi.reorderDeliveryOrders(
           deliveryId,
           fromIndex,
@@ -469,6 +511,8 @@ export default function DeliveryRouteManagerProvider({
         }
       } catch (error) {
         console.error("Error reordering delivery orders:", error);
+        // Reset flag on error
+        isReorderingRef.current = false;
       }
     },
     [currentDelivery]
