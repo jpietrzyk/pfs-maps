@@ -228,7 +228,8 @@ const LeafletMap = ({
     if (deliveryOrders.length === 1) {
       mapProvider.setView(deliveryOrders[0].location, 13);
     } else if (deliveryOrders.length > 1) {
-      mapProvider.fitBounds([...deliveryOrders, ...unassignedOrders]);
+      // Focus on the active route only; avoid pool orders shrinking zoom
+      mapProvider.fitBounds(deliveryOrders);
     } else {
       mapProvider.fitBounds(unassignedOrders);
     }

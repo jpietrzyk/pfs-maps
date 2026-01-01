@@ -10,9 +10,7 @@ export async function getMapProvider(
   switch (provider) {
     case "leaflet": {
       // Lazy import to avoid loading all providers at once
-      const { LeafletMapProvider } = await import(
-        "@/components/maps/leaflet/leaflet-map-provider"
-      );
+      const { LeafletMapProvider } = await import("@/providers/LeafletMapProvider");
       return new LeafletMapProvider(mapInstance);
     }
     default:
