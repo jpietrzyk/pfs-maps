@@ -2,69 +2,48 @@ import MapView from "@/components/maps/abstraction/map-view";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-sidebar";
 import OrdersCountDisplay from "@/components/ui/orders-count-display";
-import { useEffect, useState } from "react";
-import { OrdersApi } from "@/services/ordersApi";
-import type { Order } from "@/types/order";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDelivery } from "@/hooks/use-delivery";
 
 export default function DeliveryMapPage() {
   const { deliveryId } = useParams<{ deliveryId: string }>();
-  const { addOrderToDelivery } = useDelivery();
-  const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
-  const [unassignedOrders, setUnassignedOrders] = useState<Order[]>([]);
-  const [totalOrdersCount, setTotalOrdersCount] = useState<number>(0);
+  const {
+    addOrderToDelivery,
+    unassignedOrders,
+    deliveryOrders,
+    deliveries,
+    currentDelivery,
+    setCurrentDelivery,
+    refreshUnassignedOrders,
+    refreshDeliveryOrders,
+  } = useDelivery();
+
+  const totalOrdersCount = deliveryOrders.length + unassignedOrders.length;
 
   useEffect(() => {
-    console.log("DeliveryMapPage: Fetching orders for deliveryId:", deliveryId);
-    OrdersApi.getOrders().then((fetchedOrders) => {
-      console.log("DeliveryMapPage: Fetched orders:", fetchedOrders.length);
-      // Filter orders for the specific delivery
-      const deliveryOrders = fetchedOrders.filter(
-        (order) => order.deliveryId === deliveryId
-      );
-      console.log("DeliveryMapPage: Delivery orders:", deliveryOrders.length);
-      setDeliveryOrders(deliveryOrders);
+    void refreshDeliveryOrders(deliveryId);
+    void refreshUnassignedOrders();
+  }, [deliveryId, refreshDeliveryOrders, refreshUnassignedOrders]);
 
-      // Get unassigned orders
-      const initialUnassignedOrders = fetchedOrders.filter(
-        (order) => !order.deliveryId
-      );
-      console.log(
-        "DeliveryMapPage: Unassigned orders:",
-        initialUnassignedOrders.length
-      );
-      setUnassignedOrders(initialUnassignedOrders);
-
-      // Calculate total orders count (both assigned and unassigned)
-      setTotalOrdersCount(fetchedOrders.length);
-    });
-  }, [deliveryId]);
+  // Keep context currentDelivery in sync with the route param when present
+  useEffect(() => {
+    if (!deliveryId) return;
+    const match = deliveries.find((d) => d.id === deliveryId);
+    if (match && match.id !== currentDelivery?.id) {
+      setCurrentDelivery(match);
+    }
+  }, [deliveryId, deliveries, currentDelivery, setCurrentDelivery]);
 
   // Refetch orders when an order is removed
   const handleOrderRemoved = () => {
-    OrdersApi.getOrders().then((fetchedOrders) => {
-      const deliveryOrders = fetchedOrders.filter(
-        (order) => order.deliveryId === deliveryId
-      );
-      setDeliveryOrders(deliveryOrders);
-      const initialUnassignedOrders = fetchedOrders.filter(
-        (order) => !order.deliveryId
-      );
-      setUnassignedOrders(initialUnassignedOrders);
-    });
+    void refreshDeliveryOrders(deliveryId);
+    void refreshUnassignedOrders();
   };
 
   // Update delivery orders when an order is removed or added
-  const handleDeliveryOrdersUpdated = (updatedOrders: Order[]) => {
-    setDeliveryOrders(updatedOrders);
-    // When delivery orders are updated, we need to refresh unassigned orders too
-    OrdersApi.getOrders().then((fetchedOrders) => {
-      const initialUnassignedOrders = fetchedOrders.filter(
-        (order) => !order.deliveryId
-      );
-      setUnassignedOrders(initialUnassignedOrders);
-    });
+  const handleDeliveryOrdersUpdated = () => {
+    void refreshUnassignedOrders();
   };
 
   return (
@@ -76,17 +55,8 @@ export default function DeliveryMapPage() {
             orders={deliveryOrders}
             unassignedOrders={unassignedOrders}
             onOrderAddedToDelivery={async () => {
-              // Refresh both delivery and unassigned orders
-              const allOrders = await OrdersApi.getOrders();
-              const updatedDeliveryOrders = allOrders.filter(
-                (order) => order.deliveryId === deliveryId
-              );
-              const updatedUnassignedOrders = allOrders.filter(
-                (order) => !order.deliveryId
-              );
-              setDeliveryOrders(updatedDeliveryOrders);
-              setUnassignedOrders(updatedUnassignedOrders);
-              handleDeliveryOrdersUpdated(updatedDeliveryOrders);
+              await refreshDeliveryOrders(deliveryId);
+              handleDeliveryOrdersUpdated();
             }}
             onRefreshRequested={handleOrderRemoved}
           />
@@ -107,24 +77,19 @@ export default function DeliveryMapPage() {
           <DeliverySidebar
             onOrderRemoved={handleOrderRemoved}
             onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
+            deliveryOrders={deliveryOrders}
             unassignedOrders={unassignedOrders}
             onAddOrderToDelivery={async (orderId: string) => {
               try {
                 // Use the delivery context's addOrderToDelivery method
-                const targetDeliveryId = deliveryId || "DEL-001";
+                const targetDeliveryId = deliveryId || currentDelivery?.id;
+                if (!targetDeliveryId) {
+                  throw new Error("No delivery selected");
+                }
                 await addOrderToDelivery(targetDeliveryId, orderId);
 
-                // Refresh local state to match the updated context
-                const allOrders = await OrdersApi.getOrders();
-                const updatedDeliveryOrders = allOrders.filter(
-                  (order) => order.deliveryId === deliveryId
-                );
-                const updatedUnassignedOrders = allOrders.filter(
-                  (order) => !order.deliveryId
-                );
-                setDeliveryOrders(updatedDeliveryOrders);
-                setUnassignedOrders(updatedUnassignedOrders);
-                handleDeliveryOrdersUpdated(updatedDeliveryOrders);
+                await refreshDeliveryOrders(deliveryId);
+                handleDeliveryOrdersUpdated();
               } catch (error) {
                 console.error("Failed to add order to delivery:", error);
                 alert("Failed to add order to delivery");

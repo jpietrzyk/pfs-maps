@@ -31,6 +31,7 @@ export default function DeliveryRouteManagerProvider({
   const [currentDelivery, setCurrentDelivery] = useState<DeliveryRoute | null>(
     null
   );
+  const [deliveryOrders, setDeliveryOrders] = useState<Order[]>([]);
   const [unassignedOrders, setUnassignedOrders] = useState<Order[]>([]);
 
   // Route manager state
@@ -86,11 +87,37 @@ export default function DeliveryRouteManagerProvider({
     }
   }, []);
 
+  // Fetch orders for the current or provided delivery
+  const refreshDeliveryOrders = useCallback(
+    async (deliveryId?: string) => {
+      try {
+        const targetId = deliveryId ?? currentDelivery?.id;
+        if (!targetId) {
+          setDeliveryOrders([]);
+          return [];
+        }
+
+        const allOrders = await OrdersApi.getOrders();
+        const ordersWithPending = applyPendingOrderUpdates(allOrders);
+        const inDelivery = ordersWithPending.filter(
+          (order) => order.deliveryId === targetId
+        );
+        setDeliveryOrders(inDelivery);
+        return inDelivery;
+      } catch (error) {
+        console.error("Error fetching delivery orders:", error);
+        return [];
+      }
+    },
+    [currentDelivery]
+  );
+
   // Load deliveries and unassigned orders on mount
   useEffect(() => {
     const loadData = async () => {
       await refreshDeliveries();
       await refreshUnassignedOrders();
+      await refreshDeliveryOrders();
     };
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,6 +133,11 @@ export default function DeliveryRouteManagerProvider({
       setCurrentDelivery(deliveries[0]);
     }
   }, [deliveries, currentDelivery]);
+
+  // Refresh delivery orders when current delivery changes
+  useEffect(() => {
+    void refreshDeliveryOrders();
+  }, [currentDelivery, refreshDeliveryOrders]);
 
   // Create a new delivery
   const createDelivery = useCallback(
@@ -159,6 +191,132 @@ export default function DeliveryRouteManagerProvider({
     [currentDelivery]
   );
 
+  // Centralized optimistic helpers to keep deliveryOrders and unassignedOrders in sync
+  const applyOptimisticAdd = useCallback(
+    (deliveryId: string, orderId: string, atIndex?: number) => {
+      const orderFromPool = unassignedOrders.find(
+        (order) => order.id === orderId
+      );
+
+      setDeliveries((prev) =>
+        prev.map((d) => {
+          if (d.id !== deliveryId) return d;
+          const updatedOrders = [...d.orders];
+          const newIndex = atIndex ?? updatedOrders.length;
+          const orderAlreadyInDelivery = updatedOrders.some(
+            (order) => order.orderId === orderId
+          );
+
+          if (!orderAlreadyInDelivery) {
+            updatedOrders.splice(newIndex, 0, {
+              orderId,
+              sequence: newIndex,
+              status: "pending",
+            });
+            updatedOrders.forEach((order, index) => {
+              order.sequence = index;
+            });
+          }
+
+          return {
+            ...d,
+            orders: updatedOrders,
+          };
+        })
+      );
+
+      if (currentDelivery?.id === deliveryId) {
+        setCurrentDelivery((prev) => {
+          if (!prev) return null;
+          const updatedOrders = [...prev.orders];
+          const newIndex = atIndex ?? updatedOrders.length;
+          const orderAlreadyInDelivery = updatedOrders.some(
+            (order) => order.orderId === orderId
+          );
+
+          if (!orderAlreadyInDelivery) {
+            updatedOrders.splice(newIndex, 0, {
+              orderId,
+              sequence: newIndex,
+              status: "pending",
+            });
+            updatedOrders.forEach((order, index) => {
+              order.sequence = index;
+            });
+          }
+
+          return {
+            ...prev,
+            orders: updatedOrders,
+          };
+        });
+      }
+
+      setUnassignedOrders((prev) =>
+        prev.filter((order) => order.id !== orderId)
+      );
+
+      setDeliveryOrders((prev) => {
+        if (prev.some((order) => order.id === orderId)) return prev;
+        if (!orderFromPool) return prev;
+        const insertAt = atIndex ?? prev.length;
+        const next = [...prev];
+        next.splice(insertAt, 0, { ...orderFromPool, deliveryId });
+        return next;
+      });
+    },
+    [currentDelivery, unassignedOrders]
+  );
+
+  const applyOptimisticRemove = useCallback(
+    (deliveryId: string, orderId: string, restoredOrder?: Order) => {
+      setDeliveries((prev) =>
+        prev.map((d) => {
+          if (d.id !== deliveryId) return d;
+          const updatedOrders = d.orders
+            .filter((order) => order.orderId !== orderId)
+            .map((order, index) => ({
+              ...order,
+              sequence: index,
+            }));
+
+          return {
+            ...d,
+            orders: updatedOrders,
+          };
+        })
+      );
+
+      if (currentDelivery?.id === deliveryId) {
+        setCurrentDelivery((prev) => {
+          if (!prev) return null;
+
+          const updatedOrders = prev.orders
+            .filter((order) => order.orderId !== orderId)
+            .map((order, index) => ({
+              ...order,
+              sequence: index,
+            }));
+
+          return {
+            ...prev,
+            orders: updatedOrders,
+          };
+        });
+      }
+
+      if (restoredOrder) {
+        setUnassignedOrders((prev) => [
+          ...prev,
+          { ...restoredOrder, deliveryId: undefined },
+        ]);
+      }
+
+      setDeliveryOrders((prev) => prev.filter((order) => order.id !== orderId));
+    },
+    [currentDelivery]
+  );
+
   // Add an order to a delivery (pulls from unassigned)
   const addOrderToDelivery = useCallback(
     async (deliveryId: string, orderId: string, atIndex?: number) => {
@@ -175,77 +333,7 @@ export default function DeliveryRouteManagerProvider({
         });
 
         // Optimistic UI update - update local state immediately
-        setDeliveries((prev) => {
-          return prev.map((d) => {
-            if (d.id === deliveryId) {
-              // Add the order to the delivery
-              const updatedOrders = [...d.orders];
-              const newIndex = atIndex ?? updatedOrders.length;
-
-              // Check if order is already in delivery
-              const orderAlreadyInDelivery = updatedOrders.some(
-                (order) => order.orderId === orderId
-              );
-
-              if (!orderAlreadyInDelivery) {
-                updatedOrders.splice(newIndex, 0, {
-                  orderId,
-                  sequence: newIndex,
-                  status: "pending",
-                });
-
-                // Resequence
-                updatedOrders.forEach((order, index) => {
-                  order.sequence = index;
-                });
-              }
-
-              return {
-                ...d,
-                orders: updatedOrders,
-              };
-            }
-            return d;
-          });
-        });
-
-        // Update current delivery if it's the one being modified
-        if (currentDelivery?.id === deliveryId) {
-          setCurrentDelivery((prev) => {
-            if (!prev) return null;
-
-            const updatedOrders = [...prev.orders];
-            const newIndex = atIndex ?? updatedOrders.length;
-
-            // Check if order is already in delivery
-            const orderAlreadyInDelivery = updatedOrders.some(
-              (order) => order.orderId === orderId
-            );
-
-            if (!orderAlreadyInDelivery) {
-              updatedOrders.splice(newIndex, 0, {
-                orderId,
-                sequence: newIndex,
-                status: "pending",
-              });
-
-              // Resequence
-              updatedOrders.forEach((order, index) => {
-                order.sequence = index;
-              });
-            }
-
-            return {
-              ...prev,
-              orders: updatedOrders,
-            };
-          });
-        }
-
-        // Optimistic update - remove from unassigned orders
-        setUnassignedOrders((prev) =>
-          prev.filter((order) => order.id !== orderId)
-        );
+        applyOptimisticAdd(deliveryId, orderId, atIndex);
 
         // Perform API calls in background
         try {
@@ -270,13 +358,21 @@ export default function DeliveryRouteManagerProvider({
           markDeliveryUpdateFailed(deliveryId, orderId);
           markOrderUpdateFailed(orderId);
 
-          // TODO: Revert optimistic updates (would need to refetch data)
+          // Revert optimistic updates by refetching canonical data
+          await refreshDeliveryOrders(deliveryId);
+          await refreshUnassignedOrders();
+          await refreshDeliveries();
         }
       } catch (error) {
         console.error("Error adding order to delivery:", error);
       }
     },
-    [currentDelivery]
+    [
+      applyOptimisticAdd,
+      refreshDeliveryOrders,
+      refreshUnassignedOrders,
+      refreshDeliveries,
+    ]
   );
 
   // Remove an order from a delivery (returns to unassigned)
@@ -294,56 +390,16 @@ export default function DeliveryRouteManagerProvider({
           deliveryId: undefined,
         });
 
+        let restoredOrder = deliveryOrders.find(
+          (order) => order.id === orderId
+        );
+        if (!restoredOrder) {
+          const allOrders = await OrdersApi.getAllOrders();
+          restoredOrder = allOrders.find((order) => order.id === orderId);
+        }
+
         // Optimistic UI update - update local state immediately
-        setDeliveries((prev) => {
-          return prev.map((d) => {
-            if (d.id === deliveryId) {
-              // Remove the order from the delivery
-              const updatedOrders = d.orders
-                .filter((order) => order.orderId !== orderId)
-                .map((order, index) => ({
-                  ...order,
-                  sequence: index,
-                }));
-
-              return {
-                ...d,
-                orders: updatedOrders,
-              };
-            }
-            return d;
-          });
-        });
-
-        // Update current delivery if it's the one being modified
-        if (currentDelivery?.id === deliveryId) {
-          setCurrentDelivery((prev) => {
-            if (!prev) return null;
-
-            const updatedOrders = prev.orders
-              .filter((order) => order.orderId !== orderId)
-              .map((order, index) => ({
-                ...order,
-                sequence: index,
-              }));
-
-            return {
-              ...prev,
-              orders: updatedOrders,
-            };
-          });
-        }
-
-        // Optimistic update - add back to unassigned orders
-        // We need to find the order from the original orders data
-        const allOrders = await OrdersApi.getAllOrders();
-        const orderToRestore = allOrders.find((order) => order.id === orderId);
-        if (orderToRestore) {
-          setUnassignedOrders((prev) => [
-            ...prev,
-            { ...orderToRestore, deliveryId: undefined },
-          ]);
-        }
+        applyOptimisticRemove(deliveryId, orderId, restoredOrder);
 
         // Perform API calls in background
         try {
@@ -367,13 +423,22 @@ export default function DeliveryRouteManagerProvider({
           markDeliveryUpdateFailed(deliveryId, orderId);
           markOrderUpdateFailed(orderId);
 
-          // TODO: Revert optimistic updates (would need to refetch data)
+          // Revert optimistic updates by refetching canonical data
+          await refreshDeliveryOrders(deliveryId);
+          await refreshUnassignedOrders();
+          await refreshDeliveries();
         }
       } catch (error) {
         console.error("Error removing order from delivery:", error);
       }
     },
-    [currentDelivery]
+    [
+      applyOptimisticRemove,
+      deliveryOrders,
+      refreshDeliveryOrders,
+      refreshUnassignedOrders,
+      refreshDeliveries,
+    ]
   );
 
   // Reorder orders in a delivery
@@ -403,6 +468,7 @@ export default function DeliveryRouteManagerProvider({
   const deliveryContextValue = {
     deliveries,
     currentDelivery,
+    deliveryOrders,
     unassignedOrders,
     setCurrentDelivery,
     setDeliveries,
@@ -413,6 +479,7 @@ export default function DeliveryRouteManagerProvider({
     removeOrderFromDelivery,
     reorderDeliveryOrders,
     refreshDeliveries,
+    refreshDeliveryOrders,
     refreshUnassignedOrders,
   };
 
