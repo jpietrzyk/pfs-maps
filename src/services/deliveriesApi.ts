@@ -109,7 +109,10 @@ class DeliveriesApiClass {
     return delivery ? { ...delivery } : null;
   }
 
-  // Get delivery with populated order data
+  /**
+   * @deprecated Use getWaypointsWithOrders from delivery-route-helpers instead
+   * Get delivery with populated order data using embedded orders array (legacy)
+   */
   async getDeliveryWithOrders(
     id: string,
     orders: Order[]
@@ -183,7 +186,10 @@ class DeliveriesApiClass {
     return true;
   }
 
-  // Add an order to a delivery
+  /**
+   * @deprecated Use DeliveryRouteWaypointsApi.addWaypoint() instead
+   * Add an order to a delivery (legacy embedded array method)
+   */
   async addOrderToDelivery(
     deliveryId: string,
     orderId: string,
@@ -213,7 +219,10 @@ class DeliveriesApiClass {
     return this.updateDelivery(deliveryId, { orders: updatedOrders });
   }
 
-  // Remove an order from a delivery
+  /**
+   * @deprecated Use DeliveryRouteWaypointsApi.removeWaypoint() instead
+   * Remove an order from a delivery (legacy embedded array method)
+   */
   async removeOrderFromDelivery(deliveryId: string, orderId: string): Promise<DeliveryRoute | null> {
     const delivery = await this.getDelivery(deliveryId);
     if (!delivery) return null;
@@ -228,7 +237,10 @@ class DeliveriesApiClass {
     return this.updateDelivery(deliveryId, { orders: updatedOrders });
   }
 
-  // Reorder orders within a delivery
+  /**
+   * @deprecated Use DeliveryRouteWaypointsApi.reorderWaypoints() instead
+   * Reorder orders within a delivery (legacy embedded array method)
+   */
   async reorderDeliveryOrders(
     deliveryId: string,
     fromIndex: number,
@@ -249,7 +261,10 @@ class DeliveriesApiClass {
     return this.updateDelivery(deliveryId, { orders: updatedOrders });
   }
 
-  // Update the status of an order within a delivery
+  /**
+   * @deprecated Use DeliveryRouteWaypointsApi.updateWaypointStatus() instead
+   * Update the status of an order within a delivery (legacy embedded array method)
+   */
   async updateDeliveryOrderStatus(
     deliveryId: string,
     orderId: string,
