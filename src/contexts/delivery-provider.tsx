@@ -300,11 +300,12 @@ export default function DeliveryProvider({
 
         // Perform API call in background
         try {
-          const updatedWaypoints = await DeliveryRouteWaypointsApi.reorderWaypoints(
-            deliveryId,
-            fromIndex,
-            toIndex
-          );
+          const updatedWaypoints =
+            await DeliveryRouteWaypointsApi.reorderWaypoints(
+              deliveryId,
+              fromIndex,
+              toIndex
+            );
 
           console.log(
             "[DeliveryProvider] Reordered waypoints:",
