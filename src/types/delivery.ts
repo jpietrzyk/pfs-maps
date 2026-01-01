@@ -1,11 +1,11 @@
 import type { Order } from './order';
 
 /**
- * Delivery represents a planned delivery route.
+ * DeliveryRoute represents a planned delivery route.
  * Orders are "pulled" from the pool and assigned to a delivery.
  * Once assigned, orders are removed from the pool (order.deliveryId is set).
  */
-export interface Delivery {
+export interface DeliveryRoute {
   id: string;
   name: string;
   status: 'draft' | 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
@@ -16,7 +16,7 @@ export interface Delivery {
   completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
-  orders: DeliveryRouteItem[]; // Orders in this delivery with their sequence
+  orders: DeliveryRouteWaypoint[]; // Orders in this delivery with their sequence
   notes?: string;
   estimatedDistance?: number; // in kilometers
   estimatedDuration?: number; // in minutes
@@ -28,9 +28,9 @@ export interface Delivery {
 }
 
 /**
- * DeliveryRouteItem represents an order within a delivery with its position and status.
+ * DeliveryRouteWaypoint represents an order within a delivery with its position and status.
  */
-export interface DeliveryRouteItem {
+export interface DeliveryRouteWaypoint {
   orderId: string;
   sequence: number; // Position in the delivery route (0-based)
   status: 'pending' | 'in-transit' | 'delivered' | 'failed';
@@ -52,7 +52,7 @@ export function createDelivery(params: {
   vehicle?: string;
   scheduledDate?: Date;
   notes?: string;
-}): Delivery {
+}): DeliveryRoute {
   const now = new Date();
 
   return {
@@ -75,11 +75,11 @@ export function createDelivery(params: {
 
 // Helper function to add an order to a delivery
 export function addOrderToDelivery(
-  delivery: Delivery,
+  delivery: DeliveryRoute,
   orderId: string,
   atIndex?: number
-): Delivery {
-  const newDeliveryRouteItem: DeliveryRouteItem = {
+): DeliveryRoute {
+  const newDeliveryRouteItem: DeliveryRouteWaypoint = {
     orderId,
     sequence: atIndex ?? delivery.orders.length,
     status: 'pending',
@@ -106,9 +106,9 @@ export function addOrderToDelivery(
 
 // Helper function to remove an order from a delivery
 export function removeOrderFromDelivery(
-  delivery: Delivery,
+  delivery: DeliveryRoute,
   orderId: string
-): Delivery {
+): DeliveryRoute {
   const updatedOrders = delivery.orders
     .filter((order) => order.orderId !== orderId)
     .map((order, index) => ({
@@ -125,10 +125,10 @@ export function removeOrderFromDelivery(
 
 // Helper function to reorder orders in a delivery
 export function reorderDeliveryOrders(
-  delivery: Delivery,
+  delivery: DeliveryRoute,
   fromIndex: number,
   toIndex: number
-): Delivery {
+): DeliveryRoute {
   const updatedOrders = [...delivery.orders];
   const [removed] = updatedOrders.splice(fromIndex, 1);
   updatedOrders.splice(toIndex, 0, removed);
@@ -147,12 +147,12 @@ export function reorderDeliveryOrders(
 
 // Helper function to update delivery order status
 export function updateDeliveryOrderStatus(
-  delivery: Delivery,
+  delivery: DeliveryRoute,
   orderId: string,
-  status: DeliveryRouteItem['status'],
+  status: DeliveryRouteWaypoint['status'],
   deliveredAt?: Date,
   notes?: string
-): Delivery {
+): DeliveryRoute {
   const updatedOrders = delivery.orders.map((order) =>
     order.orderId === orderId
       ? {
@@ -172,7 +172,7 @@ export function updateDeliveryOrderStatus(
 }
 
 // Sample deliveries data
-export const sampleDeliveries: Delivery[] = [
+export const sampleDeliveries: DeliveryRoute[] = [
   {
     id: 'DEL-001',
     name: 'Morning Delivery Route - Budapest',
