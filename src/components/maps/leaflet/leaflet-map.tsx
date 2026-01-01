@@ -4,7 +4,6 @@ import {
   TileLayer,
   Marker,
   Popup,
-  useMap,
   Polyline,
 } from "react-leaflet";
 
@@ -17,6 +16,8 @@ import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDelivery } from "@/hooks/use-delivery";
 import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
+import { useMapProvider } from "@/hooks/use-map-provider";
+import { mapConfig } from "@/config/map.config";
 
 // DEPRECATED: Logic should be moved to provider abstraction layer.
 // Helper function to get status colors (consistent with pool markers)
@@ -187,40 +188,7 @@ interface LeafletMapProps {
   unassignedOrders?: Order[];
   onOrderAddedToDelivery?: (orderId: string) => void;
   onRefreshRequested?: () => void;
-}
-
-function MapFitter({
-  orders,
-  unassignedOrders,
-}: {
-  orders: Order[];
-  unassignedOrders: Order[];
-}) {
-  const map = useMap();
-  React.useEffect(() => {
-    if (orders.length === 0 && unassignedOrders.length === 0) return;
-
-    // Filter to get only delivery orders for primary focus
-    const deliveryOrders = orders.filter((order) => order.deliveryId);
-
-    if (deliveryOrders.length === 1) {
-      map.setView(deliveryOrders[0].location, 13);
-    } else if (deliveryOrders.length > 1) {
-      // Focus on delivery orders, but include pool orders in bounds for context
-      const allOrders = [...deliveryOrders, ...unassignedOrders];
-      const bounds = L.latLngBounds(
-        allOrders.map((o) => [o.location.lat, o.location.lng])
-      );
-      map.fitBounds(bounds, { padding: [40, 40] });
-    } else {
-      // If no delivery orders, show all orders (pool orders)
-      const bounds = L.latLngBounds(
-        unassignedOrders.map((o) => [o.location.lat, o.location.lng])
-      );
-      map.fitBounds(bounds, { padding: [40, 40] });
-    }
-  }, [orders, unassignedOrders, map]);
-  return null;
+  onMapReady?: (mapInstance: unknown) => void;
 }
 
 const LeafletMap = ({
@@ -228,7 +196,9 @@ const LeafletMap = ({
   unassignedOrders = [],
   onOrderAddedToDelivery,
   onRefreshRequested,
+  onMapReady,
 }: LeafletMapProps) => {
+  const { mapProvider } = useMapProvider();
   console.log("LeafletMap: Rendering with delivery orders:", orders.length);
   console.log(
     "LeafletMap: Rendering with unassigned orders:",
@@ -241,6 +211,45 @@ const LeafletMap = ({
     useSegmentHighlight();
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDelivery();
+
+  const handleMapCreated = React.useCallback(
+    (mapInstance: unknown) => {
+      onMapReady?.(mapInstance);
+    },
+    [onMapReady]
+  );
+
+  React.useEffect(() => {
+    if (!mapProvider) return;
+    if (orders.length === 0 && unassignedOrders.length === 0) return;
+
+    const deliveryOrders = orders.filter((order) => order.deliveryId);
+
+    if (deliveryOrders.length === 1) {
+      mapProvider.setView(deliveryOrders[0].location, 13);
+    } else if (deliveryOrders.length > 1) {
+      mapProvider.fitBounds([...deliveryOrders, ...unassignedOrders]);
+    } else {
+      mapProvider.fitBounds(unassignedOrders);
+    }
+  }, [mapProvider, orders, unassignedOrders]);
+
+  const initialCenter = React.useMemo(() => {
+    if (orders.length > 0) {
+      return orders[0].location;
+    }
+    if (unassignedOrders.length > 0) {
+      return unassignedOrders[0].location;
+    }
+    return mapConfig.defaultView.center;
+  }, [orders, unassignedOrders]);
+
+  const initialZoom = React.useMemo(() => {
+    if (orders.length > 0 || unassignedOrders.length > 0) {
+      return 13;
+    }
+    return mapConfig.defaultView.zoom;
+  }, [orders, unassignedOrders]);
 
   // Debug logging for order highlighting
   console.log("LeafletMap: highlightedOrderId:", highlightedOrderId);
@@ -366,8 +375,12 @@ const LeafletMap = ({
   }
 
   return (
-    <MapContainer style={{ width: "100%", height: "100%" }}>
-      <MapFitter orders={orders} unassignedOrders={unassignedOrders} />
+    <MapContainer
+      style={{ width: "100%", height: "100%" }}
+      center={[initialCenter.lat, initialCenter.lng]}
+      zoom={initialZoom}
+      whenCreated={handleMapCreated}
+    >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {polylinePositions.length > 0 &&
         polylinePositions.map((positions, index) => {

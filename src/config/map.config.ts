@@ -6,6 +6,19 @@
 
 export const mapConfig = {
   /**
+   * Default map provider implementation
+   */
+  provider: "leaflet" as const,
+
+  /**
+   * Default initial view if no orders are available yet
+   */
+  defaultView: {
+    center: { lat: 51.1657, lng: 10.4515 },
+    zoom: 6,
+  },
+
+  /**
    * Pool Order Markers Configuration
    */
   poolMarkers: {

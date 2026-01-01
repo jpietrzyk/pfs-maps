@@ -25,6 +25,7 @@ import {
   formatDuration,
   formatDistance,
 } from "@/lib/delivery-time-calculator";
+import { useRouteManager } from "@/hooks/use-route-manager";
 
 interface DeliverySidebarProps {
   onOrderRemoved?: () => void;
@@ -44,7 +45,9 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, setCurrentOrderId, setPreviousOrderId } =
     useOrderHighlight();
-  const { currentDelivery, removeOrderFromDelivery } = useDelivery();
+  const { currentDelivery, removeOrderFromDelivery, reorderDeliveryOrders } =
+    useDelivery();
+  const { routeManager } = useRouteManager();
   const [deliveryOrders, setDeliveryOrders] =
     useState<Order[]>(deliveryOrdersProp);
   const [isDeliveryExpanded, setIsDeliveryExpanded] = useState(true);
@@ -161,9 +164,18 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
     await onAddOrderToDelivery?.(orderId);
   };
 
-  const handleReorder = (newOrders: Order[]) => {
+  const handleReorder = async (
+    newOrders: Order[],
+    fromIndex: number,
+    toIndex: number
+  ) => {
     // Update the local state with the new order
     setDeliveryOrders(newOrders);
+
+    // Persist reorder to backend/state
+    if (currentDelivery) {
+      await reorderDeliveryOrders(currentDelivery.id, fromIndex, toIndex);
+    }
 
     // Call the callback to notify parent components about the update
     onDeliveryOrdersUpdated?.(newOrders);
@@ -345,6 +357,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                     onRemoveOrder={handleRemoveOrder}
                     onReorder={handleReorder}
                     title=""
+                    routeManager={routeManager ?? undefined}
                   />
                 </div>
               </div>

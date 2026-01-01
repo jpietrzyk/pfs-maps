@@ -457,6 +457,15 @@ export default function DeliveryRouteManagerProvider({
           if (currentDelivery?.id === deliveryId) {
             setCurrentDelivery(updatedDelivery);
           }
+          // Keep deliveryOrders in sync locally so UI and map rerender
+          setDeliveryOrders((prev) => {
+            if (prev.length === 0) return prev;
+            const next = [...prev];
+            const [moved] = next.splice(fromIndex, 1);
+            if (!moved) return prev;
+            next.splice(toIndex, 0, moved);
+            return next;
+          });
         }
       } catch (error) {
         console.error("Error reordering delivery orders:", error);
