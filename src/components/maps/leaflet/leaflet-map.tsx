@@ -185,7 +185,6 @@ const createOrderPopupContent = (
 };
 
 interface LeafletMapProps {
-  orders?: Order[];
   unassignedOrders?: Order[];
   onOrderAddedToDelivery?: (orderId: string) => void;
   onRefreshRequested?: () => void;
@@ -209,7 +208,6 @@ const MapInitializer: React.FC<{ onMapReady: (map: unknown) => void }> = ({
 };
 
 const LeafletMap = ({
-  orders = [],
   unassignedOrders = [],
   onOrderAddedToDelivery,
   onRefreshRequested,
@@ -228,8 +226,12 @@ const LeafletMap = ({
   const { highlightedPolylineOrderId } = usePolylineHighlight();
   const { highlightedSegmentId, setHighlightedSegmentId } =
     useSegmentHighlight();
-  const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
-    useDelivery();
+  const {
+    currentDelivery,
+    deliveryOrders,
+    removeOrderFromDelivery,
+    addOrderToDelivery,
+  } = useDelivery();
 
   const mapCreatedRef = React.useRef(false);
 
@@ -377,7 +379,6 @@ const LeafletMap = ({
 
   // Draw straight lines between consecutive DELIVERY order markers only
   const polylinePositions: [number, number][][] = [];
-  const deliveryOrders = orders;
   if (deliveryOrders.length >= 2) {
     for (let i = 0; i < deliveryOrders.length - 1; i++) {
       polylinePositions.push([
@@ -456,7 +457,7 @@ const LeafletMap = ({
             />
           );
         })}
-      {[...orders, ...unassignedOrders].map((order) => {
+      {[...deliveryOrders, ...unassignedOrders].map((order) => {
         const isPool = !order.deliveryId;
         let icon = defaultIcon;
         if (isPool) {

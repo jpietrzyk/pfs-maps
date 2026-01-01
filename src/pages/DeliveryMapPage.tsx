@@ -52,7 +52,6 @@ export default function DeliveryMapPage() {
         {/* Map layer at the bottom */}
         <div className="absolute inset-0 z-0">
           <MapView
-            orders={deliveryOrders}
             unassignedOrders={unassignedOrders}
             onOrderAddedToDelivery={async () => {
               await refreshDeliveryOrders(deliveryId);
@@ -77,7 +76,6 @@ export default function DeliveryMapPage() {
           <DeliverySidebar
             onOrderRemoved={handleOrderRemoved}
             onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
-            deliveryOrders={deliveryOrders}
             unassignedOrders={unassignedOrders}
             onAddOrderToDelivery={async (orderId: string) => {
               try {

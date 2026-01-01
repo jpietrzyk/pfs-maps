@@ -45,25 +45,17 @@ describe("DeliverySidebar - Assigned Count Update", () => {
   let getOrdersMock: jest.Mock;
 
   const Wrapper = ({
-    initialDeliveryOrders,
     unassignedOrders,
     onAddOrderToDelivery,
   }: {
-    initialDeliveryOrders: Order[];
     unassignedOrders: Order[];
     onAddOrderToDelivery?: (orderId: string) => Promise<void>;
   }) => {
-    const [deliveryOrders, setDeliveryOrders] = useState<Order[]>(
-      initialDeliveryOrders
-    );
-
     return (
       <SidebarProvider>
         <DeliveryRouteManagerProvider>
           <DeliverySidebar
-            deliveryOrders={deliveryOrders}
             unassignedOrders={unassignedOrders}
-            onDeliveryOrdersUpdated={setDeliveryOrders}
             onAddOrderToDelivery={onAddOrderToDelivery}
           />
         </DeliveryRouteManagerProvider>
@@ -149,7 +141,6 @@ describe("DeliverySidebar - Assigned Count Update", () => {
 
     render(
       <Wrapper
-        initialDeliveryOrders={[mockOrders[0]]}
         unassignedOrders={[mockOrders[1]]}
         onAddOrderToDelivery={async (orderId: string) => {
           await OrdersApi.updateOrder(orderId, {

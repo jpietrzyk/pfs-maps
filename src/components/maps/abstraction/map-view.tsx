@@ -7,9 +7,9 @@ import { MapProviderContext } from "@/contexts/map-provider-context";
 import { getMapProvider } from "./map-provider-factory";
 import { useRouteManager } from "@/hooks/use-route-manager";
 import { RouteManager } from "@/services/RouteManager";
+import { useDelivery } from "@/hooks/use-delivery";
 
 interface MapViewProps {
-  orders: Order[];
   unassignedOrders?: Order[];
   onOrderAddedToDelivery?: (orderId: string) => void;
   onRefreshRequested?: () => void;
@@ -17,6 +17,7 @@ interface MapViewProps {
 
 // Render MapView using the configured provider and expose it via context
 const MapView: React.FC<MapViewProps> = (props) => {
+  const { deliveryOrders } = useDelivery();
   const { setRouteManager: setRouteManagerContext } = useRouteManager();
   const [mapProvider, setMapProvider] = React.useState<MapProvider | null>(
     null
@@ -76,12 +77,12 @@ const MapView: React.FC<MapViewProps> = (props) => {
 
     // Small delay to ensure map is fully rendered before fitBounds
     const timeoutId = requestAnimationFrame(() => {
-      if (props.orders?.length) {
-        if (props.orders.length > 1) {
-          mapProvider.fitBounds(props.orders);
+      if (deliveryOrders?.length) {
+        if (deliveryOrders.length > 1) {
+          mapProvider.fitBounds(deliveryOrders);
           return;
         }
-        mapProvider.setView(props.orders[0].location, 13);
+        mapProvider.setView(deliveryOrders[0].location, 13);
         return;
       }
       if (props.unassignedOrders?.length) {
@@ -90,7 +91,7 @@ const MapView: React.FC<MapViewProps> = (props) => {
     });
 
     return () => cancelAnimationFrame(timeoutId);
-  }, [mapProvider, props.orders, props.unassignedOrders]);
+  }, [mapProvider, deliveryOrders, props.unassignedOrders]);
 
   return (
     <MapProviderContext.Provider value={{ mapProvider }}>

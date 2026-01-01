@@ -30,7 +30,6 @@ import { useRouteManager } from "@/hooks/use-route-manager";
 interface DeliverySidebarProps {
   onOrderRemoved?: () => void;
   onDeliveryOrdersUpdated?: (updatedOrders: Order[]) => void;
-  deliveryOrders?: Order[];
   unassignedOrders?: Order[];
   onAddOrderToDelivery?: (orderId: string) => void;
 }
@@ -38,18 +37,22 @@ interface DeliverySidebarProps {
 const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   onOrderRemoved,
   onDeliveryOrdersUpdated,
-  deliveryOrders: deliveryOrdersProp = [],
   unassignedOrders = [],
   onAddOrderToDelivery,
 }) => {
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, setCurrentOrderId, setPreviousOrderId } =
     useOrderHighlight();
-  const { currentDelivery, removeOrderFromDelivery, reorderDeliveryOrders } =
-    useDelivery();
+  const {
+    currentDelivery,
+    deliveryOrders: deliveryOrdersFromContext,
+    removeOrderFromDelivery,
+    reorderDeliveryOrders,
+  } = useDelivery();
   const { routeManager } = useRouteManager();
-  const [deliveryOrders, setDeliveryOrders] =
-    useState<Order[]>(deliveryOrdersProp);
+  const [deliveryOrders, setDeliveryOrders] = useState<Order[]>(
+    deliveryOrdersFromContext
+  );
   const [isDeliveryExpanded, setIsDeliveryExpanded] = useState(true);
   const [isUnassignedCollapsed, setIsUnassignedCollapsed] = useState(true); // collapsed by default
   const [totalEstimatedTime, setTotalEstimatedTime] = useState<number>(0);
@@ -86,10 +89,14 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
 
   console.log("DeliverySidebar: currentDelivery", currentDelivery);
 
-  // Sync internal state when props change
+  // Sync internal state when context delivery orders change
   useEffect(() => {
-    setDeliveryOrders(deliveryOrdersProp);
-  }, [deliveryOrdersProp]);
+    console.log(
+      "[DeliverySidebar] Orders from context updated:",
+      deliveryOrdersFromContext.map((o) => o.id)
+    );
+    setDeliveryOrders(deliveryOrdersFromContext);
+  }, [deliveryOrdersFromContext]);
 
   // Recalculate time and distance when delivery orders sequence changes
   useEffect(() => {
