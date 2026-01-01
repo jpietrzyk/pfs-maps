@@ -1,4 +1,4 @@
-import type { Delivery, DeliveryRouteItem } from '@/types/delivery';
+import type { DeliveryRoute, DeliveryRouteWaypoint } from '@/types/delivery';
 import { sampleDeliveries } from '@/types/delivery';
 import type { Order } from '@/types/order';
 
@@ -16,7 +16,7 @@ import type { Order } from '@/types/order';
  * to update order.deliveryId. For now, we mock this behavior.
  */
 class DeliveriesApiClass {
-  private deliveries: Delivery[] = [];
+  private deliveries: DeliveryRoute[] = [];
   private loaded = false;
 
   constructor() {
@@ -43,8 +43,8 @@ class DeliveriesApiClass {
           orderId: string;
         }
 
-        // Convert the JSON structure to our Delivery interface
-        const delivery: Delivery = {
+        // Convert the JSON structure to our DeliveryRoute interface
+        const delivery: DeliveryRoute = {
           id: deliveryData.id,
           name: deliveryData.description || `Delivery ${deliveryData.id}`,
           status: 'scheduled', // Default status
@@ -78,7 +78,7 @@ class DeliveriesApiClass {
   }
 
   // Get all deliveries
-  async getDeliveries(): Promise<Delivery[]> {
+  async getDeliveries(): Promise<DeliveryRoute[]> {
     // Ensure initialization is complete
     await this.ensureInitialized();
 
@@ -94,7 +94,7 @@ class DeliveriesApiClass {
   }
 
   // Get a single delivery by ID
-  async getDelivery(id: string): Promise<Delivery | null> {
+  async getDelivery(id: string): Promise<DeliveryRoute | null> {
     await this.ensureInitialized();
     await new Promise((resolve) => setTimeout(resolve, 100));
     const delivery = this.deliveries.find((d) => d.id === id);
@@ -105,7 +105,7 @@ class DeliveriesApiClass {
   async getDeliveryWithOrders(
     id: string,
     orders: Order[]
-  ): Promise<(Delivery & { orders: (DeliveryRouteItem & { order: Order })[] }) | null> {
+  ): Promise<(DeliveryRoute & { orders: (DeliveryRouteWaypoint & { order: Order })[] }) | null> {
     const delivery = await this.getDelivery(id);
     if (!delivery) return null;
 
@@ -120,7 +120,7 @@ class DeliveriesApiClass {
           order,
         };
       })
-      .filter((order): order is DeliveryRouteItem & { order: Order } => order !== null);
+      .filter((order): order is DeliveryRouteWaypoint & { order: Order } => order !== null);
 
     return {
       ...delivery,
@@ -129,12 +129,12 @@ class DeliveriesApiClass {
   }
 
   // Create a new delivery
-  async createDelivery(delivery: Omit<Delivery, 'id' | 'createdAt' | 'updatedAt'>): Promise<Delivery> {
+  async createDelivery(delivery: Omit<DeliveryRoute, 'id' | 'createdAt' | 'updatedAt'>): Promise<DeliveryRoute> {
     await this.ensureInitialized();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const now = new Date();
-    const newDelivery: Delivery = {
+    const newDelivery: DeliveryRoute = {
       ...delivery,
       id: `DEL-${Date.now()}`,
       createdAt: now,
@@ -146,7 +146,7 @@ class DeliveriesApiClass {
   }
 
   // Update an existing delivery
-  async updateDelivery(id: string, updates: Partial<Delivery>): Promise<Delivery | null> {
+  async updateDelivery(id: string, updates: Partial<DeliveryRoute>): Promise<DeliveryRoute | null> {
     await this.ensureInitialized();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -180,11 +180,11 @@ class DeliveriesApiClass {
     deliveryId: string,
     orderId: string,
     atIndex?: number
-  ): Promise<Delivery | null> {
+  ): Promise<DeliveryRoute | null> {
     const delivery = await this.getDelivery(deliveryId);
     if (!delivery) return null;
 
-    const newDeliveryRouteItem: DeliveryRouteItem = {
+    const newDeliveryRouteItem: DeliveryRouteWaypoint = {
       orderId,
       sequence: atIndex ?? delivery.orders.length,
       status: 'pending',
@@ -206,7 +206,7 @@ class DeliveriesApiClass {
   }
 
   // Remove an order from a delivery
-  async removeOrderFromDelivery(deliveryId: string, orderId: string): Promise<Delivery | null> {
+  async removeOrderFromDelivery(deliveryId: string, orderId: string): Promise<DeliveryRoute | null> {
     const delivery = await this.getDelivery(deliveryId);
     if (!delivery) return null;
 
@@ -225,7 +225,7 @@ class DeliveriesApiClass {
     deliveryId: string,
     fromIndex: number,
     toIndex: number
-  ): Promise<Delivery | null> {
+  ): Promise<DeliveryRoute | null> {
     const delivery = await this.getDelivery(deliveryId);
     if (!delivery) return null;
 
@@ -245,10 +245,10 @@ class DeliveriesApiClass {
   async updateDeliveryOrderStatus(
     deliveryId: string,
     orderId: string,
-    status: DeliveryRouteItem['status'],
+    status: DeliveryRouteWaypoint['status'],
     deliveredAt?: Date,
     notes?: string
-  ): Promise<Delivery | null> {
+  ): Promise<DeliveryRoute | null> {
     const delivery = await this.getDelivery(deliveryId);
     if (!delivery) return null;
 
@@ -269,11 +269,11 @@ class DeliveriesApiClass {
   // Update delivery status
   async updateDeliveryStatus(
     deliveryId: string,
-    status: Delivery['status'],
+    status: DeliveryRoute['status'],
     startedAt?: Date,
     completedAt?: Date
-  ): Promise<Delivery | null> {
-    const updates: Partial<Delivery> = { status };
+  ): Promise<DeliveryRoute | null> {
+    const updates: Partial<DeliveryRoute> = { status };
 
     if (status === 'in-progress' && startedAt) {
       updates.startedAt = startedAt;

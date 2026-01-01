@@ -1,17 +1,20 @@
 import { createContext } from "react";
-import type { Delivery } from "@/types/delivery";
+import type { DeliveryRoute } from "@/types/delivery";
 import type { Order } from "@/types/order";
 
 export interface DeliveryContextType {
-  deliveries: Delivery[];
-  currentDelivery: Delivery | null;
+  deliveries: DeliveryRoute[];
+  currentDelivery: DeliveryRoute | null;
   unassignedOrders: Order[];
-  setCurrentDelivery: (delivery: Delivery | null) => void;
-  setDeliveries: (deliveries: Delivery[]) => void;
+  setCurrentDelivery: (delivery: DeliveryRoute | null) => void;
+  setDeliveries: (deliveries: DeliveryRoute[]) => void;
   createDelivery: (
-    delivery: Omit<Delivery, "id" | "createdAt" | "updatedAt">
+    delivery: Omit<DeliveryRoute, "id" | "createdAt" | "updatedAt">
   ) => Promise<void>;
-  updateDelivery: (id: string, updates: Partial<Delivery>) => Promise<void>;
+  updateDelivery: (
+    id: string,
+    updates: Partial<DeliveryRoute>
+  ) => Promise<void>;
   deleteDelivery: (id: string) => Promise<void>;
   addOrderToDelivery: (
     deliveryId: string,

@@ -1,5 +1,5 @@
 import type { Order } from '@/types/order';
-import type { Delivery } from '@/types/delivery';
+import type { DeliveryRoute } from '@/types/delivery';
 
 // Local storage keys
 const LOCAL_STORAGE_KEYS = {
@@ -258,9 +258,9 @@ export function applyPendingOrderUpdates(orders: Order[]): Order[] {
  * Apply pending optimistic updates to delivery orders
  */
 export function applyPendingDeliveryUpdates(
-  delivery: Delivery,
+  delivery: DeliveryRoute,
   orders: Order[]
-): Delivery {
+): DeliveryRoute {
   try {
     const pendingUpdates = getPendingDeliveryUpdates();
 

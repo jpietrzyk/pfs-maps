@@ -7,7 +7,7 @@ import { SegmentHighlightContext } from "@/contexts/segment-highlight-context";
 import { PolylineHighlightContext } from "@/contexts/polyline-highlight-context";
 import { DeliveriesApi } from "@/services/deliveriesApi";
 import { OrdersApi } from "@/services/ordersApi";
-import type { Delivery } from "@/types/delivery";
+import type { DeliveryRoute } from "@/types/delivery";
 import type { Order } from "@/types/order";
 import {
   addOptimisticDeliveryUpdate,
@@ -27,8 +27,10 @@ export default function DeliveryRouteManagerProvider({
   children: React.ReactNode;
 }) {
   // Delivery state
-  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
-  const [currentDelivery, setCurrentDelivery] = useState<Delivery | null>(null);
+  const [deliveries, setDeliveries] = useState<DeliveryRoute[]>([]);
+  const [currentDelivery, setCurrentDelivery] = useState<DeliveryRoute | null>(
+    null
+  );
   const [unassignedOrders, setUnassignedOrders] = useState<Order[]>([]);
 
   // Route manager state
@@ -107,7 +109,7 @@ export default function DeliveryRouteManagerProvider({
 
   // Create a new delivery
   const createDelivery = useCallback(
-    async (delivery: Omit<Delivery, "id" | "createdAt" | "updatedAt">) => {
+    async (delivery: Omit<DeliveryRoute, "id" | "createdAt" | "updatedAt">) => {
       try {
         const newDelivery = await DeliveriesApi.createDelivery(delivery);
         setDeliveries((prev) => [...prev, newDelivery]);
@@ -121,7 +123,7 @@ export default function DeliveryRouteManagerProvider({
 
   // Update an existing delivery
   const updateDelivery = useCallback(
-    async (id: string, updates: Partial<Delivery>) => {
+    async (id: string, updates: Partial<DeliveryRoute>) => {
       try {
         const updatedDelivery = await DeliveriesApi.updateDelivery(id, updates);
         if (updatedDelivery) {
