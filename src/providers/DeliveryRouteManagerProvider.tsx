@@ -6,6 +6,7 @@ import { OrderHighlightContext } from "@/contexts/order-highlight-context";
 import { SegmentHighlightContext } from "@/contexts/segment-highlight-context";
 import { PolylineHighlightContext } from "@/contexts/polyline-highlight-context";
 import { DeliveryRoutesApi } from "@/services/deliveryRoutesApi";
+import { DeliveryRouteWaypointsApi } from "@/services/deliveryRouteWaypointsApi";
 import { OrdersApi } from "@/services/ordersApi";
 import type { DeliveryRoute } from "@/types/delivery-route";
 import type { Order } from "@/types/order";
@@ -99,9 +100,21 @@ export default function DeliveryRouteManagerProvider({
 
         const allOrders = await OrdersApi.getOrders();
         const ordersWithPending = applyPendingOrderUpdates(allOrders);
-        const inDelivery = ordersWithPending.filter(
-          (order) => order.deliveryId === targetId
+
+        // Get waypoints for this delivery from waypoint API
+        const waypoints =
+          DeliveryRouteWaypointsApi.getWaypointsByDelivery(targetId);
+
+        // Create a map for O(1) lookup
+        const ordersMap = new Map(
+          ordersWithPending.map((order) => [order.id, order])
         );
+
+        // Convert waypoints to orders in sequence
+        const inDelivery = waypoints
+          .map((waypoint) => ordersMap.get(waypoint.orderId))
+          .filter((order): order is Order => order !== undefined);
+
         setDeliveryOrders(inDelivery);
         return inDelivery;
       } catch (error) {
@@ -343,18 +356,12 @@ export default function DeliveryRouteManagerProvider({
           // First, mark the order as assigned to this delivery
           await OrdersApi.updateOrder(orderId, { deliveryId });
 
-          // Then add it to the delivery
-          const updatedDelivery = await DeliveryRoutesApi.addOrderToDelivery(
-            deliveryId,
-            orderId,
-            atIndex
-          );
+          // Then add it to the delivery using waypoint API
+          DeliveryRouteWaypointsApi.addWaypoint(deliveryId, orderId, atIndex);
 
-          if (updatedDelivery) {
-            // Mark updates as completed
-            markDeliveryUpdateCompleted(deliveryId, orderId);
-            markOrderUpdateCompleted(orderId);
-          }
+          // Mark updates as completed
+          markDeliveryUpdateCompleted(deliveryId, orderId);
+          markOrderUpdateCompleted(orderId);
         } catch (error) {
           console.error("Error adding order to delivery:", error);
           // Mark updates as failed
@@ -409,18 +416,12 @@ export default function DeliveryRouteManagerProvider({
           // First, remove delivery assignment from order (returns to unassigned)
           await OrdersApi.updateOrder(orderId, { deliveryId: undefined });
 
-          // Then remove from delivery
-          const updatedDelivery =
-            await DeliveryRoutesApi.removeOrderFromDelivery(
-              deliveryId,
-              orderId
-            );
+          // Then remove from delivery using waypoint API
+          DeliveryRouteWaypointsApi.removeWaypoint(deliveryId, orderId);
 
-          if (updatedDelivery) {
-            // Mark updates as completed
-            markDeliveryUpdateCompleted(deliveryId, orderId);
-            markOrderUpdateCompleted(orderId);
-          }
+          // Mark updates as completed
+          markDeliveryUpdateCompleted(deliveryId, orderId);
+          markOrderUpdateCompleted(orderId);
         } catch (error) {
           console.error("Error removing order from delivery:", error);
           // Mark updates as failed
@@ -449,24 +450,21 @@ export default function DeliveryRouteManagerProvider({
   const reorderDeliveryOrders = useCallback(
     async (deliveryId: string, fromIndex: number, toIndex: number) => {
       try {
-        const updatedDelivery = await DeliveryRoutesApi.reorderDeliveryOrders(
+        // Use waypoint API to reorder
+        DeliveryRouteWaypointsApi.reorderWaypoints(
           deliveryId,
           fromIndex,
           toIndex
         );
-        if (updatedDelivery) {
-          setDeliveries((prev) =>
-            prev.map((d) => (d.id === deliveryId ? updatedDelivery : d))
-          );
-          if (currentDelivery?.id === deliveryId) {
-            setCurrentDelivery(updatedDelivery);
-          }
-        }
+
+        // Refresh UI to reflect changes
+        await refreshDeliveryOrders(deliveryId);
+        await refreshDeliveries();
       } catch (error) {
         console.error("Error reordering delivery orders:", error);
       }
     },
-    [currentDelivery]
+    [refreshDeliveryOrders, refreshDeliveries]
   );
 
   const deliveryContextValue = {
