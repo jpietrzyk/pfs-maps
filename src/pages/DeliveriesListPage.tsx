@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
+import { DeliveryRoutesApi } from "@/services/deliveryRoutesApi";
+import { DeliveryRouteWaypointsApi } from "@/services/deliveryRouteWaypointsApi";
 import type { Order } from "@/types/order";
+import type { DeliveryRoute } from "@/types/delivery-route";
 import { Link } from "react-router-dom";
 import { DeliveryOrderList } from "@/components/delivery-route/delivery-order-list";
 
+interface DeliveryWithOrders extends DeliveryRoute {
+  ordersInSequence: Order[];
+}
+
 export default function DeliveriesListPage() {
-  const [deliveries, setDeliveries] = useState<
-    { id: string; orders: Order[] }[]
-  >([]);
+  const [deliveries, setDeliveries] = useState<DeliveryWithOrders[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,28 +20,34 @@ export default function DeliveriesListPage() {
     const fetchDeliveries = async () => {
       try {
         setLoading(true);
-        const orders = await OrdersApi.getOrders();
 
-        // Group orders by deliveryId
-        const deliveriesMap = new Map<string, Order[]>();
-        orders.forEach((order) => {
-          if (order.deliveryId) {
-            if (!deliveriesMap.has(order.deliveryId)) {
-              deliveriesMap.set(order.deliveryId, []);
-            }
-            deliveriesMap.get(order.deliveryId)?.push(order);
+        // Fetch deliveries and orders
+        const [allDeliveries, orders] = await Promise.all([
+          DeliveryRoutesApi.getDeliveries(),
+          OrdersApi.getOrders(),
+        ]);
+
+        // Create orders map for O(1) lookup
+        const ordersMap = new Map(orders.map((order) => [order.id, order]));
+
+        // For each delivery, get waypoints and populate with order data
+        const deliveriesWithOrders: DeliveryWithOrders[] = allDeliveries.map(
+          (delivery) => {
+            const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(
+              delivery.id
+            );
+            const ordersInSequence = waypoints
+              .map((waypoint) => ordersMap.get(waypoint.orderId))
+              .filter((order): order is Order => order !== undefined);
+
+            return {
+              ...delivery,
+              ordersInSequence,
+            };
           }
-        });
-
-        // Convert to array format
-        const deliveriesArray = Array.from(deliveriesMap.entries()).map(
-          ([id, orders]) => ({
-            id,
-            orders,
-          })
         );
 
-        setDeliveries(deliveriesArray);
+        setDeliveries(deliveriesWithOrders);
         setError(null);
       } catch (err) {
         console.error("Failed to fetch deliveries:", err);
@@ -147,7 +158,7 @@ export default function DeliveriesListPage() {
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                   <div className="flex justify-between items-center">
                     <h2 className="text-lg font-semibold text-gray-800">
-                      Delivery {delivery.id}
+                      {delivery.name || `Delivery ${delivery.id}`}
                     </h2>
                     <Link
                       to={`/deliveries/${delivery.id}`}
@@ -173,8 +184,8 @@ export default function DeliveriesListPage() {
                 </div>
                 <div className="p-6">
                   <DeliveryOrderList
-                    orders={delivery.orders}
-                    title={`Orders (${delivery.orders.length})`}
+                    orders={delivery.ordersInSequence}
+                    title={`Orders (${delivery.ordersInSequence.length})`}
                   />
                 </div>
               </div>
