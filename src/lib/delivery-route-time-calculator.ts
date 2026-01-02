@@ -1,5 +1,5 @@
 import type { Order } from '@/types/order';
-import { getDistanceKm, getDriveMinutes, getHandlingMinutes } from './delivery-time-utils';
+import { getDistanceKm, getDriveMinutes, getHandlingMinutes } from './delivery-route-time-utils';
 
 export function calculateTotalEstimatedTime(orders: Order[]): number {
   if (orders.length === 0) {

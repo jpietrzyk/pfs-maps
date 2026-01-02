@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import type { Order } from "@/types/order";
 import { DeliveryRouteOrderItem } from "@/components/delivery-route/delivery-route-order-item";
 import { DeliveryRouteSegment } from "@/components/delivery-route/delivery-route-segment";
-import { getDistanceKm, getDriveMinutes } from "@/lib/delivery-time-utils";
+import {
+  getDistanceKm,
+  getDriveMinutes,
+} from "@/lib/delivery-route-time-utils";
 import {
   DndContext,
   closestCenter,

@@ -24,7 +24,7 @@ import {
   calculateTotalDistance,
   formatDuration,
   formatDistance,
-} from "@/lib/delivery-time-calculator";
+} from "@/lib/delivery-route-time-calculator";
 
 interface DeliveryRouteSidebarProps {
   onOrderRemoved?: () => void;
