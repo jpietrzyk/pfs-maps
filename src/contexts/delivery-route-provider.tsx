@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { DeliveryContext } from "./delivery-context";
-import { DeliveriesApi } from "@/services/deliveriesApi";
+import { DeliveryRouteContext } from "./delivery-route-context";
+import { DeliveryRoutesApi } from "@/services/deliveryRoutesApi";
 import { OrdersApi } from "@/services/ordersApi";
-import type { DeliveryRoute } from "@/types/delivery";
+import type { DeliveryRoute } from "@/types/delivery-route";
 import type { Order } from "@/types/order";
 import {
   addOptimisticDeliveryUpdate,
@@ -15,7 +15,7 @@ import {
   applyPendingDeliveryUpdates,
 } from "@/lib/local-storage-utils";
 
-export default function DeliveryProvider({
+export default function DeliveryRouteProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -36,7 +36,7 @@ export default function DeliveryProvider({
         (order) => !order.deliveryId
       );
       console.log(
-        "[DeliveryProvider] Unassigned orders:",
+        "[DeliveryRouteProvider] Unassigned orders:",
         unassigned.length,
         unassigned.map((o) => o.id)
       );
@@ -49,7 +49,7 @@ export default function DeliveryProvider({
   // Fetch all deliveries
   const refreshDeliveries = useCallback(async () => {
     try {
-      const fetchedDeliveries = await DeliveriesApi.getDeliveries();
+      const fetchedDeliveries = await DeliveryRoutesApi.getDeliveries();
       const allOrders = await OrdersApi.getOrders();
 
       // Apply pending optimistic updates to each delivery
@@ -77,7 +77,7 @@ export default function DeliveryProvider({
   useEffect(() => {
     if (deliveries.length > 0 && !currentDelivery) {
       console.log(
-        "[DeliveryProvider] POC: Auto-selecting first delivery as current:",
+        "[DeliveryRouteProvider] POC: Auto-selecting first delivery as current:",
         deliveries[0].id
       );
       setCurrentDelivery(deliveries[0]);
@@ -88,7 +88,7 @@ export default function DeliveryProvider({
   const createDelivery = useCallback(
     async (delivery: Omit<DeliveryRoute, "id" | "createdAt" | "updatedAt">) => {
       try {
-        const newDelivery = await DeliveriesApi.createDelivery(delivery);
+        const newDelivery = await DeliveryRoutesApi.createDelivery(delivery);
         setDeliveries((prev) => [...prev, newDelivery]);
         setCurrentDelivery(newDelivery);
       } catch (error) {
@@ -102,7 +102,10 @@ export default function DeliveryProvider({
   const updateDelivery = useCallback(
     async (id: string, updates: Partial<DeliveryRoute>) => {
       try {
-        const updatedDelivery = await DeliveriesApi.updateDelivery(id, updates);
+        const updatedDelivery = await DeliveryRoutesApi.updateDelivery(
+          id,
+          updates
+        );
         if (updatedDelivery) {
           setDeliveries((prev) =>
             prev.map((d) => (d.id === id ? updatedDelivery : d))
@@ -122,7 +125,7 @@ export default function DeliveryProvider({
   const deleteDelivery = useCallback(
     async (id: string) => {
       try {
-        const success = await DeliveriesApi.deleteDelivery(id);
+        const success = await DeliveryRoutesApi.deleteDelivery(id);
         if (success) {
           setDeliveries((prev) => prev.filter((d) => d.id !== id));
           if (currentDelivery?.id === id) {
@@ -230,7 +233,7 @@ export default function DeliveryProvider({
           await OrdersApi.updateOrder(orderId, { deliveryId });
 
           // Then add it to the delivery
-          const updatedDelivery = await DeliveriesApi.addOrderToDelivery(
+          const updatedDelivery = await DeliveryRoutesApi.addOrderToDelivery(
             deliveryId,
             orderId,
             atIndex
@@ -328,10 +331,11 @@ export default function DeliveryProvider({
           await OrdersApi.updateOrder(orderId, { deliveryId: undefined });
 
           // Then remove from delivery
-          const updatedDelivery = await DeliveriesApi.removeOrderFromDelivery(
-            deliveryId,
-            orderId
-          );
+          const updatedDelivery =
+            await DeliveryRoutesApi.removeOrderFromDelivery(
+              deliveryId,
+              orderId
+            );
 
           if (updatedDelivery) {
             // Mark updates as completed
@@ -357,7 +361,7 @@ export default function DeliveryProvider({
   const reorderDeliveryOrders = useCallback(
     async (deliveryId: string, fromIndex: number, toIndex: number) => {
       try {
-        const updatedDelivery = await DeliveriesApi.reorderDeliveryOrders(
+        const updatedDelivery = await DeliveryRoutesApi.reorderDeliveryOrders(
           deliveryId,
           fromIndex,
           toIndex
@@ -394,8 +398,8 @@ export default function DeliveryProvider({
   };
 
   return (
-    <DeliveryContext.Provider value={value}>
+    <DeliveryRouteContext.Provider value={value}>
       {children}
-    </DeliveryContext.Provider>
+    </DeliveryRouteContext.Provider>
   );
 }

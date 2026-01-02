@@ -1,6 +1,6 @@
 // import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import DeliveryMapPage from "@/pages/DeliveryMapPage";
+import DeliveryMapPage from "@/pages/DeliveryRouteMapPage";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 import { OrdersApi } from "@/services/ordersApi";

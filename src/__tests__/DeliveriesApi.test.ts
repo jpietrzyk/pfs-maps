@@ -1,11 +1,11 @@
 /**
- * Tests for DeliveriesApi service
+ * Tests for DeliveryRoutesApi service
  */
-import { DeliveriesApi } from '@/services/deliveriesApi';
-import type { DeliveryRoute, DeliveryRouteWaypoint } from '@/types/delivery';
+import { DeliveryRoutesApi } from '@/services/deliveryRoutesApi';
+import type { DeliveryRoute, DeliveryRouteWaypoint } from '@/types/delivery-route';
 import type { Order } from '@/types/order';
 
-describe('DeliveriesApi', () => {
+describe('DeliveryRoutesApi', () => {
   const mockOrdersData: Order[] = [
     {
       id: 'ORD-001',
@@ -39,19 +39,19 @@ describe('DeliveriesApi', () => {
 
   beforeEach(() => {
     // Reset the API cache before each test
-    DeliveriesApi.resetCache();
+    DeliveryRoutesApi.resetCache();
   });
 
   describe('getDeliveries', () => {
     it('should return an array of deliveries', async () => {
-      const deliveries = await DeliveriesApi.getDeliveries();
+      const deliveries = await DeliveryRoutesApi.getDeliveries();
 
       expect(Array.isArray(deliveries)).toBe(true);
       expect(deliveries.length).toBeGreaterThanOrEqual(0);
     });
 
     it('should return deliveries as an array', async () => {
-      const deliveries = await DeliveriesApi.getDeliveries();
+      const deliveries = await DeliveryRoutesApi.getDeliveries();
 
       expect(Array.isArray(deliveries)).toBe(true);
       if (deliveries.length > 0) {
@@ -64,16 +64,16 @@ describe('DeliveriesApi', () => {
 
   describe('getDelivery', () => {
     it('should return null for non-existent delivery', async () => {
-      const delivery = await DeliveriesApi.getDelivery('NON-EXISTENT');
+      const delivery = await DeliveryRoutesApi.getDelivery('NON-EXISTENT');
 
       expect(delivery).toBeNull();
     });
 
     it('should return a copy of the delivery', async () => {
-      const deliveries = await DeliveriesApi.getDeliveries();
+      const deliveries = await DeliveryRoutesApi.getDeliveries();
       if (deliveries.length > 0) {
-        const delivery1 = await DeliveriesApi.getDelivery(deliveries[0].id);
-        const delivery2 = await DeliveriesApi.getDelivery(deliveries[0].id);
+        const delivery1 = await DeliveryRoutesApi.getDelivery(deliveries[0].id);
+        const delivery2 = await DeliveryRoutesApi.getDelivery(deliveries[0].id);
 
         if (delivery1 && delivery2) {
           delivery1.name = 'Modified';
@@ -85,7 +85,7 @@ describe('DeliveriesApi', () => {
 
   describe('getDeliveryWithOrders', () => {
     it('should return delivery with populated order data', async () => {
-      const delivery = await DeliveriesApi.getDeliveryWithOrders('NON-EXISTENT', mockOrdersData);
+      const delivery = await DeliveryRoutesApi.getDeliveryWithOrders('NON-EXISTENT', mockOrdersData);
 
       expect(delivery).toBeNull();
     });
@@ -109,8 +109,8 @@ describe('DeliveriesApi', () => {
         notes: 'Test'
       };
 
-      const created = await DeliveriesApi.createDelivery(testDelivery);
-      const populated = await DeliveriesApi.getDeliveryWithOrders(created.id, mockOrdersData);
+      const created = await DeliveryRoutesApi.createDelivery(testDelivery);
+      const populated = await DeliveryRoutesApi.getDeliveryWithOrders(created.id, mockOrdersData);
 
       if (populated) {
         expect(populated.orders).toHaveLength(2);
@@ -129,7 +129,7 @@ describe('DeliveriesApi', () => {
         notes: 'Test delivery'
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
 
       expect(created.id).toBeDefined();
       expect(created.name).toBe('New Delivery');
@@ -146,7 +146,7 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
       const afterCreation = new Date();
 
       expect(created.createdAt.getTime()).toBeGreaterThanOrEqual(beforeCreation.getTime());
@@ -174,7 +174,7 @@ describe('DeliveriesApi', () => {
         orders: waypoints
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
 
       expect(created.orders).toHaveLength(2);
       expect(created.orders[0].orderId).toBe('ORD-001');
@@ -190,8 +190,8 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDelivery(created.id, {
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDelivery(created.id, {
         name: 'Updated Name',
         status: 'in-progress'
       });
@@ -208,19 +208,19 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
       const originalUpdatedAt = created.updatedAt;
 
       // Wait a bit to ensure timestamp difference
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      const updated = await DeliveriesApi.updateDelivery(created.id, { name: 'Updated' });
+      const updated = await DeliveryRoutesApi.updateDelivery(created.id, { name: 'Updated' });
 
       expect(updated?.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime());
     });
 
     it('should return null if delivery is not found', async () => {
-      const updated = await DeliveriesApi.updateDelivery('NON-EXISTENT', {
+      const updated = await DeliveryRoutesApi.updateDelivery('NON-EXISTENT', {
         name: 'Updated'
       });
 
@@ -234,12 +234,12 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
       const originalCreatedAt = created.createdAt;
 
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      const updated = await DeliveriesApi.updateDelivery(created.id, { name: 'Updated' });
+      const updated = await DeliveryRoutesApi.updateDelivery(created.id, { name: 'Updated' });
 
       expect(updated?.createdAt.getTime()).toEqual(originalCreatedAt.getTime());
     });
@@ -253,17 +253,17 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const deleted = await DeliveriesApi.deleteDelivery(created.id);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const deleted = await DeliveryRoutesApi.deleteDelivery(created.id);
 
       expect(deleted).toBe(true);
 
-      const retrieved = await DeliveriesApi.getDelivery(created.id);
+      const retrieved = await DeliveryRoutesApi.getDelivery(created.id);
       expect(retrieved).toBeNull();
     });
 
     it('should return false if delivery is not found', async () => {
-      const deleted = await DeliveriesApi.deleteDelivery('NON-EXISTENT');
+      const deleted = await DeliveryRoutesApi.deleteDelivery('NON-EXISTENT');
 
       expect(deleted).toBe(false);
     });
@@ -277,8 +277,8 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.addOrderToDelivery(created.id, 'ORD-001');
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.addOrderToDelivery(created.id, 'ORD-001');
 
       expect(updated?.orders).toHaveLength(1);
       expect(updated?.orders[0].orderId).toBe('ORD-001');
@@ -295,8 +295,8 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.addOrderToDelivery(created.id, 'ORD-003', 1);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.addOrderToDelivery(created.id, 'ORD-003', 1);
 
       expect(updated?.orders).toHaveLength(3);
       expect(updated?.orders[1].orderId).toBe('ORD-003');
@@ -306,7 +306,7 @@ describe('DeliveriesApi', () => {
     });
 
     it('should return null if delivery is not found', async () => {
-      const result = await DeliveriesApi.addOrderToDelivery('NON-EXISTENT', 'ORD-001');
+      const result = await DeliveryRoutesApi.addOrderToDelivery('NON-EXISTENT', 'ORD-001');
 
       expect(result).toBeNull();
     });
@@ -323,8 +323,8 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.removeOrderFromDelivery(created.id, 'ORD-001');
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.removeOrderFromDelivery(created.id, 'ORD-001');
 
       expect(updated?.orders).toHaveLength(1);
       expect(updated?.orders[0].orderId).toBe('ORD-002');
@@ -342,14 +342,14 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.removeOrderFromDelivery(created.id, 'ORD-002');
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.removeOrderFromDelivery(created.id, 'ORD-002');
 
       expect(updated?.orders[1].sequence).toBe(1); // ORD-003 now at index 1
     });
 
     it('should return null if delivery is not found', async () => {
-      const result = await DeliveriesApi.removeOrderFromDelivery('NON-EXISTENT', 'ORD-001');
+      const result = await DeliveryRoutesApi.removeOrderFromDelivery('NON-EXISTENT', 'ORD-001');
 
       expect(result).toBeNull();
     });
@@ -367,8 +367,8 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.reorderDeliveryOrders(created.id, 0, 2);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.reorderDeliveryOrders(created.id, 0, 2);
 
       expect(updated?.orders[0].orderId).toBe('ORD-002');
       expect(updated?.orders[1].orderId).toBe('ORD-003');
@@ -386,8 +386,8 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.reorderDeliveryOrders(created.id, 2, 0);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.reorderDeliveryOrders(created.id, 2, 0);
 
       expect(updated?.orders[0].sequence).toBe(0);
       expect(updated?.orders[1].sequence).toBe(1);
@@ -395,7 +395,7 @@ describe('DeliveriesApi', () => {
     });
 
     it('should return null if delivery is not found', async () => {
-      const result = await DeliveriesApi.reorderDeliveryOrders('NON-EXISTENT', 0, 1);
+      const result = await DeliveryRoutesApi.reorderDeliveryOrders('NON-EXISTENT', 0, 1);
 
       expect(result).toBeNull();
     });
@@ -411,8 +411,8 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDeliveryOrderStatus(created.id, 'ORD-001', 'in-transit');
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDeliveryOrderStatus(created.id, 'ORD-001', 'in-transit');
 
       expect(updated?.orders[0].status).toBe('in-transit');
     });
@@ -426,9 +426,9 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
       const beforeUpdate = new Date();
-      const updated = await DeliveriesApi.updateDeliveryOrderStatus(created.id, 'ORD-001', 'delivered');
+      const updated = await DeliveryRoutesApi.updateDeliveryOrderStatus(created.id, 'ORD-001', 'delivered');
       const afterUpdate = new Date();
 
       expect(updated?.orders[0].status).toBe('delivered');
@@ -449,8 +449,8 @@ describe('DeliveriesApi', () => {
       };
 
       const testDate = new Date('2026-01-01T10:00:00');
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDeliveryOrderStatus(created.id, 'ORD-001', 'delivered', testDate);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDeliveryOrderStatus(created.id, 'ORD-001', 'delivered', testDate);
 
       expect(updated?.orders[0].deliveredAt).toEqual(testDate);
     });
@@ -464,8 +464,8 @@ describe('DeliveriesApi', () => {
         ]
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDeliveryOrderStatus(
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDeliveryOrderStatus(
         created.id,
         'ORD-001',
         'delivered',
@@ -477,7 +477,7 @@ describe('DeliveriesApi', () => {
     });
 
     it('should return null if delivery is not found', async () => {
-      const result = await DeliveriesApi.updateDeliveryOrderStatus('NON-EXISTENT', 'ORD-001', 'delivered');
+      const result = await DeliveryRoutesApi.updateDeliveryOrderStatus('NON-EXISTENT', 'ORD-001', 'delivered');
 
       expect(result).toBeNull();
     });
@@ -491,8 +491,8 @@ describe('DeliveriesApi', () => {
         orders: []
       };
 
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDeliveryStatus(created.id, 'in-progress');
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDeliveryStatus(created.id, 'in-progress');
 
       expect(updated?.status).toBe('in-progress');
     });
@@ -505,8 +505,8 @@ describe('DeliveriesApi', () => {
       };
 
       const startDate = new Date('2026-01-01T10:00:00');
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDeliveryStatus(created.id, 'in-progress', startDate);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDeliveryStatus(created.id, 'in-progress', startDate);
 
       expect(updated?.startedAt).toEqual(startDate);
     });
@@ -519,14 +519,14 @@ describe('DeliveriesApi', () => {
       };
 
       const completeDate = new Date('2026-01-01T15:00:00');
-      const created = await DeliveriesApi.createDelivery(newDelivery);
-      const updated = await DeliveriesApi.updateDeliveryStatus(created.id, 'completed', undefined, completeDate);
+      const created = await DeliveryRoutesApi.createDelivery(newDelivery);
+      const updated = await DeliveryRoutesApi.updateDeliveryStatus(created.id, 'completed', undefined, completeDate);
 
       expect(updated?.completedAt).toEqual(completeDate);
     });
 
     it('should return null if delivery is not found', async () => {
-      const result = await DeliveriesApi.updateDeliveryStatus('NON-EXISTENT', 'completed');
+      const result = await DeliveryRoutesApi.updateDeliveryStatus('NON-EXISTENT', 'completed');
 
       expect(result).toBeNull();
     });

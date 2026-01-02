@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 import { Link } from "react-router-dom";
-import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
+import { DeliveryOrderList } from "@/components/delivery-route/delivery-order-list";
 
 export default function DeliveriesListPage() {
   const [deliveries, setDeliveries] = useState<

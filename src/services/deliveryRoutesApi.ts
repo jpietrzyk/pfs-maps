@@ -1,9 +1,9 @@
-import type { DeliveryRoute, DeliveryRouteWaypoint } from '@/types/delivery';
-import { sampleDeliveries } from '@/types/delivery';
+import type { DeliveryRoute, DeliveryRouteWaypoint } from '@/types/delivery-route';
+import { sampleDeliveries } from '@/types/delivery-route';
 import type { Order } from '@/types/order';
 
 /**
- * DeliveriesApi - Manages delivery planning and order assignment
+ * DeliveryRoutesApi - Manages delivery planning and order assignment
  *
  * WORKFLOW:
  * 1. Orders start in the "pool" (order.deliveryId = null, waiting for delivery)
@@ -15,7 +15,7 @@ import type { Order } from '@/types/order';
  * NOTE: In a real implementation, this would coordinate with OrdersApi
  * to update order.deliveryId. For now, we mock this behavior.
  */
-class DeliveriesApiClass {
+class DeliveryRoutesApiClass {
   private deliveries: DeliveryRoute[] = [];
   private loaded = false;
 
@@ -295,4 +295,4 @@ class DeliveriesApiClass {
   }
 }
 
-export const DeliveriesApi = new DeliveriesApiClass();
+export const DeliveryRoutesApi = new DeliveryRoutesApiClass();

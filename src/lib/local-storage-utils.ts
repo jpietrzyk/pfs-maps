@@ -1,5 +1,5 @@
 import type { Order } from '@/types/order';
-import type { DeliveryRoute } from '@/types/delivery';
+import type { DeliveryRoute } from '@/types/delivery-route';
 
 // Local storage keys
 const LOCAL_STORAGE_KEYS = {

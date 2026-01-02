@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import type { DeliveryRoute } from "@/types/delivery";
+import type { DeliveryRoute } from "@/types/delivery-route";
 import type { Order } from "@/types/order";
 
-export interface DeliveryContextType {
+export interface DeliveryRouteContextType {
   deliveries: DeliveryRoute[];
   currentDelivery: DeliveryRoute | null;
   deliveryOrders: Order[];
@@ -36,6 +36,6 @@ export interface DeliveryContextType {
   refreshUnassignedOrders: () => Promise<void>;
 }
 
-export const DeliveryContext = createContext<DeliveryContextType | undefined>(
-  undefined
-);
+export const DeliveryRouteContext = createContext<
+  DeliveryRouteContextType | undefined
+>(undefined);
