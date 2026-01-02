@@ -1,4 +1,4 @@
-import type { DeliveryRouteWaypoint } from '@/types/delivery';
+import type { DeliveryRouteWaypoint } from '@/types/delivery-route';
 
 // Mock delay to simulate network request
 const mockDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

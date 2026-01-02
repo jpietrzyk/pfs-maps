@@ -14,7 +14,7 @@ import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { usePolylineHighlight } from "@/hooks/use-polyline-highlight";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
-import { useDelivery } from "@/hooks/use-delivery";
+import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import type { Order } from "@/types/order";
 import { OrdersApi } from "@/services/ordersApi";
 
@@ -240,7 +240,7 @@ const LeafletMap = ({
   const { highlightedSegmentId, setHighlightedSegmentId } =
     useSegmentHighlight();
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
-    useDelivery();
+    useDeliveryRoute();
 
   // Debug logging for order highlighting
   console.log("LeafletMap: highlightedOrderId:", highlightedOrderId);

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DeliveriesListPage from "@/pages/DeliveriesListPage";
-import DeliveryMapPage from "@/pages/DeliveryMapPage";
+import DeliveryMapPage from "@/pages/DeliveryRouteMapPage";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
 function App() {

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { UnassignedOrderList } from "@/components/delivery/unassigned-order-list";
+import { UnassignedOrderList } from "@/components/delivery-route/unassigned-order-list";
 import type { Order as BaseOrder } from "@/types/order";
 
 // Extend Order type locally to allow product to be undefined for testing

@@ -1,10 +1,10 @@
 import MapView from "@/components/maps/abstraction/map-view";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import DeliverySidebar from "@/components/delivery-sidebar";
+import DeliverySidebar from "@/components/delivery-route-sidebar";
 import OrdersCountDisplay from "@/components/ui/orders-count-display";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useDelivery } from "@/hooks/use-delivery";
+import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import type { Order } from "@/types/order";
 
 export default function DeliveryMapPage() {
@@ -18,7 +18,7 @@ export default function DeliveryMapPage() {
     setCurrentDelivery,
     refreshUnassignedOrders,
     refreshDeliveryOrders,
-  } = useDelivery();
+  } = useDeliveryRoute();
 
   // Local state to track reordered orders for the map
   const [displayedOrders, setDisplayedOrders] =

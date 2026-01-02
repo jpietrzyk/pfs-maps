@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import { useOrderHighlight } from "@/hooks/use-order-highlight";
-import { useDelivery } from "@/hooks/use-delivery";
+import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteManager } from "@/hooks/use-route-manager";
 import { useEffect, useState } from "react";
 import { Package, Clock, Route } from "lucide-react";
@@ -17,15 +17,15 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { Order } from "@/types/order";
-import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
-import { UnassignedOrderList } from "@/components/delivery/unassigned-order-list";
+import { DeliveryOrderList } from "@/components/delivery-route/delivery-order-list";
+import { UnassignedOrderList } from "@/components/delivery-route/unassigned-order-list";
 import { resetLocalStorageAndFetchData } from "@/lib/local-storage-utils";
 import {
   calculateTotalEstimatedTime,
   calculateTotalDistance,
   formatDuration,
   formatDistance,
-} from "@/lib/delivery-time-calculator";
+} from "@/lib/delivery-route-time-calculator";
 
 interface DeliverySidebarProps {
   onOrderRemoved?: () => void;
@@ -45,7 +45,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, setCurrentOrderId, setPreviousOrderId } =
     useOrderHighlight();
-  const { currentDelivery, removeOrderFromDelivery } = useDelivery();
+  const { currentDelivery, removeOrderFromDelivery } = useDeliveryRoute();
   const routeManagerContext = useRouteManager();
   const routeManager = routeManagerContext?.routeManager ?? null;
 
@@ -158,7 +158,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
       });
     } else if (orderToAdd && !currentDelivery) {
       console.log(
-        "currentDelivery not available yet, will rely on DeliveryProvider update"
+        "currentDelivery not available yet, will rely on DeliveryRouteProvider update"
       );
     }
 

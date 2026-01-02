@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import DeliverySidebar from "@/components/delivery-sidebar";
+import DeliverySidebar from "@/components/delivery-route-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
-import { DeliveriesApi } from "@/services/deliveriesApi";
+import { DeliveryRoutesApi } from "@/services/deliveryRoutesApi";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 
 // Mock the OrdersApi
 jest.mock("@/services/ordersApi");
-// Mock the DeliveriesApi
-jest.mock("@/services/deliveriesApi");
+// Mock the DeliveryRoutesApi
+jest.mock("@/services/deliveryRoutesApi");
 
 const mockOrders: Order[] = [
   {
@@ -79,7 +79,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
 
     // Mock getDeliveries to return a delivery with one assigned order initially
     getDeliveriesMock = (
-      DeliveriesApi.getDeliveries as jest.Mock
+      DeliveryRoutesApi.getDeliveries as jest.Mock
     ).mockResolvedValue([
       {
         id: "delivery-1",
@@ -92,7 +92,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
     ]);
 
     // Mock addOrderToDelivery to return updated delivery
-    (DeliveriesApi.addOrderToDelivery as jest.Mock).mockImplementation(
+    (DeliveryRoutesApi.addOrderToDelivery as jest.Mock).mockImplementation(
       (_deliveryId, orderId) => {
         // Update the mock to return delivery with 2 orders
         getDeliveriesMock.mockResolvedValue([
@@ -156,7 +156,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
             deliveryId: "delivery-1",
           });
           // Force refresh of deliveries by calling getDeliveries again
-          await DeliveriesApi.getDeliveries();
+          await DeliveryRoutesApi.getDeliveries();
           return;
         }}
       />

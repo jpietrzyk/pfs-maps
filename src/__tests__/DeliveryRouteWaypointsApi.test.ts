@@ -2,7 +2,7 @@
  * Tests for DeliveryRouteWaypointsApi service
  */
 import { DeliveryRouteWaypointsApi } from '@/services/deliveryRouteWaypointsApi';
-import type { DeliveryRouteWaypoint } from '@/types/delivery';
+import type { DeliveryRouteWaypoint } from '@/types/delivery-route';
 
 // Mock fetch globally
 (globalThis as typeof globalThis).fetch = jest.fn();
