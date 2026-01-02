@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import type { Order } from "@/types/order";
-import { DeliveryOrderItem } from "@/components/delivery/delivery-order-item";
+import { DeliveryRouteOrderItem } from "@/components/delivery/delivery-route-order-item";
 import { DeliveryRouteSegment } from "@/components/delivery/delivery-route-segment";
 import { getDistanceKm, getDriveMinutes } from "@/lib/delivery-time-utils";
 import {
@@ -20,7 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { RouteManager } from "@/services/RouteManager";
 
-interface DeliveryOrderListProps {
+interface DeliveryRouteOrderListProps {
   orders: Order[];
   highlightedOrderId?: string | null;
   setHighlightedOrderId?: (id: string | null) => void;
@@ -30,7 +30,7 @@ interface DeliveryOrderListProps {
   routeManager?: RouteManager;
 }
 
-export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
+export const DeliveryRouteOrderList: React.FC<DeliveryRouteOrderListProps> = ({
   orders,
   highlightedOrderId,
   setHighlightedOrderId,
@@ -108,7 +108,7 @@ export const DeliveryOrderList: React.FC<DeliveryOrderListProps> = ({
             <ul className="space-y-2">
               {orders
                 .flatMap((order, idx) => [
-                  <DeliveryOrderItem
+                  <DeliveryRouteOrderItem
                     key={order.id}
                     id={order.id}
                     order={order}

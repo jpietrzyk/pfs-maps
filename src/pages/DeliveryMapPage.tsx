@@ -1,6 +1,6 @@
 import MapView from "@/components/maps/abstraction/map-view";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import DeliverySidebar from "@/components/delivery-sidebar";
+import DeliveryRouteSidebar from "@/components/delivery-route-sidebar";
 import OrdersCountDisplay from "@/components/ui/orders-count-display";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -74,7 +74,7 @@ export default function DeliveryMapPage() {
           </div>
         </div>
         <div className="pointer-events-auto">
-          <DeliverySidebar
+          <DeliveryRouteSidebar
             onOrderRemoved={handleOrderRemoved}
             onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
             deliveryOrders={deliveryOrders}

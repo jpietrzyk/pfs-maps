@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { Order } from "@/types/order";
-import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
+import { DeliveryRouteOrderList } from "@/components/delivery/delivery-route-order-list";
 import { UnassignedOrderList } from "@/components/delivery/unassigned-order-list";
 import { resetLocalStorageAndFetchData } from "@/lib/local-storage-utils";
 import {
@@ -26,7 +26,7 @@ import {
   formatDistance,
 } from "@/lib/delivery-time-calculator";
 
-interface DeliverySidebarProps {
+interface DeliveryRouteSidebarProps {
   onOrderRemoved?: () => void;
   onDeliveryOrdersUpdated?: (updatedOrders: Order[]) => void;
   deliveryOrders?: Order[];
@@ -34,7 +34,7 @@ interface DeliverySidebarProps {
   onAddOrderToDelivery?: (orderId: string) => void;
 }
 
-const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
+const DeliveryRouteSidebar: React.FC<DeliveryRouteSidebarProps> = ({
   onOrderRemoved,
   onDeliveryOrdersUpdated,
   deliveryOrders: deliveryOrdersProp = [],
@@ -81,7 +81,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
     }
   }, [unassignedOrders.length, isUnassignedCollapsed]);
 
-  console.log("DeliverySidebar: currentDelivery", currentDelivery);
+  console.log("DeliveryRouteSidebar: currentDelivery", currentDelivery);
 
   // Sync internal state when props change
   useEffect(() => {
@@ -91,7 +91,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   // Recalculate time and distance when delivery orders sequence changes
   useEffect(() => {
     console.log(
-      "DeliverySidebar: Recalculating time and distance for reordered sequence"
+      "DeliveryRouteSidebar: Recalculating time and distance for reordered sequence"
     );
     if (deliveryOrders.length === 0) {
       setTotalEstimatedTime(0);
@@ -104,8 +104,12 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
     setTotalEstimatedTime(totalTime);
     setTotalDistance(distance);
 
-    console.log("DeliverySidebar: Recalculated time:", totalTime, "minutes");
-    console.log("DeliverySidebar: Recalculated distance:", distance, "km");
+    console.log(
+      "DeliveryRouteSidebar: Recalculated time:",
+      totalTime,
+      "minutes"
+    );
+    console.log("DeliveryRouteSidebar: Recalculated distance:", distance, "km");
   }, [deliveryOrders]);
 
   const handleRemoveOrder = async (orderId: string) => {
@@ -338,7 +342,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             <div className="flex-1 p-2 overflow-y-auto overflow-x-hidden">
               <div className="max-w-full">
                 <div className="max-w-full overflow-hidden">
-                  <DeliveryOrderList
+                  <DeliveryRouteOrderList
                     orders={deliveryOrders}
                     highlightedOrderId={highlightedOrderId}
                     setHighlightedOrderId={setHighlightedOrderId}
@@ -478,4 +482,4 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   );
 };
 
-export default DeliverySidebar;
+export default DeliveryRouteSidebar;

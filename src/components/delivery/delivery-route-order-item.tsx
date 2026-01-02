@@ -12,23 +12,27 @@ import {
 import { createExpandedTooltipContent } from "./order-tooltip-utils";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 
-interface DeliveryOrderItemProps {
+interface DeliveryRouteOrderItemProps {
   order: Order;
   isHighlighted?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onRemove?: (orderId: string) => void;
   id: string;
+  arrivalTime?: Date;
+  departureTime?: Date;
 }
 
-export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
-  function DeliveryOrderItem({
+export const DeliveryRouteOrderItem = memo<DeliveryRouteOrderItemProps>(
+  function DeliveryRouteOrderItem({
     order,
     isHighlighted = false,
     onMouseEnter,
     onMouseLeave,
     onRemove,
     id,
+    arrivalTime,
+    departureTime,
   }) {
     const {
       attributes,

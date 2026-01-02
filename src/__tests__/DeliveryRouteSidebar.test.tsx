@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import DeliverySidebar from "@/components/delivery-sidebar";
+import DeliveryRouteSidebar from "@/components/delivery-route-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 import { DeliveriesApi } from "@/services/deliveriesApi";
@@ -40,7 +40,7 @@ const mockOrders: Order[] = [
   },
 ];
 
-describe("DeliverySidebar - Assigned Count Update", () => {
+describe("DeliveryRouteSidebar - Assigned Count Update", () => {
   let getDeliveriesMock: jest.Mock;
   let getOrdersMock: jest.Mock;
 
@@ -60,7 +60,7 @@ describe("DeliverySidebar - Assigned Count Update", () => {
     return (
       <SidebarProvider>
         <DeliveryRouteManagerProvider>
-          <DeliverySidebar
+          <DeliveryRouteSidebar
             deliveryOrders={deliveryOrders}
             unassignedOrders={unassignedOrders}
             onDeliveryOrdersUpdated={setDeliveryOrders}

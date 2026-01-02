@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { DeliveryOrderItem } from "@/components/delivery/delivery-order-item";
+import { DeliveryRouteOrderItem } from "@/components/delivery/delivery-route-order-item";
 import type { Order } from "@/types/order";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
-describe("DeliveryOrderItem", () => {
+describe("DeliveryRouteOrderItem", () => {
   const createMockOrder = (
     id: string = "order-1",
     complexity: 1 | 2 | 3 = 1,
@@ -31,7 +31,7 @@ describe("DeliveryOrderItem", () => {
   it("should render basic order information", () => {
     const order = createMockOrder();
 
-    render(<DeliveryOrderItem id={order.id} order={order} />, {
+    render(<DeliveryRouteOrderItem id={order.id} order={order} />, {
       wrapper: Wrapper,
     });
 
@@ -50,7 +50,7 @@ describe("DeliveryOrderItem", () => {
     const order1 = createMockOrder("order-1", 1);
 
     const { rerender } = render(
-      <DeliveryOrderItem id={order1.id} order={order1} />,
+      <DeliveryRouteOrderItem id={order1.id} order={order1} />,
       { wrapper: Wrapper }
     );
 
@@ -59,19 +59,19 @@ describe("DeliveryOrderItem", () => {
 
     // Test complexity level 2 (60 minutes)
     const order2 = createMockOrder("order-2", 2);
-    rerender(<DeliveryOrderItem id={order2.id} order={order2} />);
+    rerender(<DeliveryRouteOrderItem id={order2.id} order={order2} />);
     expect(screen.queryByText("60 minutes")).not.toBeInTheDocument();
 
     // Test complexity level 3 (90 minutes)
     const order3 = createMockOrder("order-3", 3);
-    rerender(<DeliveryOrderItem id={order3.id} order={order3} />);
+    rerender(<DeliveryRouteOrderItem id={order3.id} order={order3} />);
     expect(screen.queryByText("90 minutes")).not.toBeInTheDocument();
   });
 
   it("should not show location icon or times in compact view", () => {
     const order = createMockOrder();
 
-    render(<DeliveryOrderItem id={order.id} order={order} />, {
+    render(<DeliveryRouteOrderItem id={order.id} order={order} />, {
       wrapper: Wrapper,
     });
 
@@ -84,7 +84,7 @@ describe("DeliveryOrderItem", () => {
     const order = createMockOrder();
 
     const { container } = render(
-      <DeliveryOrderItem id={order.id} order={order} isHighlighted={true} />,
+      <DeliveryRouteOrderItem id={order.id} order={order} isHighlighted={true} />,
       { wrapper: Wrapper }
     );
 
@@ -99,7 +99,7 @@ describe("DeliveryOrderItem", () => {
     const mockMouseLeave = jest.fn();
 
     const { container } = render(
-      <DeliveryOrderItem
+      <DeliveryRouteOrderItem
         id={order.id}
         order={order}
         onMouseEnter={mockMouseEnter}
@@ -123,7 +123,7 @@ describe("DeliveryOrderItem", () => {
     const mockRemove = jest.fn();
 
     render(
-      <DeliveryOrderItem id={order.id} order={order} onRemove={mockRemove} />,
+      <DeliveryRouteOrderItem id={order.id} order={order} onRemove={mockRemove} />,
       { wrapper: Wrapper }
     );
 
@@ -137,7 +137,7 @@ describe("DeliveryOrderItem", () => {
   it("should not show remove button when onRemove is not provided", () => {
     const order = createMockOrder();
 
-    render(<DeliveryOrderItem id={order.id} order={order} />, {
+    render(<DeliveryRouteOrderItem id={order.id} order={order} />, {
       wrapper: Wrapper,
     });
 
@@ -168,7 +168,7 @@ describe("DeliveryOrderItem", () => {
     };
 
     render(
-      <DeliveryOrderItem
+      <DeliveryRouteOrderItem
         id={orderWithoutProductName.id}
         order={orderWithoutProductName}
       />,
@@ -195,7 +195,7 @@ describe("DeliveryOrderItem", () => {
     };
 
     const { rerender } = render(
-      <DeliveryOrderItem id={order.id} order={order} />,
+      <DeliveryRouteOrderItem id={order.id} order={order} />,
       { wrapper: Wrapper }
     );
 
@@ -205,14 +205,14 @@ describe("DeliveryOrderItem", () => {
     // Test in-progress status
     const orderInProgress = { ...order, status: "in-progress" as const };
     rerender(
-      <DeliveryOrderItem id={orderInProgress.id} order={orderInProgress} />
+      <DeliveryRouteOrderItem id={orderInProgress.id} order={orderInProgress} />
     );
     expect(screen.queryByText("in-progress")).not.toBeInTheDocument();
 
     // Test completed status
     const orderCompleted = { ...order, status: "completed" as const };
     rerender(
-      <DeliveryOrderItem id={orderCompleted.id} order={orderCompleted} />
+      <DeliveryRouteOrderItem id={orderCompleted.id} order={orderCompleted} />
     );
     expect(screen.queryByText("completed")).not.toBeInTheDocument();
   });

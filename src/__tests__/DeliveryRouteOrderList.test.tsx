@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
+import { DeliveryRouteOrderList } from "@/components/delivery/delivery-route-order-list";
 import type { Order } from "@/types/order";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
-describe("DeliveryOrderList", () => {
+describe("DeliveryRouteOrderList", () => {
   const createMockOrder = (
     id: string = "order-1",
     customer: string = "Test Customer"
@@ -27,7 +27,7 @@ describe("DeliveryOrderList", () => {
   );
 
   it("should render empty state when no orders are provided", () => {
-    render(<DeliveryOrderList orders={[]} />, { wrapper: Wrapper });
+    render(<DeliveryRouteOrderList orders={[]} />, { wrapper: Wrapper });
 
     // Should show "No orders assigned" message
     expect(screen.getByText("No orders assigned")).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe("DeliveryOrderList", () => {
 
   it("should render default title when no title is provided", () => {
     const order = createMockOrder();
-    render(<DeliveryOrderList orders={[order]} />, { wrapper: Wrapper });
+    render(<DeliveryRouteOrderList orders={[order]} />, { wrapper: Wrapper });
 
     // Should show default title "Zamówienia"
     expect(screen.getByText("Zamówienia")).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe("DeliveryOrderList", () => {
 
   it("should render custom title when provided", () => {
     const order = createMockOrder();
-    render(<DeliveryOrderList orders={[order]} title="Custom Title" />, {
+    render(<DeliveryRouteOrderList orders={[order]} title="Custom Title" />, {
       wrapper: Wrapper,
     });
 
@@ -53,7 +53,7 @@ describe("DeliveryOrderList", () => {
 
   it("should render single order correctly", () => {
     const order = createMockOrder("order-1", "Customer 1");
-    render(<DeliveryOrderList orders={[order]} />, { wrapper: Wrapper });
+    render(<DeliveryRouteOrderList orders={[order]} />, { wrapper: Wrapper });
 
     // Should render the order (customer name is in tooltip, not main UI)
     expect(screen.getByText("Test Product")).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("DeliveryOrderList", () => {
     const order1 = createMockOrder("order-1", "Customer 1");
     const order2 = createMockOrder("order-2", "Customer 2");
 
-    render(<DeliveryOrderList orders={[order1, order2]} />, {
+    render(<DeliveryRouteOrderList orders={[order1, order2]} />, {
       wrapper: Wrapper,
     });
 
@@ -78,7 +78,7 @@ describe("DeliveryOrderList", () => {
     const order1 = createMockOrder("order-1", "Customer 1");
     const order2 = createMockOrder("order-2", "Customer 2");
 
-    render(<DeliveryOrderList orders={[order1, order2]} />, {
+    render(<DeliveryRouteOrderList orders={[order1, order2]} />, {
       wrapper: Wrapper,
     });
 
@@ -104,7 +104,7 @@ describe("DeliveryOrderList", () => {
       status: "completed" as const,
     };
 
-    render(<DeliveryOrderList orders={[order1, order2, order3]} />, {
+    render(<DeliveryRouteOrderList orders={[order1, order2, order3]} />, {
       wrapper: Wrapper,
     });
 
@@ -130,7 +130,7 @@ describe("DeliveryOrderList", () => {
       priority: "low" as const,
     };
 
-    render(<DeliveryOrderList orders={[order1, order2, order3]} />, {
+    render(<DeliveryRouteOrderList orders={[order1, order2, order3]} />, {
       wrapper: Wrapper,
     });
 

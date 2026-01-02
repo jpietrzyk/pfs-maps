@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { OrdersApi } from "@/services/ordersApi";
 import type { Order } from "@/types/order";
 import { Link } from "react-router-dom";
-import { DeliveryOrderList } from "@/components/delivery/delivery-order-list";
+import { DeliveryRouteOrderList } from "@/components/delivery/delivery-route-order-list";
 
 export default function DeliveriesListPage() {
   const [deliveries, setDeliveries] = useState<
@@ -172,7 +172,7 @@ export default function DeliveriesListPage() {
                   </div>
                 </div>
                 <div className="p-6">
-                  <DeliveryOrderList
+                  <DeliveryRouteOrderList
                     orders={delivery.orders}
                     title={`Orders (${delivery.orders.length})`}
                   />
