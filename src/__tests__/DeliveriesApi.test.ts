@@ -57,7 +57,8 @@ describe('DeliveryRoutesApi', () => {
       if (deliveries.length > 0) {
         expect(deliveries[0]).toHaveProperty('id');
         expect(deliveries[0]).toHaveProperty('name');
-        expect(deliveries[0]).toHaveProperty('orders');
+        // DeliveryRoute no longer has embedded orders array (waypoint-based now)
+        expect(deliveries[0]).toHaveProperty('status');
       }
     });
   });

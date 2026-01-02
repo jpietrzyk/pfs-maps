@@ -1,41 +1,28 @@
 import type { DeliveryRouteWaypoint } from '@/types/delivery-route';
+import { sampleDeliveryWaypoints } from '@/types/delivery-route';
+import { resequenceWaypoints } from '@/lib/delivery-route-waypoint-helpers';
 
 // Mock delay to simulate network request
 const mockDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Store for in-memory data that can be modified
-let waypointsData: DeliveryRouteWaypoint[] = [];
+// Key: deliveryId, Value: array of waypoints for that delivery
+let waypointsData: Map<string, DeliveryRouteWaypoint[]> = new Map();
 let waypointsLoaded = false;
 
-// Load and convert JSON data to DeliveryRouteWaypoint[]
-async function loadWaypoints(): Promise<void> {
+// Load sample data into the in-memory store
+function loadWaypoints(): void {
   if (waypointsLoaded) return;
 
-  try {
-    const response = await fetch('/delivery-route-waypoints-DEL-001.json');
-    if (!response.ok) {
-      throw new Error('Failed to load waypoints data');
+  // Initialize with sample data
+  for (const waypoint of sampleDeliveryWaypoints) {
+    if (!waypointsData.has(waypoint.deliveryId)) {
+      waypointsData.set(waypoint.deliveryId, []);
     }
-
-    const waypointsJson = await response.json();
-    waypointsData = waypointsJson.map((waypoint: any) => ({
-      orderId: waypoint.orderId,
-      sequence: waypoint.sequence,
-      status: waypoint.status || 'pending' as const,
-      deliveredAt: waypoint.deliveredAt ? new Date(waypoint.deliveredAt) : undefined,
-      notes: waypoint.notes,
-      order: waypoint.order,
-      driveTimeEstimate: waypoint.driveTimeEstimate,
-      driveTimeActual: waypoint.driveTimeActual,
-      arrivalTime: waypoint.arrivalTime ? new Date(waypoint.arrivalTime) : undefined,
-      departureTime: waypoint.departureTime ? new Date(waypoint.departureTime) : undefined
-    }));
-
-    waypointsLoaded = true;
-  } catch (error) {
-    console.error('Failed to load waypoints:', error);
-    throw error;
+    waypointsData.get(waypoint.deliveryId)!.push({ ...waypoint });
   }
+
+  waypointsLoaded = true;
 }
 
 export class DeliveryRouteWaypointsApi {
@@ -44,119 +31,236 @@ export class DeliveryRouteWaypointsApi {
    */
   static resetCache(): void {
     waypointsLoaded = false;
-    waypointsData = [];
+    waypointsData.clear();
   }
 
   /**
-   * Fetch all waypoints for a delivery route
-   * In the future, this will make a real HTTP request to the backend
+   * Get waypoints for a specific delivery
+   *
+   * @param deliveryId - ID of the delivery
+   * @returns Waypoints in sequence order
    */
-  static async getWaypoints(): Promise<DeliveryRouteWaypoint[]> {
-    await loadWaypoints();
-    // Simulate network delay
-    await mockDelay(500);
+  static getWaypointsByDelivery(deliveryId: string): DeliveryRouteWaypoint[] {
+    loadWaypoints();
 
-    // Return a copy of the data to prevent external mutations
-    return waypointsData.map(waypoint => ({ ...waypoint }));
+    const waypoints = waypointsData.get(deliveryId) || [];
+    return waypoints
+      .sort((a, b) => a.sequence - b.sequence)
+      .map(waypoint => ({ ...waypoint }));
   }
 
   /**
-   * Get a specific waypoint by order ID
+   * Get all deliveries containing a specific order
+   *
+   * @param orderId - ID of the order to find
+   * @returns Array of delivery IDs containing this order
    */
-  static async getWaypointByOrderId(orderId: string): Promise<DeliveryRouteWaypoint | null> {
-    await loadWaypoints();
-    await mockDelay(300);
+  static getDeliveriesForOrder(orderId: string): string[] {
+    loadWaypoints();
 
-    const waypoint = waypointsData.find(wp => wp.orderId === orderId);
-    return waypoint ? { ...waypoint } : null;
+    const deliveries: string[] = [];
+    for (const [deliveryId, waypoints] of waypointsData.entries()) {
+      if (waypoints.some(w => w.orderId === orderId)) {
+        deliveries.push(deliveryId);
+      }
+    }
+    return deliveries;
   }
 
   /**
-   * Get waypoints for a specific delivery route
+   * Add a waypoint (order to delivery) at a specific position
+   *
+   * @param deliveryId - ID of the delivery
+   * @param orderId - ID of the order to add
+   * @param atIndex - Optional position to insert (defaults to end)
+   * @returns Created waypoint
    */
-  static async getWaypointsByDeliveryId(): Promise<DeliveryRouteWaypoint[]> {
-    await loadWaypoints();
-    await mockDelay(400);
+  static addWaypoint(
+    deliveryId: string,
+    orderId: string,
+    atIndex?: number
+  ): DeliveryRouteWaypoint {
+    loadWaypoints();
 
-    // Filter waypoints by delivery route ID (if available in data)
-    // For now, return all as the mock data structure may be delivery-specific
-    return waypointsData.map(waypoint => ({ ...waypoint }));
+    if (!waypointsData.has(deliveryId)) {
+      waypointsData.set(deliveryId, []);
+    }
+
+    const deliveryWaypoints = waypointsData.get(deliveryId)!;
+
+    // Check if order already exists in this delivery
+    if (deliveryWaypoints.some(w => w.orderId === orderId)) {
+      throw new Error(`Order ${orderId} already exists in delivery ${deliveryId}`);
+    }
+
+    const newWaypoint: DeliveryRouteWaypoint = {
+      deliveryId,
+      orderId,
+      sequence: atIndex ?? deliveryWaypoints.length,
+      status: 'pending',
+    };
+
+    // Insert at position or append
+    if (atIndex !== undefined && atIndex >= 0 && atIndex <= deliveryWaypoints.length) {
+      deliveryWaypoints.splice(atIndex, 0, newWaypoint);
+    } else {
+      deliveryWaypoints.push(newWaypoint);
+    }
+
+    // Resequence all waypoints
+    const resequenced = resequenceWaypoints(deliveryWaypoints);
+    waypointsData.set(deliveryId, resequenced);
+
+    return { ...newWaypoint };
+  }
+
+  /**
+   * Remove a waypoint (order from delivery)
+   *
+   * @param deliveryId - ID of the delivery
+   * @param orderId - ID of the order to remove
+   * @returns true if successful, throws on error
+   */
+  static removeWaypoint(deliveryId: string, orderId: string): void {
+    loadWaypoints();
+
+    const deliveryWaypoints = waypointsData.get(deliveryId);
+    if (!deliveryWaypoints) {
+      throw new Error(`Delivery ${deliveryId} not found`);
+    }
+
+    const index = deliveryWaypoints.findIndex(w => w.orderId === orderId);
+    if (index === -1) {
+      throw new Error(`Order ${orderId} not found in delivery ${deliveryId}`);
+    }
+
+    // Remove the waypoint
+    deliveryWaypoints.splice(index, 1);
+
+    // Resequence remaining waypoints
+    const resequenced = resequenceWaypoints(deliveryWaypoints);
+    waypointsData.set(deliveryId, resequenced);
+  }
+
+  /**
+   * Reorder waypoints (move order to different position)
+   *
+   * @param deliveryId - ID of the delivery
+   * @param fromIndex - Current position
+   * @param toIndex - New position
+   * @returns Updated waypoints in sequence
+   */
+  static reorderWaypoints(
+    deliveryId: string,
+    fromIndex: number,
+    toIndex: number
+  ): DeliveryRouteWaypoint[] {
+    loadWaypoints();
+
+    const deliveryWaypoints = waypointsData.get(deliveryId);
+    if (!deliveryWaypoints) {
+      throw new Error(`Delivery ${deliveryId} not found`);
+    }
+
+    // Sort by current sequence to get proper order
+    const sorted = [...deliveryWaypoints].sort((a, b) => a.sequence - b.sequence);
+
+    if (fromIndex < 0 || fromIndex >= sorted.length || toIndex < 0 || toIndex >= sorted.length) {
+      throw new Error('Invalid fromIndex or toIndex');
+    }
+
+    // Move item
+    const [moved] = sorted.splice(fromIndex, 1);
+    sorted.splice(toIndex, 0, moved);
+
+    // Resequence
+    const resequenced = resequenceWaypoints(sorted);
+    waypointsData.set(deliveryId, resequenced);
+
+    return [...resequenced];
   }
 
   /**
    * Update waypoint status
-   * Future: This will be a PUT/PATCH request to the backend
+   *
+   * @param deliveryId - ID of the delivery
+   * @param orderId - ID of the order
+   * @param status - New status
+   * @param deliveredAt - Optional delivery timestamp
+   * @returns Updated waypoint or null if not found
    */
-  static async updateWaypointStatus(
+  static updateWaypointStatus(
+    deliveryId: string,
     orderId: string,
-    status: DeliveryRouteWaypoint['status']
-  ): Promise<DeliveryRouteWaypoint | null> {
-    await loadWaypoints();
-    await mockDelay(400);
+    status: DeliveryRouteWaypoint['status'],
+    deliveredAt?: Date
+  ): DeliveryRouteWaypoint | null {
+    loadWaypoints();
 
-    const waypointIndex = waypointsData.findIndex(wp => wp.orderId === orderId);
-    if (waypointIndex === -1) return null;
+    const deliveryWaypoints = waypointsData.get(deliveryId);
+    if (!deliveryWaypoints) {
+      return null;
+    }
 
-    const updatedWaypoint = {
-      ...waypointsData[waypointIndex],
-      status,
-      deliveredAt: status === 'delivered' ? new Date() : undefined
-    };
+    const waypoint = deliveryWaypoints.find(w => w.orderId === orderId);
+    if (!waypoint) {
+      return null;
+    }
 
-    // Update the in-memory data
-    waypointsData[waypointIndex] = updatedWaypoint;
+    waypoint.status = status;
+    if (status === 'delivered') {
+      waypoint.deliveredAt = deliveredAt ?? new Date();
+    }
 
-    return { ...updatedWaypoint };
-  }
-
-  /**
-   * Update waypoint with timing information
-   * Future: This will be a PUT/PATCH request to the backend
-   */
-  static async updateWaypointTiming(
-    orderId: string,
-    updates: Partial<Pick<DeliveryRouteWaypoint, 'arrivalTime' | 'departureTime' | 'driveTimeActual'>>
-  ): Promise<DeliveryRouteWaypoint | null> {
-    await loadWaypoints();
-    await mockDelay(400);
-
-    const waypointIndex = waypointsData.findIndex(wp => wp.orderId === orderId);
-    if (waypointIndex === -1) return null;
-
-    const updatedWaypoint = {
-      ...waypointsData[waypointIndex],
-      ...updates
-    };
-
-    // Update the in-memory data
-    waypointsData[waypointIndex] = updatedWaypoint;
-
-    return { ...updatedWaypoint };
+    return { ...waypoint };
   }
 
   /**
    * Update any waypoint fields
-   * Future: This will be a PUT/PATCH request to the backend
+   *
+   * @param deliveryId - ID of the delivery
+   * @param orderId - ID of the order
+   * @param updates - Fields to update (excluding deliveryId and orderId which cannot be changed)
+   * @returns Updated waypoint or null if not found
    */
-  static async updateWaypoint(
+  static updateWaypoint(
+    deliveryId: string,
     orderId: string,
-    updates: Partial<DeliveryRouteWaypoint>
-  ): Promise<DeliveryRouteWaypoint | null> {
-    await loadWaypoints();
-    await mockDelay(400);
+    updates: Partial<Omit<DeliveryRouteWaypoint, 'deliveryId' | 'orderId' | 'sequence'>>
+  ): DeliveryRouteWaypoint | null {
+    loadWaypoints();
 
-    const waypointIndex = waypointsData.findIndex(wp => wp.orderId === orderId);
-    if (waypointIndex === -1) return null;
+    const deliveryWaypoints = waypointsData.get(deliveryId);
+    if (!deliveryWaypoints) {
+      return null;
+    }
 
-    const updatedWaypoint = {
-      ...waypointsData[waypointIndex],
-      ...updates,
-      orderId // Ensure orderId doesn't change
-    };
+    const waypoint = deliveryWaypoints.find(w => w.orderId === orderId);
+    if (!waypoint) {
+      return null;
+    }
 
-    // Update the in-memory data
-    waypointsData[waypointIndex] = updatedWaypoint;
+    // Remove orderId and deliveryId from updates if they were passed (prevent override attempts)
+    const { orderId: _, deliveryId: __, ...safeUpdates } = updates as any;
 
-    return { ...updatedWaypoint };
+    Object.assign(waypoint, safeUpdates);
+    return { ...waypoint };
+  }
+
+  /**
+   * Get a specific waypoint
+   *
+   * @param deliveryId - ID of the delivery
+   * @param orderId - ID of the order
+   * @returns The waypoint or null if not found
+   */
+  static getWaypoint(deliveryId: string, orderId: string): DeliveryRouteWaypoint | null {
+    loadWaypoints();
+
+    const deliveryWaypoints = waypointsData.get(deliveryId);
+    if (!deliveryWaypoints) return null;
+
+    const waypoint = deliveryWaypoints.find(w => w.orderId === orderId);
+    return waypoint ? { ...waypoint } : null;
   }
 }

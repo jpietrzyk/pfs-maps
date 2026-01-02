@@ -1,6 +1,9 @@
 import type { DeliveryRoute, DeliveryRouteWaypoint } from '@/types/delivery-route';
 import { sampleDeliveries } from '@/types/delivery-route';
 import type { Order } from '@/types/order';
+import { DeliveryRouteWaypointsApi } from './deliveryRouteWaypointsApi';
+import { getOrdersInSequence } from '@/lib/delivery-route-waypoint-helpers';
+import { OrdersApi } from './ordersApi';
 
 /**
  * DeliveryRoutesApi - Manages delivery planning and order assignment
@@ -133,6 +136,45 @@ class DeliveryRoutesApiClass {
     return {
       ...delivery,
       orders: populatedOrders,
+    };
+  }
+
+  /**
+   * Get delivery with waypoints populated with order data
+   * Uses the new waypoint-based service layer
+   *
+   * @param deliveryId - ID of the delivery
+   * @returns Delivery with populated waypoints, or null if not found
+   */
+  async getDeliveryWithWaypoints(
+    deliveryId: string
+  ): Promise<(DeliveryRoute & { waypoints: (DeliveryRouteWaypoint & { order: Order })[] }) | null> {
+    const delivery = await this.getDelivery(deliveryId);
+    if (!delivery) return null;
+
+    // Get waypoints for this delivery
+    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
+    if (waypoints.length === 0) {
+      return {
+        ...delivery,
+        waypoints: [],
+      };
+    }
+
+    // Get all orders
+    const orders = await OrdersApi.getOrders();
+
+    // Populate waypoints with order data
+    const populatedWaypoints = getOrdersInSequence(waypoints, orders)
+      .map((order) => {
+        const waypoint = waypoints.find(w => w.orderId === order.id);
+        return waypoint ? { ...waypoint, order } : null;
+      })
+      .filter((wp): wp is DeliveryRouteWaypoint & { order: Order } => wp !== null);
+
+    return {
+      ...delivery,
+      waypoints: populatedWaypoints,
     };
   }
 
