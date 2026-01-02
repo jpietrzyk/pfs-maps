@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { DeliveryRouteOrderList } from "@/components/delivery/delivery-route-order-list";
+import { DeliveryRouteOrderList } from "@/components/delivery-route/delivery-route-order-list";
 import type { Order } from "@/types/order";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 

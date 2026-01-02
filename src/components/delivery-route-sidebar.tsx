@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { Order } from "@/types/order";
-import { DeliveryRouteOrderList } from "@/components/delivery/delivery-route-order-list";
-import { UnassignedOrderList } from "@/components/delivery/unassigned-order-list";
+import { DeliveryRouteOrderList } from "@/components/delivery-route/delivery-route-order-list";
+import { UnassignedOrderList } from "@/components/delivery-route/unassigned-order-list";
 import { resetLocalStorageAndFetchData } from "@/lib/local-storage-utils";
 import {
   calculateTotalEstimatedTime,

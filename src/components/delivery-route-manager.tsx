@@ -1,6 +1,6 @@
 import React from "react";
 import type { Order } from "@/types/order";
-import { DeliveryRouteOrderItem } from "@/components/delivery/delivery-route-order-item";
+import { DeliveryRouteOrderItem } from "@/components/delivery-route/delivery-route-order-item";
 
 // Haversine formula for straight-line distance in km
 function getDistanceKm(

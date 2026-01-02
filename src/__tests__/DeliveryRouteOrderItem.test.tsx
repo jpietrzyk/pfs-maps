@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { DeliveryRouteOrderItem } from "@/components/delivery/delivery-route-order-item";
+import { DeliveryRouteOrderItem } from "@/components/delivery-route/delivery-route-order-item";
 import type { Order } from "@/types/order";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
 
@@ -84,7 +84,11 @@ describe("DeliveryRouteOrderItem", () => {
     const order = createMockOrder();
 
     const { container } = render(
-      <DeliveryRouteOrderItem id={order.id} order={order} isHighlighted={true} />,
+      <DeliveryRouteOrderItem
+        id={order.id}
+        order={order}
+        isHighlighted={true}
+      />,
       { wrapper: Wrapper }
     );
 
@@ -123,7 +127,11 @@ describe("DeliveryRouteOrderItem", () => {
     const mockRemove = jest.fn();
 
     render(
-      <DeliveryRouteOrderItem id={order.id} order={order} onRemove={mockRemove} />,
+      <DeliveryRouteOrderItem
+        id={order.id}
+        order={order}
+        onRemove={mockRemove}
+      />,
       { wrapper: Wrapper }
     );
 

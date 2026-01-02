@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { DeliveryRouteSegment } from "@/components/delivery/delivery-route-segment";
+import { DeliveryRouteSegment } from "@/components/delivery-route/delivery-route-segment";
 import type { RouteSegment, RouteData } from "@/types/map-provider";
 import type { Order } from "@/types/order";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
