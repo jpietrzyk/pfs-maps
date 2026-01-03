@@ -51,7 +51,7 @@ export const MapyTiledMap: React.FC<MapyTiledMapProps> = ({
         return container;
       },
     });
-    new (LogoControl as any)().addTo(map);
+    new (LogoControl as typeof L.Control)().addTo(map);
 
     mapRef.current = map;
 
