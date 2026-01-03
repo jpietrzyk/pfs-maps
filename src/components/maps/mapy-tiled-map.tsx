@@ -116,19 +116,38 @@ export const MapyTiledMap: React.FC<MapyTiledMapProps> = ({
   useEffect(() => {
     if (!polylineLayerRef.current) return;
 
+    console.log("Updating polylines, count:", polylines.length);
+
     // Clear existing polylines
     polylineLayerRef.current.clearLayers();
 
     // Add new polylines
     polylines.forEach((polyline) => {
+      console.log(
+        "Adding polyline:",
+        polyline.id,
+        "with",
+        polyline.positions.length,
+        "positions"
+      );
+      console.log("First 3 positions:", polyline.positions.slice(0, 3));
+
       const positions = polyline.positions.map(
         (pos) => [pos.lat, pos.lng] as [number, number]
       );
-      L.polyline(positions, {
+
+      console.log(
+        "Converted to Leaflet format (first 3):",
+        positions.slice(0, 3)
+      );
+
+      const leafletPolyline = L.polyline(positions, {
         color: polyline.color || "#3388ff",
         weight: polyline.weight || 3,
         opacity: polyline.opacity || 0.8,
       }).addTo(polylineLayerRef.current!);
+
+      console.log("Polyline added to map:", leafletPolyline);
     });
   }, [polylines]);
 
