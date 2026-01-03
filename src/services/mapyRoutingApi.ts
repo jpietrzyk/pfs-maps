@@ -104,6 +104,53 @@ class MapyRoutingApiClass {
   ): Array<{ lat: number; lng: number }> {
     return coordinates.map(([lng, lat]) => ({ lat, lng }));
   }
+
+  /**
+   * Calculate a complete route through multiple waypoints (segments between each pair)
+   */
+  async calculateCompleteRoute(
+    points: Array<{ lat: number; lng: number }>,
+    apiKey: string,
+    routeType: 'car_fast' | 'car_fast_traffic' | 'car_short' | 'foot_fast' | 'foot_hiking' | 'bike_road' | 'bike_mountain' = 'car_fast'
+  ): Promise<Array<{ id: string; coordinates: Array<[number, number]> }>> {
+    if (points.length < 2) {
+      throw new Error('At least 2 points are required for routing');
+    }
+
+    const segments: Array<{ id: string; coordinates: Array<[number, number]> }> = [];
+
+    // Calculate route for each segment (from point i to point i+1)
+    for (let i = 0; i < points.length - 1; i++) {
+      const startPoint = points[i];
+      const endPoint = points[i + 1];
+
+      try {
+        const response = await this.calculateRoute(
+          {
+            start: [startPoint.lng, startPoint.lat],
+            end: [endPoint.lng, endPoint.lat],
+            routeType,
+            format: 'geojson',
+          },
+          apiKey
+        );
+
+        segments.push({
+          id: `segment-${i}-${i + 1}`,
+          coordinates: response.geometry.geometry.coordinates,
+        });
+      } catch (error) {
+        console.error(`Failed to calculate segment ${i} to ${i + 1}:`, error);
+        // Fallback to straight line for this segment
+        segments.push({
+          id: `segment-${i}-${i + 1}`,
+          coordinates: [[startPoint.lng, startPoint.lat], [endPoint.lng, endPoint.lat]],
+        });
+      }
+    }
+
+    return segments;
+  }
 }
 
 export const MapyRoutingApi = new MapyRoutingApiClass();
