@@ -216,16 +216,39 @@ export function clearCompletedUpdates(): void {
 /**
  * Reset all local storage data and fetch all data from the endpoint
  */
-export function resetLocalStorageAndFetchData(): void {
+export async function resetLocalStorageAndFetchData(refreshCallback?: () => Promise<void>): Promise<void> {
   try {
+    console.log('🔄 Resetting local storage and clearing caches...');
+
     // Clear all local storage data
     localStorage.removeItem(LOCAL_STORAGE_KEYS.OPTIMISTIC_DELIVERY_UPDATES);
     localStorage.removeItem(LOCAL_STORAGE_KEYS.OPTIMISTIC_ORDER_UPDATES);
 
-    // Reload the page to fetch all data from the endpoint
-    window.location.reload();
+    // Clear the API caches (they will reload data from JSON files on next request)
+    // Import APIs dynamically to avoid circular dependencies
+    const [{ OrdersApi }, { DeliveryRoutesApi }, { DeliveryRouteWaypointsApi }] = await Promise.all([
+      import('@/services/ordersApi'),
+      import('@/services/deliveryRoutesApi'),
+      import('@/services/deliveryRouteWaypointsApi'),
+    ]);
+
+    OrdersApi.resetCache();
+    DeliveryRoutesApi.resetCache();
+    DeliveryRouteWaypointsApi.resetCache();
+
+    console.log('✅ Caches cleared successfully');
+
+    // If a refresh callback is provided, call it; otherwise, reload the page
+    if (refreshCallback) {
+      console.log('🔄 Calling refresh callback...');
+      await refreshCallback();
+      console.log('✅ Data refreshed successfully');
+    } else {
+      console.log('🔄 No refresh callback provided, reloading page...');
+      window.location.reload();
+    }
   } catch (error) {
-    console.error('Error resetting local storage:', error);
+    console.error('❌ Error resetting local storage:', error);
   }
 }
 

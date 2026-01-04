@@ -42,7 +42,9 @@ export default function MapyCzMapPage() {
         // Get waypoints for first delivery route
         const firstRoute = deliveryRoutes.length > 0 ? deliveryRoutes[0] : null;
         const waypoints = firstRoute
-          ? DeliveryRouteWaypointsApi.getWaypointsByDelivery(firstRoute.id)
+          ? await DeliveryRouteWaypointsApi.getWaypointsByDelivery(
+              firstRoute.id
+            )
           : [];
 
         const firstRouteOrderIds = new Set(waypoints.map((wp) => wp.orderId));

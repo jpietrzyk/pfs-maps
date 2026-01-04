@@ -66,7 +66,9 @@ export default function DeliveryRouteProvider({
 
         // Get waypoints for this delivery (junction table)
         const waypoints =
-          DeliveryRouteWaypointsApi.getWaypointsByDelivery(targetDeliveryId);
+          await DeliveryRouteWaypointsApi.getWaypointsByDelivery(
+            targetDeliveryId
+          );
 
         if (waypoints.length === 0) {
           setDeliveryOrders([]);

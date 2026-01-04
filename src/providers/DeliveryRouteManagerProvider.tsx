@@ -96,7 +96,7 @@ export default function DeliveryRouteManagerProvider({
 
         // Get waypoints for this delivery from waypoint API
         const waypoints =
-          DeliveryRouteWaypointsApi.getWaypointsByDelivery(targetId);
+          await DeliveryRouteWaypointsApi.getWaypointsByDelivery(targetId);
 
         // Create a map for O(1) lookup
         const ordersMap = new Map(

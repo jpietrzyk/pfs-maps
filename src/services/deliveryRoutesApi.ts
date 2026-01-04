@@ -118,7 +118,7 @@ class DeliveryRoutesApiClass {
     if (!delivery) return null;
 
     // Get waypoints for this delivery
-    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(id);
+    const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(id);
 
     if (waypoints.length === 0) {
       return {
@@ -161,7 +161,7 @@ class DeliveryRoutesApiClass {
     if (!delivery) return null;
 
     // Get waypoints for this delivery
-    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
+    const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
     if (waypoints.length === 0) {
       return {
         ...delivery,
@@ -270,13 +270,13 @@ class DeliveryRoutesApiClass {
 
     // Delegate to waypoint API
     try {
-      DeliveryRouteWaypointsApi.addWaypoint(deliveryId, orderId, atIndex);
+      await DeliveryRouteWaypointsApi.addWaypoint(deliveryId, orderId, atIndex);
     } catch (e) {
       console.error('Error adding waypoint:', e);
     }
 
     // Return delivery with populated orders for backward compatibility
-    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
+    const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
     return {
       ...delivery,
       orders: waypoints
@@ -294,13 +294,13 @@ class DeliveryRoutesApiClass {
 
     // Delegate to waypoint API
     try {
-      DeliveryRouteWaypointsApi.removeWaypoint(deliveryId, orderId);
+      await DeliveryRouteWaypointsApi.removeWaypoint(deliveryId, orderId);
     } catch (e) {
       console.error('Error removing waypoint:', e);
     }
 
-    // Return delivery with populated orders for backward compatibility
-    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
+    // Return delivery with updated orders for backward compatibility
+    const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
     return {
       ...delivery,
       orders: waypoints
@@ -322,13 +322,13 @@ class DeliveryRoutesApiClass {
 
     // Delegate to waypoint API
     try {
-      DeliveryRouteWaypointsApi.reorderWaypoints(deliveryId, fromIndex, toIndex);
+      await DeliveryRouteWaypointsApi.reorderWaypoints(deliveryId, fromIndex, toIndex);
     } catch (e) {
       console.error('Error reordering waypoints:', e);
     }
 
-    // Return delivery with populated orders for backward compatibility
-    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
+    // Return delivery with updated orders for backward compatibility
+    const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
     return {
       ...delivery,
       orders: waypoints
@@ -352,18 +352,18 @@ class DeliveryRoutesApiClass {
 
     // Delegate to waypoint API
     try {
-      DeliveryRouteWaypointsApi.updateWaypointStatus(deliveryId, orderId, status, deliveredAt);
+      await DeliveryRouteWaypointsApi.updateWaypointStatus(deliveryId, orderId, status, deliveredAt);
 
       // Update notes if provided
       if (notes) {
-        DeliveryRouteWaypointsApi.updateWaypoint(deliveryId, orderId, { notes });
+        await DeliveryRouteWaypointsApi.updateWaypoint(deliveryId, orderId, { notes });
       }
     } catch (e) {
       console.error('Error updating waypoint status:', e);
     }
 
     // Return delivery with populated orders for backward compatibility
-    const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
+    const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(deliveryId);
     return {
       ...delivery,
       orders: waypoints
