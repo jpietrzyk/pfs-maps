@@ -228,6 +228,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
   // Calculate routes when orders change
   useEffect(() => {
+    // TESTING: Calculate route only between 1st and 2nd waypoint
     const calculateRoutes = async () => {
       if (!mapyApiKey || orders.length < 2) {
         setCalculatedRoutes([]);
@@ -235,13 +236,18 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       }
 
       try {
-        const waypoints = orders.map((order) => order.location);
+        // Only take the first 2 waypoints
+        const waypoints = orders.slice(0, 2).map((order) => order.location);
         const segments = await MapyRoutingApi.calculateRouteSegments(
           waypoints,
           mapyApiKey,
           {
             routeType: "car_fast",
           }
+        );
+        console.log(
+          "TESTING: Calculated route between waypoint 1 and 2:",
+          segments
         );
         setCalculatedRoutes(segments);
       } catch (error) {
@@ -428,7 +434,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
     <>
       {children({
         markers,
-        routes,
+        routes, // TESTING: Now drawing the calculated routes (should be only 1st->2nd)
         bounds,
         onMarkerHover: handleMarkerHover,
         onRouteSegmentHover: handleRouteSegmentHover,
