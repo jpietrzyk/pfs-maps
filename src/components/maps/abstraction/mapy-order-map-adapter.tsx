@@ -228,7 +228,6 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
   // Calculate routes when orders change
   useEffect(() => {
-    // TESTING: Calculate route only between 1st and 2nd waypoint
     const calculateRoutes = async () => {
       if (!mapyApiKey || orders.length < 2) {
         setCalculatedRoutes([]);
@@ -236,18 +235,13 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       }
 
       try {
-        // Only take the first 2 waypoints
-        const waypoints = orders.slice(0, 2).map((order) => order.location);
+        const waypoints = orders.map((order) => order.location);
         const segments = await MapyRoutingApi.calculateRouteSegments(
           waypoints,
           mapyApiKey,
           {
             routeType: "car_fast",
           }
-        );
-        console.log(
-          "TESTING: Calculated route between waypoint 1 and 2:",
-          segments
         );
         setCalculatedRoutes(segments);
       } catch (error) {
@@ -339,22 +333,6 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
       // Get calculated route by index - the API returns segments in the same order as input waypoints
       const calculatedRoute = calculatedRoutes[i];
-
-      // TESTING: Only create segments where we have actual calculated routes
-      if (!calculatedRoute) {
-        continue; // Skip this segment if no route was calculated
-      }
-
-      console.log(`Adapter segment ${i}: ${fromOrder.id} -> ${toOrder.id}`, {
-        fromOrder: fromOrder.location,
-        toOrder: toOrder.location,
-        calculatedRoute: {
-          from: calculatedRoute.from,
-          to: calculatedRoute.to,
-          positionsCount: calculatedRoute.positions?.length || 0,
-        },
-        totalCalculatedRoutes: calculatedRoutes.length,
-      });
 
       // Determine if highlighted and what color
       const isFromHighlighted = highlightedOrderId === fromOrder.id;
