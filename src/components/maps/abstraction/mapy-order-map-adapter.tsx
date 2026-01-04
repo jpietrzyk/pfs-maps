@@ -331,14 +331,21 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       const toOrder = orders[i + 1];
       const segmentId = `${fromOrder.id}-${toOrder.id}`;
 
-      // Find calculated route for this segment
-      const calculatedRoute = calculatedRoutes.find(
-        (r) =>
-          r.from.lat === fromOrder.location.lat &&
-          r.from.lng === fromOrder.location.lng &&
-          r.to.lat === toOrder.location.lat &&
-          r.to.lng === toOrder.location.lng
-      );
+      // Get calculated route by index - the API returns segments in the same order as input waypoints
+      const calculatedRoute = calculatedRoutes[i];
+
+      console.log(`Adapter segment ${i}: ${fromOrder.id} -> ${toOrder.id}`, {
+        fromOrder: fromOrder.location,
+        toOrder: toOrder.location,
+        calculatedRoute: calculatedRoute
+          ? {
+              from: calculatedRoute.from,
+              to: calculatedRoute.to,
+              positionsCount: calculatedRoute.positions?.length || 0,
+            }
+          : "NOT FOUND",
+        totalCalculatedRoutes: calculatedRoutes.length,
+      });
 
       // Determine if highlighted and what color
       const isFromHighlighted = highlightedOrderId === fromOrder.id;
@@ -365,6 +372,15 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
         highlightColor,
       });
     }
+
+    console.log(
+      "MapyOrderMapAdapter - Route segments:",
+      segments.map((s) => ({
+        id: s.id,
+        positionsCount: s.positions?.length || 0,
+        distance: s.distance,
+      }))
+    );
 
     return segments;
   }, [orders, calculatedRoutes, highlightedOrderId, highlightedSegmentId]);

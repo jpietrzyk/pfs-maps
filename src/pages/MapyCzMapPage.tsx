@@ -84,9 +84,20 @@ export default function MapyCzMapPage() {
               deliveryOrders={displayedOrders}
               unassignedOrders={unassignedOrders}
               onAddOrderToDelivery={async (orderId: string) => {
-                await addOrderToDelivery(orderId);
-                void refreshDeliveryOrders(deliveryId);
-                void refreshUnassignedOrders();
+                try {
+                  // Use the delivery context's addOrderToDelivery method
+                  const targetDeliveryId = deliveryId || currentDelivery?.id;
+                  if (!targetDeliveryId) {
+                    throw new Error("No delivery selected");
+                  }
+                  await addOrderToDelivery(targetDeliveryId, orderId);
+
+                  void refreshDeliveryOrders(deliveryId);
+                  void refreshUnassignedOrders();
+                } catch (error) {
+                  console.error("Failed to add order to delivery:", error);
+                  alert("Failed to add order to delivery");
+                }
               }}
             />
           </div>
@@ -94,18 +105,7 @@ export default function MapyCzMapPage() {
 
         {/* Orders count display at top center */}
         <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-20 pointer-events-auto">
-          <OrdersCountDisplay
-            orderCount={totalOrdersCount}
-            pendingCount={
-              displayedOrders.filter((o) => o.status === "pending").length
-            }
-            inProgressCount={
-              displayedOrders.filter((o) => o.status === "in-progress").length
-            }
-            completedCount={
-              displayedOrders.filter((o) => o.status === "completed").length
-            }
-          />
+          <OrdersCountDisplay count={totalOrdersCount} />
         </div>
 
         {/* Sidebar trigger */}
