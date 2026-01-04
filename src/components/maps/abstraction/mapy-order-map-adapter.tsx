@@ -340,16 +340,19 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       // Get calculated route by index - the API returns segments in the same order as input waypoints
       const calculatedRoute = calculatedRoutes[i];
 
+      // TESTING: Only create segments where we have actual calculated routes
+      if (!calculatedRoute) {
+        continue; // Skip this segment if no route was calculated
+      }
+
       console.log(`Adapter segment ${i}: ${fromOrder.id} -> ${toOrder.id}`, {
         fromOrder: fromOrder.location,
         toOrder: toOrder.location,
-        calculatedRoute: calculatedRoute
-          ? {
-              from: calculatedRoute.from,
-              to: calculatedRoute.to,
-              positionsCount: calculatedRoute.positions?.length || 0,
-            }
-          : "NOT FOUND",
+        calculatedRoute: {
+          from: calculatedRoute.from,
+          to: calculatedRoute.to,
+          positionsCount: calculatedRoute.positions?.length || 0,
+        },
         totalCalculatedRoutes: calculatedRoutes.length,
       });
 
