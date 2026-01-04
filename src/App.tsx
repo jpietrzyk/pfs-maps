@@ -10,6 +10,22 @@ function App() {
       <DeliveryRouteManagerProvider>
         <Routes>
           <Route path="/" element={<DeliveriesListPage />} />
+          {/* New RESTful routes for delivery routes with optional map provider */}
+          <Route path="/delivery_routes" element={<DeliveryMapPage />} />
+          <Route
+            path="/delivery_routes/:deliveryId"
+            element={<DeliveryMapPage />}
+          />
+          <Route
+            path="/delivery_routes/:deliveryId/leaflet"
+            element={<DeliveryMapPage />}
+          />
+          <Route
+            path="/delivery_routes/:deliveryId/mapy"
+            element={<MapyCzMapPage />}
+          />
+
+          {/* Legacy routes for backward compatibility */}
           <Route path="/deliveries" element={<DeliveryMapPage />} />
           <Route path="/deliveries/:deliveryId" element={<DeliveryMapPage />} />
           <Route path="/mapy" element={<MapyCzMapPage />} />
