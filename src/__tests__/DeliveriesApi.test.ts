@@ -182,7 +182,7 @@ describe('DeliveryRoutesApi', () => {
       expect(created.name).toBe('Delivery with Orders');
 
       // Verify waypoints were added (load them to check)
-      const waypointsLoaded = DeliveryRouteWaypointsApi.getWaypointsByDelivery(created.id);
+      const waypointsLoaded = await DeliveryRouteWaypointsApi.getWaypointsByDelivery(created.id);
       expect(waypointsLoaded).toHaveLength(2);
       expect(waypointsLoaded[0].orderId).toBe('ORD-001');
       expect(waypointsLoaded[1].orderId).toBe('ORD-002');

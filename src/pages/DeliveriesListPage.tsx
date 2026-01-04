@@ -31,11 +31,12 @@ export default function DeliveriesListPage() {
         const ordersMap = new Map(orders.map((order) => [order.id, order]));
 
         // For each delivery, get waypoints and populate with order data
-        const deliveriesWithOrders: DeliveryWithOrders[] = allDeliveries.map(
-          (delivery) => {
-            const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery(
-              delivery.id
-            );
+        const deliveriesWithOrders: DeliveryWithOrders[] = await Promise.all(
+          allDeliveries.map(async (delivery) => {
+            const waypoints =
+              await DeliveryRouteWaypointsApi.getWaypointsByDelivery(
+                delivery.id
+              );
             const ordersInSequence = waypoints
               .map((waypoint) => ordersMap.get(waypoint.orderId))
               .filter((order): order is Order => order !== undefined);
@@ -44,7 +45,7 @@ export default function DeliveriesListPage() {
               ...delivery,
               ordersInSequence,
             };
-          }
+          })
         );
 
         setDeliveries(deliveriesWithOrders);

@@ -16,8 +16,8 @@ describe('DeliveryRouteWaypointsApi', () => {
   });
 
   describe('getWaypointsByDelivery', () => {
-    it('should return waypoints for a specific delivery sorted by sequence', () => {
-      const waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery('DEL-001');
+    it('should return waypoints for a specific delivery sorted by sequence', async () => {
+      const waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery('DEL-001');
 
       expect(Array.isArray(waypoints)).toBe(true);
       // Waypoints should be sorted by sequence
@@ -28,23 +28,23 @@ describe('DeliveryRouteWaypointsApi', () => {
   });
 
   describe('getDeliveriesForOrder', () => {
-    it('should return deliveries containing a specific order', () => {
-      const deliveries = DeliveryRouteWaypointsApi.getDeliveriesForOrder('ORD-001');
+    it('should return deliveries containing a specific order', async () => {
+      const deliveries = await DeliveryRouteWaypointsApi.getDeliveriesForOrder('ORD-001');
       expect(Array.isArray(deliveries)).toBe(true);
     });
   });
 
   describe('addWaypoint', () => {
-    it('should add a waypoint to a delivery', () => {
-      const result = DeliveryRouteWaypointsApi.addWaypoint('DEL-001', 'ORD-004');
+    it('should add a waypoint to a delivery', async () => {
+      const result = await DeliveryRouteWaypointsApi.addWaypoint('DEL-001', 'ORD-004');
 
       // Result should be the created waypoint or null
       expect(result === null || typeof result === 'object').toBe(true);
     });
 
-    it('should prevent duplicate orders in same delivery', () => {
+    it('should prevent duplicate orders in same delivery', async () => {
       // Add same order twice to same delivery
-      const result1 = DeliveryRouteWaypointsApi.addWaypoint('DEL-001', 'ORD-005');
+      const result1 = await DeliveryRouteWaypointsApi.addWaypoint('DEL-001', 'ORD-005');
 
       // Second add should fail due to duplicate validation
       if (result1) {
@@ -54,29 +54,29 @@ describe('DeliveryRouteWaypointsApi', () => {
   });
 
   describe('removeWaypoint', () => {
-    it('should remove a waypoint from a delivery', () => {
+    it('should remove a waypoint from a delivery', async () => {
       // Add first
-      DeliveryRouteWaypointsApi.addWaypoint('DEL-002', 'ORD-010');
+      await DeliveryRouteWaypointsApi.addWaypoint('DEL-002', 'ORD-010');
 
       // Verify it was added
-      let waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery('DEL-002');
+      let waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery('DEL-002');
       expect(waypoints.length).toBeGreaterThan(0);
 
       // Then remove
-      const result = DeliveryRouteWaypointsApi.removeWaypoint('DEL-002', 'ORD-010');
+      const result = await DeliveryRouteWaypointsApi.removeWaypoint('DEL-002', 'ORD-010');
 
       // Should return undefined (void)
       expect(result).toBeUndefined();
 
       // Verify it was removed
-      waypoints = DeliveryRouteWaypointsApi.getWaypointsByDelivery('DEL-002');
+      waypoints = await DeliveryRouteWaypointsApi.getWaypointsByDelivery('DEL-002');
       const found = waypoints.find(w => w.orderId === 'ORD-010');
       expect(found).toBeUndefined();
     });
   });
 
   describe('reorderWaypoints', () => {
-    it('should move waypoint from one position to another', () => {
+    it('should move waypoint from one position to another', async () => {
       // Add waypoints
       DeliveryRouteWaypointsApi.addWaypoint('DEL-003', 'ORD-020');
       DeliveryRouteWaypointsApi.addWaypoint('DEL-003', 'ORD-021');

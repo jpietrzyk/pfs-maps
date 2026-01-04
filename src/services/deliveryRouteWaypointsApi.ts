@@ -6,57 +6,83 @@ import { resequenceWaypoints } from '@/lib/delivery-route-waypoint-helpers';
 // Key: deliveryId, Value: array of waypoints for that delivery
 let waypointsData: Map<string, DeliveryRouteWaypoint[]> = new Map();
 let waypointsLoaded = false;
+let loadingPromise: Promise<void> | null = null;
 
 /**
  * Load waypoints from JSON file (browser) or use sample data (Node.js/tests)
- * This is synchronous to match the existing API design
+ * Returns a promise that resolves when data is loaded
  */
-function loadWaypoints(): void {
-  if (waypointsLoaded) return;
-
-  // Always start with sample data for synchronous availability
-  loadSampleData();
-
-  // Try to preload waypoints JSON in browser environment
-  // This will override sample data once loaded
-  if (typeof fetch !== 'undefined' && typeof window !== 'undefined') {
-    try {
-      fetch('/delivery-route-waypoints-DEL-001.json')
-        .then(response => {
-          if (!response.ok) {
-            console.warn('Failed to load waypoints from JSON, using sample data');
-            return null;
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data && Array.isArray(data)) {
-            // Replace sample data with loaded data
-            waypointsData.clear();
-            const deliveryId = 'DEL-001';
-            waypointsData.set(deliveryId, data.map((wp: any) => ({
-              ...wp,
-              deliveryId,
-            })));
-            console.log(`Loaded ${data.length} waypoints for delivery ${deliveryId}`);
-          }
-        })
-        .catch(error => {
-          console.warn('Error loading waypoints from JSON:', error);
-          // Silently continue with sample data
-        });
-    } catch (error) {
-      // Silently fail - sample data already loaded
-    }
+async function loadWaypoints(): Promise<void> {
+  if (waypointsLoaded) {
+    console.log('Waypoints already loaded, returning cached data');
+    return;
   }
 
-  waypointsLoaded = true;
+  // If already loading, return the existing promise
+  if (loadingPromise) {
+    console.log('Waypoints loading in progress, waiting...');
+    return loadingPromise;
+  }
+
+  console.log('Starting waypoints loading...');
+  loadingPromise = (async () => {
+    try {
+      // Check if we're in a test environment (Jest)
+      const isTestEnv = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
+
+      // Check if we're in a browser environment (fetch is available) and NOT in tests
+      if (!isTestEnv && typeof fetch !== 'undefined' && typeof window !== 'undefined') {
+        console.log('Browser environment detected, fetching JSON...');
+        try {
+          const response = await fetch('/delivery-route-waypoints-DEL-001.json');
+          console.log('Fetch response:', response.status, response.ok);
+          if (response.ok) {
+            const data = await response.json();
+            console.log('JSON parsed, data:', data);
+            if (data && Array.isArray(data)) {
+              // Load data from JSON file
+              waypointsData.clear();
+              const deliveryId = 'DEL-001';
+              waypointsData.set(deliveryId, data.map((wp: any) => ({
+                ...wp,
+                deliveryId,
+              })));
+              console.log(`✅ Loaded ${data.length} waypoints for delivery ${deliveryId} from JSON`);
+              waypointsLoaded = true;
+              return;
+            } else {
+              console.warn('JSON data is not an array:', data);
+            }
+          } else {
+            console.warn('Fetch failed with status:', response.status);
+          }
+          // If fetch failed, fall through to sample data
+          console.warn('❌ Failed to load waypoints from JSON, using sample data');
+        } catch (error) {
+          console.error('❌ Error loading waypoints from JSON:', error);
+          // Fall through to sample data
+        }
+      } else {
+        console.log('Test environment or no fetch available, using sample data');
+      }
+
+      // Fallback: use sample data (for tests or if fetch failed)
+      console.log('Loading sample data (10 waypoints)...');
+      loadSampleData();
+      waypointsLoaded = true;
+    } finally {
+      loadingPromise = null;
+    }
+  })();
+
+  return loadingPromise;
 }
 
 /**
  * Load sample waypoints into the in-memory store
  */
 function loadSampleData(): void {
+  waypointsData.clear();
   for (const waypoint of sampleDeliveryWaypoints) {
     if (!waypoint.deliveryId) continue;
 
@@ -76,6 +102,7 @@ export class DeliveryRouteWaypointsApi {
   static resetCache(): void {
     waypointsLoaded = false;
     waypointsData.clear();
+    loadingPromise = null;
   }
 
   /**
@@ -84,8 +111,8 @@ export class DeliveryRouteWaypointsApi {
    * @param deliveryId - ID of the delivery
    * @returns Waypoints in sequence order
    */
-  static getWaypointsByDelivery(deliveryId: string): DeliveryRouteWaypoint[] {
-    loadWaypoints();
+  static async getWaypointsByDelivery(deliveryId: string): Promise<DeliveryRouteWaypoint[]> {
+    await loadWaypoints();
 
     const waypoints = waypointsData.get(deliveryId) || [];
     return waypoints
@@ -99,8 +126,8 @@ export class DeliveryRouteWaypointsApi {
    * @param orderId - ID of the order to find
    * @returns Array of delivery IDs containing this order
    */
-  static getDeliveriesForOrder(orderId: string): string[] {
-    loadWaypoints();
+  static async getDeliveriesForOrder(orderId: string): Promise<string[]> {
+    await loadWaypoints();
 
     const deliveries: string[] = [];
     for (const [deliveryId, waypoints] of waypointsData.entries()) {
@@ -119,12 +146,12 @@ export class DeliveryRouteWaypointsApi {
    * @param atIndex - Optional position to insert (defaults to end)
    * @returns Created waypoint
    */
-  static addWaypoint(
+  static async addWaypoint(
     deliveryId: string,
     orderId: string,
     atIndex?: number
-  ): DeliveryRouteWaypoint {
-    loadWaypoints();
+  ): Promise<DeliveryRouteWaypoint> {
+    await loadWaypoints();
 
     if (!waypointsData.has(deliveryId)) {
       waypointsData.set(deliveryId, []);
@@ -165,8 +192,8 @@ export class DeliveryRouteWaypointsApi {
    * @param orderId - ID of the order to remove
    * @returns true if successful, throws on error
    */
-  static removeWaypoint(deliveryId: string, orderId: string): void {
-    loadWaypoints();
+  static async removeWaypoint(deliveryId: string, orderId: string): Promise<void> {
+    await loadWaypoints();
 
     const deliveryWaypoints = waypointsData.get(deliveryId);
     if (!deliveryWaypoints) {
@@ -194,12 +221,12 @@ export class DeliveryRouteWaypointsApi {
    * @param toIndex - New position
    * @returns Updated waypoints in sequence
    */
-  static reorderWaypoints(
+  static async reorderWaypoints(
     deliveryId: string,
     fromIndex: number,
     toIndex: number
-  ): DeliveryRouteWaypoint[] {
-    loadWaypoints();
+  ): Promise<DeliveryRouteWaypoint[]> {
+    await loadWaypoints();
 
     const deliveryWaypoints = waypointsData.get(deliveryId);
     if (!deliveryWaypoints) {
@@ -233,13 +260,13 @@ export class DeliveryRouteWaypointsApi {
    * @param deliveredAt - Optional delivery timestamp
    * @returns Updated waypoint or null if not found
    */
-  static updateWaypointStatus(
+  static async updateWaypointStatus(
     deliveryId: string,
     orderId: string,
     status: DeliveryRouteWaypoint['status'],
     deliveredAt?: Date
-  ): DeliveryRouteWaypoint | null {
-    loadWaypoints();
+  ): Promise<DeliveryRouteWaypoint | null> {
+    await loadWaypoints();
 
     const deliveryWaypoints = waypointsData.get(deliveryId);
     if (!deliveryWaypoints) {
@@ -267,12 +294,12 @@ export class DeliveryRouteWaypointsApi {
    * @param updates - Fields to update (excluding deliveryId and orderId which cannot be changed)
    * @returns Updated waypoint or null if not found
    */
-  static updateWaypoint(
+  static async updateWaypoint(
     deliveryId: string,
     orderId: string,
     updates: Partial<Omit<DeliveryRouteWaypoint, 'deliveryId' | 'orderId' | 'sequence'>>
-  ): DeliveryRouteWaypoint | null {
-    loadWaypoints();
+  ): Promise<DeliveryRouteWaypoint | null> {
+    await loadWaypoints();
 
     const deliveryWaypoints = waypointsData.get(deliveryId);
     if (!deliveryWaypoints) {
@@ -298,8 +325,8 @@ export class DeliveryRouteWaypointsApi {
    * @param orderId - ID of the order
    * @returns The waypoint or null if not found
    */
-  static getWaypoint(deliveryId: string, orderId: string): DeliveryRouteWaypoint | null {
-    loadWaypoints();
+  static async getWaypoint(deliveryId: string, orderId: string): Promise<DeliveryRouteWaypoint | null> {
+    await loadWaypoints();
 
     const deliveryWaypoints = waypointsData.get(deliveryId);
     if (!deliveryWaypoints) return null;

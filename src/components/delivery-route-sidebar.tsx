@@ -45,9 +45,32 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   const { setHighlightedOrderId, highlightedOrderId } = useMarkerHighlight();
   const { currentOrderId, setCurrentOrderId, setPreviousOrderId } =
     useOrderHighlight();
-  const { currentDelivery, removeOrderFromDelivery } = useDeliveryRoute();
+  const {
+    currentDelivery,
+    removeOrderFromDelivery,
+    refreshDeliveries,
+    refreshDeliveryOrders,
+    refreshUnassignedOrders,
+  } = useDeliveryRoute();
   const routeManagerContext = useRouteManager();
   const routeManager = routeManagerContext?.routeManager ?? null;
+
+  const handleReset = async () => {
+    try {
+      await resetLocalStorageAndFetchData(async () => {
+        // Refresh all data from the context
+        await Promise.all([
+          refreshDeliveries(),
+          refreshUnassignedOrders(),
+          currentDelivery
+            ? refreshDeliveryOrders(currentDelivery.id)
+            : Promise.resolve([]),
+        ]);
+      });
+    } catch (error) {
+      console.error("Error during reset:", error);
+    }
+  };
 
   const [deliveryOrders, setDeliveryOrders] =
     useState<Order[]>(deliveryOrdersProp);
@@ -464,7 +487,7 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
           </span>
           <div className="flex items-center gap-3">
             <button
-              onClick={resetLocalStorageAndFetchData}
+              onClick={handleReset}
               className="text-muted-foreground hover:text-foreground transition-colors duration-200"
               aria-label="Reset Data"
             >
