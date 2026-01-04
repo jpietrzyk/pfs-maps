@@ -39,8 +39,18 @@ export interface RoutingResponse {
   }>;
 }
 
+export interface RouteSegment {
+  id: string;
+  from: { lat: number; lng: number };
+  to: { lat: number; lng: number };
+  positions?: Array<{ lat: number; lng: number }>; // Full polyline path
+  distance?: number; // meters
+  duration?: number; // seconds
+}
+
 class MapyRoutingApiClass {
   private readonly baseUrl = 'https://api.mapy.com/v1/routing/route';
+  private routeCache = new Map<string, RouteSegment>();
 
   /**
    * Calculate a route between two points
@@ -94,6 +104,89 @@ class MapyRoutingApiClass {
     }
 
     return response.json();
+  }
+
+  /**
+   * Calculate route segments for multiple consecutive waypoints
+   * Returns one route segment for each pair of consecutive waypoints
+   */
+  async calculateRouteSegments(
+    waypoints: Array<{ lat: number; lng: number }>,
+    apiKey: string,
+    options?: {
+      routeType?: RoutingRequest['routeType'];
+      avoidToll?: boolean;
+      avoidHighways?: boolean;
+    }
+  ): Promise<RouteSegment[]> {
+    if (waypoints.length < 2) {
+      return [];
+    }
+
+    const segments: RouteSegment[] = [];
+
+    // Calculate route for each consecutive pair
+    for (let i = 0; i < waypoints.length - 1; i++) {
+      const from = waypoints[i];
+      const to = waypoints[i + 1];
+      const segmentId = `${from.lat},${from.lng}-${to.lat},${to.lng}`;
+
+      // Check cache first
+      const cached = this.routeCache.get(segmentId);
+      if (cached) {
+        segments.push(cached);
+        continue;
+      }
+
+      try {
+        const routeResponse = await this.calculateRoute(
+          {
+            start: [from.lng, from.lat], // Mapy.cz uses [lng, lat]
+            end: [to.lng, to.lat],
+            routeType: options?.routeType || 'car_fast',
+            format: 'geojson',
+            avoidToll: options?.avoidToll,
+            avoidHighways: options?.avoidHighways,
+          },
+          apiKey
+        );
+
+        const positions = this.convertGeoJSONToPositions(
+          routeResponse.geometry.geometry.coordinates
+        );
+
+        const segment: RouteSegment = {
+          id: segmentId,
+          from,
+          to,
+          positions,
+          distance: routeResponse.length,
+          duration: routeResponse.duration,
+        };
+
+        // Cache the result
+        this.routeCache.set(segmentId, segment);
+        segments.push(segment);
+      } catch (error) {
+        console.error(`Failed to calculate route segment ${segmentId}:`, error);
+        // Fallback to straight line
+        segments.push({
+          id: segmentId,
+          from,
+          to,
+          positions: [from, to],
+        });
+      }
+    }
+
+    return segments;
+  }
+
+  /**
+   * Clear the route cache
+   */
+  clearCache(): void {
+    this.routeCache.clear();
   }
 
   /**
