@@ -15,6 +15,13 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useParams, useNavigate } from "react-router-dom";
 
 import type { Order } from "@/types/order";
 import { DeliveryOrderList } from "@/components/delivery-route/delivery-order-list";
@@ -54,6 +61,34 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
   } = useDeliveryRoute();
   const routeManagerContext = useRouteManager();
   const routeManager = routeManagerContext?.routeManager ?? null;
+
+  // Get current route params and navigation
+  const params = useParams<{ deliveryId?: string }>();
+  const navigate = useNavigate();
+
+  // Detect current map provider from URL
+  const getCurrentMapProvider = () => {
+    const pathname = window.location.pathname;
+    if (pathname.includes("/mapy")) return "mapy";
+    if (pathname.includes("/delivery_routes") && pathname.includes("/mapy"))
+      return "mapy";
+    return "leaflet"; // default
+  };
+
+  const [currentMapProvider, setCurrentMapProvider] = useState<
+    "leaflet" | "mapy"
+  >(getCurrentMapProvider());
+
+  const handleMapProviderChange = (provider: "leaflet" | "mapy") => {
+    const deliveryId = params.deliveryId || "DEL-001"; // fallback to DEL-001 if no ID
+    setCurrentMapProvider(provider);
+
+    if (provider === "mapy") {
+      navigate(`/delivery_routes/${deliveryId}/mapy`);
+    } else {
+      navigate(`/delivery_routes/${deliveryId}/leaflet`);
+    }
+  };
 
   const handleReset = async () => {
     try {
@@ -486,6 +521,32 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
             © {new Date().getFullYear()} Delivery Manager
           </span>
           <div className="flex items-center gap-3">
+            {/* Map Provider Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-muted-foreground hover:text-foreground transition-colors duration-200 px-2 py-1 rounded text-xs font-medium border border-border/50 hover:border-border">
+                  {currentMapProvider === "mapy" ? "Mapy.cz" : "Leaflet"}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="top">
+                <DropdownMenuItem
+                  onClick={() => handleMapProviderChange("leaflet")}
+                  className={
+                    currentMapProvider === "leaflet" ? "bg-accent" : ""
+                  }
+                >
+                  Leaflet
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleMapProviderChange("mapy")}
+                  className={currentMapProvider === "mapy" ? "bg-accent" : ""}
+                >
+                  Mapy.cz
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Reset Button */}
             <button
               onClick={handleReset}
               className="text-muted-foreground hover:text-foreground transition-colors duration-200"
