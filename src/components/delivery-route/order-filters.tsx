@@ -38,7 +38,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             <Toggle
               pressed={priorities.low}
               onPressedChange={() => handlePriorityChange("low")}
-              variant="outline"
               size="sm"
               aria-label="Filter by Low priority"
               className="data-[state=on]:text-green-600 data-[state=on]:*:[svg]:stroke-green-600"
@@ -50,7 +49,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             <Toggle
               pressed={priorities.medium}
               onPressedChange={() => handlePriorityChange("medium")}
-              variant="outline"
               size="sm"
               aria-label="Filter by Medium priority"
               className="data-[state=on]:text-yellow-600 data-[state=on]:*:[svg]:stroke-yellow-600"
@@ -62,7 +60,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             <Toggle
               pressed={priorities.high}
               onPressedChange={() => handlePriorityChange("high")}
-              variant="outline"
               size="sm"
               aria-label="Filter by High priority"
               className="data-[state=on]:text-red-600 data-[state=on]:*:[svg]:stroke-red-600"

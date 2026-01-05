@@ -160,7 +160,7 @@ export default function DeliveryMapPage() {
             </DrawerDescription>
           </DrawerHeader>
           <OrderFilters onPriorityChange={setPriorityFilters} />
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <div className="h-[25vh] min-h-[25vh] max-h-[25vh] overflow-y-auto px-6 pb-6">
             {filteredUnassignedOrders.length > 0 ? (
               <UnassignedOrderList
                 unassignedOrders={filteredUnassignedOrders}
@@ -183,9 +183,11 @@ export default function DeliveryMapPage() {
                 setHighlightedOrderId={setHighlightedOrderId}
               />
             ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                All orders are assigned! 🎉
-              </p>
+              <div className="flex items-center justify-center h-full">
+                <p className="text-sm text-muted-foreground text-center">
+                  All orders are assigned! 🎉
+                </p>
+              </div>
             )}
           </div>
         </div>

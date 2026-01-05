@@ -49,77 +49,79 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
       <div className="font-semibold text-sm mb-2 text-foreground/70">
         {title}
       </div>
-      {unassignedOrders.length === 0 ? (
-        <div className="text-xs text-muted-foreground">
-          No unassigned orders available
-        </div>
-      ) : (
-        <DndContext sensors={sensors} collisionDetection={closestCenter}>
-          <SortableContext
-            items={unassignedOrders}
-            strategy={verticalListSortingStrategy}
-          >
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {unassignedOrders.map((order) => (
-                <li
-                  key={order.id}
-                  className={`group relative overflow-hidden rounded border border-border bg-card shadow-sm transition-all hover:shadow-md cursor-pointer p-2 h-full ${
-                    highlightedOrderId === order.id ? "ring-2 ring-ring" : ""
-                  }`}
-                  onClick={() => onAddToDelivery(order.id)}
-                  onMouseEnter={() => setHighlightedOrderId?.(order.id)}
-                  onMouseLeave={() => setHighlightedOrderId?.(null)}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div
-                        className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0"
-                        data-testid="product-icon"
-                      >
-                        <svg
-                          className="h-3 w-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
+      <div>
+        {unassignedOrders.length === 0 ? (
+          <div className="text-xs text-muted-foreground">
+            No unassigned orders available
+          </div>
+        ) : (
+          <DndContext sensors={sensors} collisionDetection={closestCenter}>
+            <SortableContext
+              items={unassignedOrders}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {unassignedOrders.map((order) => (
+                  <li
+                    key={order.id}
+                    className={`group relative overflow-hidden rounded border border-border bg-card shadow-sm transition-all hover:shadow-md cursor-pointer p-2 h-full ${
+                      highlightedOrderId === order.id ? "ring-2 ring-ring" : ""
+                    }`}
+                    onClick={() => onAddToDelivery(order.id)}
+                    onMouseEnter={() => setHighlightedOrderId?.(order.id)}
+                    onMouseLeave={() => setHighlightedOrderId?.(null)}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div
+                          className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary shrink-0"
+                          data-testid="product-icon"
                         >
-                          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <h4 className="truncate text-xs font-medium text-foreground cursor-help">
-                              {order.product?.name || `Order ${order.id}`}
-                            </h4>
-                          </TooltipTrigger>
-                          <TooltipContent
-                            side="left"
-                            align="center"
-                            sideOffset={12}
-                            className="p-0 overflow-hidden"
+                          <svg
+                            className="h-3 w-3"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
                           >
-                            {createExpandedTooltipContent(order)}
-                          </TooltipContent>
-                        </Tooltip>
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <h4 className="truncate text-xs font-medium text-foreground cursor-help">
+                                {order.product?.name || `Order ${order.id}`}
+                              </h4>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="left"
+                              align="center"
+                              sideOffset={12}
+                              className="p-0 overflow-hidden"
+                            >
+                              {createExpandedTooltipContent(order)}
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
                       </div>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToDelivery(order.id);
+                        }}
+                        size="icon"
+                        className="shrink-0 h-6 w-6 p-1 bg-primary hover:bg-primary/90"
+                        aria-label={`Add order ${order.id} to delivery`}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
                     </div>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddToDelivery(order.id);
-                      }}
-                      size="icon"
-                      className="shrink-0 h-6 w-6 p-1 bg-primary hover:bg-primary/90"
-                      aria-label={`Add order ${order.id} to delivery`}
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
-      )}
+                  </li>
+                ))}
+              </ul>
+            </SortableContext>
+          </DndContext>
+        )}
+      </div>
     </div>
   );
 };
