@@ -15,6 +15,7 @@ import { UnassignedOrderList } from "@/components/delivery-route/unassigned-orde
 import {
   OrderFilters,
   type PriorityFilterState,
+  type StatusFilterState,
 } from "@/components/delivery-route/order-filters";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -48,9 +49,17 @@ export default function DeliveryMapPage() {
     high: true,
   });
 
-  // Filter unassigned orders based on priority filters
+  // Status filter state
+  const [statusFilters, setStatusFilters] = useState<StatusFilterState>({
+    pending: true,
+    "in-progress": true,
+    completed: true,
+    cancelled: true,
+  });
+
+  // Filter unassigned orders based on priority and status filters
   const filteredUnassignedOrders = unassignedOrders.filter(
-    (order) => priorityFilters[order.priority]
+    (order) => priorityFilters[order.priority] && statusFilters[order.status]
   );
 
   const totalOrdersCount =
@@ -159,7 +168,10 @@ export default function DeliveryMapPage() {
               assigned to a delivery route
             </DrawerDescription>
           </DrawerHeader>
-          <OrderFilters onPriorityChange={setPriorityFilters} />
+          <OrderFilters
+            onPriorityChange={setPriorityFilters}
+            onStatusChange={setStatusFilters}
+          />
           <div className="h-[25vh] min-h-[25vh] max-h-[25vh] overflow-y-auto px-6 pb-6">
             {filteredUnassignedOrders.length > 0 ? (
               <UnassignedOrderList
