@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { UnassignedOrderList } from "@/components/delivery-route/unassigned-order-list";
+import {
+  OrderFilters,
+  type PriorityFilterState,
+} from "@/components/delivery-route/order-filters";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
@@ -37,7 +41,20 @@ export default function DeliveryMapPage() {
   const [displayedOrders, setDisplayedOrders] =
     useState<Order[]>(deliveryOrders);
 
-  const totalOrdersCount = displayedOrders.length + unassignedOrders.length;
+  // Priority filter state
+  const [priorityFilters, setPriorityFilters] = useState<PriorityFilterState>({
+    low: true,
+    medium: true,
+    high: true,
+  });
+
+  // Filter unassigned orders based on priority filters
+  const filteredUnassignedOrders = unassignedOrders.filter(
+    (order) => priorityFilters[order.priority]
+  );
+
+  const totalOrdersCount =
+    displayedOrders.length + filteredUnassignedOrders.length;
 
   useEffect(() => {
     void refreshDeliveryOrders(deliveryId);
@@ -81,7 +98,7 @@ export default function DeliveryMapPage() {
           <div className="absolute inset-0 z-0">
             <MapView
               orders={displayedOrders}
-              unassignedOrders={unassignedOrders}
+              unassignedOrders={filteredUnassignedOrders}
               onOrderAddedToDelivery={async () => {
                 await refreshDeliveryOrders(deliveryId);
                 handleDeliveryOrdersUpdated();
@@ -94,7 +111,7 @@ export default function DeliveryMapPage() {
             <div className="pointer-events-auto flex gap-2">
               <DrawerTrigger asChild>
                 <Button variant="outline" size="sm">
-                  Unassigned ({unassignedOrders.length})
+                  Unassigned ({filteredUnassignedOrders.length})
                 </Button>
               </DrawerTrigger>
               <SidebarTrigger />
@@ -137,15 +154,16 @@ export default function DeliveryMapPage() {
           <DrawerHeader>
             <DrawerTitle>Unassigned Orders</DrawerTitle>
             <DrawerDescription>
-              {unassignedOrders.length} order
-              {unassignedOrders.length !== 1 ? "s" : ""} waiting to be assigned
-              to a delivery route
+              {filteredUnassignedOrders.length} order
+              {filteredUnassignedOrders.length !== 1 ? "s" : ""} waiting to be
+              assigned to a delivery route
             </DrawerDescription>
           </DrawerHeader>
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
-            {unassignedOrders.length > 0 ? (
+          <OrderFilters onPriorityChange={setPriorityFilters} />
+          <div className="h-[25vh] min-h-[25vh] max-h-[25vh] overflow-y-auto px-6 pb-6">
+            {filteredUnassignedOrders.length > 0 ? (
               <UnassignedOrderList
-                unassignedOrders={unassignedOrders}
+                unassignedOrders={filteredUnassignedOrders}
                 onAddToDelivery={async (orderId: string) => {
                   try {
                     const targetDeliveryId = deliveryId || currentDelivery?.id;
@@ -165,9 +183,11 @@ export default function DeliveryMapPage() {
                 setHighlightedOrderId={setHighlightedOrderId}
               />
             ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                All orders are assigned! 🎉
-              </p>
+              <div className="flex items-center justify-center h-full">
+                <p className="text-sm text-muted-foreground text-center">
+                  All orders are assigned! 🎉
+                </p>
+              </div>
             )}
           </div>
         </div>

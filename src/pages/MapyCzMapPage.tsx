@@ -11,6 +11,11 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { UnassignedOrderList } from "@/components/delivery-route/unassigned-order-list";
+import {
+  OrderFilters,
+  type PriorityFilterState,
+} from "@/components/delivery-route/order-filters";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
@@ -34,7 +39,20 @@ export default function MapyCzMapPage() {
   const [displayedOrders, setDisplayedOrders] =
     useState<Order[]>(deliveryOrders);
 
-  const totalOrdersCount = displayedOrders.length + unassignedOrders.length;
+  // Priority filter state
+  const [priorityFilters, setPriorityFilters] = useState<PriorityFilterState>({
+    low: true,
+    medium: true,
+    high: true,
+  });
+
+  // Filter unassigned orders based on priority filters
+  const filteredUnassignedOrders = unassignedOrders.filter(
+    (order) => priorityFilters[order.priority]
+  );
+
+  const totalOrdersCount =
+    displayedOrders.length + filteredUnassignedOrders.length;
 
   useEffect(() => {
     void refreshDeliveryOrders(deliveryId);
@@ -78,7 +96,7 @@ export default function MapyCzMapPage() {
           <div className="absolute inset-0 z-0">
             <MapyMapView
               orders={displayedOrders}
-              unassignedOrders={unassignedOrders}
+              unassignedOrders={filteredUnassignedOrders}
               onOrderAddedToDelivery={async () => {
                 await refreshDeliveryOrders(deliveryId);
                 handleDeliveryOrdersUpdated();
@@ -93,7 +111,6 @@ export default function MapyCzMapPage() {
                 onOrderRemoved={handleOrderRemoved}
                 onDeliveryOrdersUpdated={handleDeliveryOrdersUpdated}
                 deliveryOrders={displayedOrders}
-                unassignedOrders={unassignedOrders}
                 onAddOrderToDelivery={async (orderId: string) => {
                   try {
                     // Use the delivery context's addOrderToDelivery method
@@ -123,37 +140,53 @@ export default function MapyCzMapPage() {
           <div className="absolute top-6 right-6 z-30 pointer-events-auto flex gap-2">
             <DrawerTrigger asChild>
               <Button variant="outline" size="sm">
-                Info
+                Unassigned ({filteredUnassignedOrders.length})
               </Button>
             </DrawerTrigger>
             <SidebarTrigger className="bg-background border border-border shadow-lg hover:bg-accent" />
           </div>
         </main>
 
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Delivery Information</DrawerTitle>
-            <DrawerDescription>
-              Details about the current delivery route
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="p-6">
-            <p className="text-sm text-muted-foreground mb-2">
-              Delivery ID:{" "}
-              <span className="font-semibold">{currentDelivery?.id}</span>
-            </p>
-            <p className="text-sm text-muted-foreground mb-2">
-              Name:{" "}
-              <span className="font-semibold">{currentDelivery?.name}</span>
-            </p>
-            <p className="text-sm text-muted-foreground mb-2">
-              Status:{" "}
-              <span className="font-semibold">{currentDelivery?.status}</span>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Total Orders:{" "}
-              <span className="font-semibold">{totalOrdersCount}</span>
-            </p>
+        <DrawerContent side="bottom">
+          <div className="w-full flex flex-col max-h-[60vh] overflow-hidden">
+            <DrawerHeader>
+              <DrawerTitle>Unassigned Orders</DrawerTitle>
+              <DrawerDescription>
+                {filteredUnassignedOrders.length} order
+                {filteredUnassignedOrders.length !== 1 ? "s" : ""} waiting to be
+                assigned to a delivery route
+              </DrawerDescription>
+            </DrawerHeader>
+            <OrderFilters onPriorityChange={setPriorityFilters} />
+            <div className="h-[25vh] min-h-[25vh] max-h-[25vh] overflow-y-auto px-6 pb-6">
+              {filteredUnassignedOrders.length > 0 ? (
+                <UnassignedOrderList
+                  unassignedOrders={filteredUnassignedOrders}
+                  onAddToDelivery={async (orderId: string) => {
+                    try {
+                      const targetDeliveryId =
+                        deliveryId || currentDelivery?.id;
+                      if (!targetDeliveryId) {
+                        throw new Error("No delivery selected");
+                      }
+                      await addOrderToDelivery(targetDeliveryId, orderId);
+                      await refreshDeliveryOrders(deliveryId);
+                      handleDeliveryOrdersUpdated();
+                    } catch (error) {
+                      console.error("Failed to add order to delivery:", error);
+                      alert("Failed to add order to delivery");
+                    }
+                  }}
+                  title=""
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-sm text-muted-foreground text-center">
+                    All orders are assigned! 🎉
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </DrawerContent>
       </Drawer>
