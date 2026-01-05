@@ -7,7 +7,7 @@ describe("OrderFilters", () => {
   it("should render filters section with heading", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    expect(screen.getByText("Filters")).toBeInTheDocument();
+    expect(screen.getByText("FILTERS")).toBeInTheDocument();
     expect(screen.getByText("Priority")).toBeInTheDocument();
   });
 

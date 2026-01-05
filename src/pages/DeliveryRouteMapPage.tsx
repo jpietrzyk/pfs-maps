@@ -218,9 +218,9 @@ export default function DeliveryMapPage() {
 
       <DrawerContent side="bottom">
         <div className="w-full flex flex-col max-h-[60vh] overflow-hidden">
-          <DrawerHeader>
-            <DrawerTitle>Unassigned Orders</DrawerTitle>
-            <DrawerDescription>
+          <DrawerHeader className="py-3 pb-2">
+            <DrawerTitle className="text-base">Unassigned Orders</DrawerTitle>
+            <DrawerDescription className="text-xs">
               {filteredUnassignedOrders.length} order
               {filteredUnassignedOrders.length !== 1 ? "s" : ""} waiting to be
               assigned to a delivery route
