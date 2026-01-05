@@ -8,6 +8,8 @@ import {
   Play,
   CheckCircle,
   XCircle,
+  DollarSign,
+  Wrench,
 } from "lucide-react";
 
 export type PriorityFilterState = {
@@ -23,14 +25,30 @@ export type StatusFilterState = {
   cancelled: boolean;
 };
 
+export type AmountFilterState = {
+  low: boolean;
+  medium: boolean;
+  high: boolean;
+};
+
+export type ComplexityFilterState = {
+  simple: boolean;
+  moderate: boolean;
+  complex: boolean;
+};
+
 interface OrderFiltersProps {
   onPriorityChange: (filters: PriorityFilterState) => void;
   onStatusChange?: (filters: StatusFilterState) => void;
+  onAmountChange?: (filters: AmountFilterState) => void;
+  onComplexityChange?: (filters: ComplexityFilterState) => void;
 }
 
 export const OrderFilters: React.FC<OrderFiltersProps> = ({
   onPriorityChange,
   onStatusChange,
+  onAmountChange,
+  onComplexityChange,
 }) => {
   const [priorities, setPriorities] = useState<PriorityFilterState>({
     low: true,
@@ -45,6 +63,18 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     cancelled: true,
   });
 
+  const [amounts, setAmounts] = useState<AmountFilterState>({
+    low: true,
+    medium: true,
+    high: true,
+  });
+
+  const [complexities, setComplexities] = useState<ComplexityFilterState>({
+    simple: true,
+    moderate: true,
+    complex: true,
+  });
+
   const handlePriorityChange = (priority: keyof PriorityFilterState) => {
     const newFilters = { ...priorities, [priority]: !priorities[priority] };
     setPriorities(newFilters);
@@ -55,6 +85,21 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     const newFilters = { ...statuses, [status]: !statuses[status] };
     setStatuses(newFilters);
     onStatusChange?.(newFilters);
+  };
+
+  const handleAmountChange = (amount: keyof AmountFilterState) => {
+    const newFilters = { ...amounts, [amount]: !amounts[amount] };
+    setAmounts(newFilters);
+    onAmountChange?.(newFilters);
+  };
+
+  const handleComplexityChange = (complexity: keyof ComplexityFilterState) => {
+    const newFilters = {
+      ...complexities,
+      [complexity]: !complexities[complexity],
+    };
+    setComplexities(newFilters);
+    onComplexityChange?.(newFilters);
   };
 
   return (
@@ -145,6 +190,82 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             >
               <XCircle className="h-4 w-4 mr-1" />
               Cancelled
+            </Toggle>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-foreground/70">Amount</p>
+          <div className="flex flex-wrap gap-2">
+            <Toggle
+              pressed={amounts.low}
+              onPressedChange={() => handleAmountChange("low")}
+              size="sm"
+              aria-label="Filter by Low amount (0 - 10,000)"
+              className="data-[state=on]:text-cyan-600 data-[state=on]:*:[svg]:stroke-cyan-600"
+            >
+              <DollarSign className="h-4 w-4 mr-1" />
+              0-10K
+            </Toggle>
+
+            <Toggle
+              pressed={amounts.medium}
+              onPressedChange={() => handleAmountChange("medium")}
+              size="sm"
+              aria-label="Filter by Medium amount (10,001 - 100,000)"
+              className="data-[state=on]:text-orange-600 data-[state=on]:*:[svg]:stroke-orange-600"
+            >
+              <DollarSign className="h-4 w-4 mr-1" />
+              10K-100K
+            </Toggle>
+
+            <Toggle
+              pressed={amounts.high}
+              onPressedChange={() => handleAmountChange("high")}
+              size="sm"
+              aria-label="Filter by High amount (above 100,000)"
+              className="data-[state=on]:text-rose-600 data-[state=on]:*:[svg]:stroke-rose-600"
+            >
+              <DollarSign className="h-4 w-4 mr-1" />
+              100K+
+            </Toggle>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-foreground/70">Complexity</p>
+          <div className="flex flex-wrap gap-2">
+            <Toggle
+              pressed={complexities.simple}
+              onPressedChange={() => handleComplexityChange("simple")}
+              size="sm"
+              aria-label="Filter by Simple complexity (Level 1)"
+              className="data-[state=on]:text-sky-600 data-[state=on]:*:[svg]:stroke-sky-600"
+            >
+              <Wrench className="h-4 w-4 mr-1" />
+              Simple
+            </Toggle>
+
+            <Toggle
+              pressed={complexities.moderate}
+              onPressedChange={() => handleComplexityChange("moderate")}
+              size="sm"
+              aria-label="Filter by Moderate complexity (Level 2)"
+              className="data-[state=on]:text-amber-600 data-[state=on]:*:[svg]:stroke-amber-600"
+            >
+              <Wrench className="h-4 w-4 mr-1" />
+              Moderate
+            </Toggle>
+
+            <Toggle
+              pressed={complexities.complex}
+              onPressedChange={() => handleComplexityChange("complex")}
+              size="sm"
+              aria-label="Filter by Complex (Level 3)"
+              className="data-[state=on]:text-red-700 data-[state=on]:*:[svg]:stroke-red-700"
+            >
+              <Wrench className="h-4 w-4 mr-1" />
+              Complex
             </Toggle>
           </div>
         </div>

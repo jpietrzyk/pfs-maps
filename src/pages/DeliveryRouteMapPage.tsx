@@ -16,6 +16,8 @@ import {
   OrderFilters,
   type PriorityFilterState,
   type StatusFilterState,
+  type AmountFilterState,
+  type ComplexityFilterState,
 } from "@/components/delivery-route/order-filters";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -57,9 +59,44 @@ export default function DeliveryMapPage() {
     cancelled: true,
   });
 
-  // Filter unassigned orders based on priority and status filters
+  // Amount filter state
+  const [amountFilters, setAmountFilters] = useState<AmountFilterState>({
+    low: true,
+    medium: true,
+    high: true,
+  });
+
+  // Complexity filter state
+  const [complexityFilters, setComplexityFilters] =
+    useState<ComplexityFilterState>({
+      simple: true,
+      moderate: true,
+      complex: true,
+    });
+
+  // Helper function to determine amount tier
+  const getAmountTier = (amount: number): keyof AmountFilterState => {
+    if (amount <= 10000) return "low";
+    if (amount <= 100000) return "medium";
+    return "high";
+  };
+
+  // Helper function to determine complexity tier based on product complexity
+  const getComplexityTier = (
+    productComplexity: 1 | 2 | 3
+  ): keyof ComplexityFilterState => {
+    if (productComplexity === 1) return "simple";
+    if (productComplexity === 2) return "moderate";
+    return "complex";
+  };
+
+  // Filter unassigned orders based on priority, status, amount, and complexity filters
   const filteredUnassignedOrders = unassignedOrders.filter(
-    (order) => priorityFilters[order.priority] && statusFilters[order.status]
+    (order) =>
+      priorityFilters[order.priority] &&
+      statusFilters[order.status] &&
+      amountFilters[getAmountTier(order.totalAmount)] &&
+      complexityFilters[getComplexityTier(order.product.complexity)]
   );
 
   const totalOrdersCount =
@@ -171,6 +208,8 @@ export default function DeliveryMapPage() {
           <OrderFilters
             onPriorityChange={setPriorityFilters}
             onStatusChange={setStatusFilters}
+            onAmountChange={setAmountFilters}
+            onComplexityChange={setComplexityFilters}
           />
           <div className="h-[25vh] min-h-[25vh] max-h-[25vh] overflow-y-auto px-6 pb-6">
             {filteredUnassignedOrders.length > 0 ? (
