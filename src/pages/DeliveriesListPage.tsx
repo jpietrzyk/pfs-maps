@@ -220,7 +220,7 @@ export default function DeliveriesListPage() {
         </div>
       </div>
 
-      <DrawerContent>
+      <DrawerContent side="right">
         <DrawerHeader>
           <DrawerTitle>Delivery Details</DrawerTitle>
           <DrawerDescription>

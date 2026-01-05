@@ -132,8 +132,8 @@ export default function DeliveryMapPage() {
         </main>
       </SidebarProvider>
 
-      <DrawerContent className="fixed left-0 top-0 h-screen w-96 rounded-none">
-        <div className="w-full h-full flex flex-col">
+      <DrawerContent side="bottom">
+        <div className="w-full flex flex-col max-h-[60vh] overflow-hidden">
           <DrawerHeader>
             <DrawerTitle>Unassigned Orders</DrawerTitle>
             <DrawerDescription>
