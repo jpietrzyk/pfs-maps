@@ -44,44 +44,30 @@ class DeliveryRoutesApiClass {
     try {
       // Check if we're in a browser environment (fetch is available)
       if (typeof fetch !== 'undefined') {
-        // Load delivery metadata from JSON files
-        const deliveryIds = ['DEL-001', 'DEL-002'];
-        const deliveries: DeliveryRoute[] = [];
-
-        for (const deliveryId of deliveryIds) {
-          try {
-            const response = await fetch(`/delivery-${deliveryId}.json`);
-            if (!response.ok) {
-              console.warn(`Failed to load delivery data for ${deliveryId}`);
-              continue;
-            }
-
-            const deliveryData = await response.json();
-
-            // Convert the JSON structure to our DeliveryRoute interface (metadata only)
-            const delivery: DeliveryRoute = {
-              id: deliveryData.id,
-              name: deliveryData.name || `Delivery ${deliveryData.id}`,
-              status: deliveryData.status || 'scheduled',
-              driver: deliveryData.driver,
-              vehicle: deliveryData.vehicle,
-              scheduledDate: deliveryData.scheduledDate ? new Date(deliveryData.scheduledDate) : undefined,
-              startedAt: deliveryData.startedAt ? new Date(deliveryData.startedAt) : undefined,
-              completedAt: deliveryData.completedAt ? new Date(deliveryData.completedAt) : undefined,
-              createdAt: new Date(deliveryData.createdAt),
-              updatedAt: new Date(deliveryData.updatedAt),
-              notes: deliveryData.notes,
-              estimatedDistance: deliveryData.estimatedDistance,
-              estimatedDuration: deliveryData.estimatedDuration,
-            };
-
-            deliveries.push(delivery);
-          } catch (error) {
-            console.error(`Error loading delivery ${deliveryId}:`, error);
-          }
+        // Load delivery metadata from mocked GET /deliveryRoutes endpoint
+        const response = await fetch('/delivery-routes.json');
+        if (!response.ok) {
+          throw new Error('Failed to load delivery routes');
         }
 
-        this.deliveries = deliveries.length > 0 ? deliveries : [...sampleDeliveries];
+        const deliveriesData = await response.json();
+
+        // Convert the JSON array to our DeliveryRoute interface (metadata only)
+        this.deliveries = deliveriesData.map((deliveryData: any) => ({
+          id: deliveryData.id,
+          name: deliveryData.name || `Delivery ${deliveryData.id}`,
+          status: deliveryData.status || 'scheduled',
+          driver: deliveryData.driver,
+          vehicle: deliveryData.vehicle,
+          scheduledDate: deliveryData.scheduledDate ? new Date(deliveryData.scheduledDate) : undefined,
+          startedAt: deliveryData.startedAt ? new Date(deliveryData.startedAt) : undefined,
+          completedAt: deliveryData.completedAt ? new Date(deliveryData.completedAt) : undefined,
+          createdAt: new Date(deliveryData.createdAt),
+          updatedAt: new Date(deliveryData.updatedAt),
+          notes: deliveryData.notes,
+          estimatedDistance: deliveryData.estimatedDistance,
+          estimatedDuration: deliveryData.estimatedDuration,
+        }));
       } else {
         // In Node.js environment (tests), use sample data
         this.deliveries = [...sampleDeliveries];
@@ -89,7 +75,7 @@ class DeliveryRoutesApiClass {
 
       this.loaded = true;
     } catch (error) {
-      console.error('Error loading delivery data:', error);
+      console.error('Error loading delivery routes:', error);
       // Fallback to sample data if loading fails
       this.deliveries = [...sampleDeliveries];
       this.loaded = true;
