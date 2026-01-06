@@ -2,7 +2,9 @@ import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-route-sidebar";
-import OrdersCountDisplay from "@/components/ui/orders-count-display";
+import OrdersCountDisplay, {
+  BackToDeliveriesLink,
+} from "@/components/ui/orders-count-display";
 import { pl, getOrdersCountText } from "@/lib/translations";
 import {
   Drawer,
@@ -210,14 +212,32 @@ export default function DeliveryRouteMapLayout({
             </div>
           </div>
 
-          {/* Orders count display, back button, and drawer trigger at top left */}
+          {/* Back button, drawer trigger, and orders count display at top left */}
           <div className="absolute top-4 left-16 z-20 pointer-events-auto flex gap-2 items-center">
-            <OrdersCountDisplay count={totalOrdersCount} />
+            <BackToDeliveriesLink />
             <DrawerTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button
+                className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium px-3 py-2 rounded shadow-md transition-colors inline-flex items-center gap-2"
+                size="sm"
+              >
+                <svg
+                  className="h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
                 {pl.unassigned} ({filteredUnassignedOrders.length})
               </Button>
             </DrawerTrigger>
+            <OrdersCountDisplay count={totalOrdersCount} />
           </div>
 
           {/* Sidebar trigger at top right */}
