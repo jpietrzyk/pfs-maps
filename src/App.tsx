@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import DeliveriesListPage from "@/pages/DeliveriesListPage";
+import DeliveryRoutesListPage from "@/pages/DeliveryRoutesListPage";
 import DeliveryMapPage from "@/pages/DeliveryRouteMapPage";
 import MapyCzMapPage from "@/pages/MapyCzMapPage";
 import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
@@ -10,7 +10,7 @@ function App() {
       <DeliveryRouteManagerProvider>
         <Routes>
           {/* Deliveries list page */}
-          <Route path="/delivery_routes" element={<DeliveriesListPage />} />
+          <Route path="/delivery_routes" element={<DeliveryRoutesListPage />} />
           {/* Delivery route map pages */}
           <Route
             path="/delivery_routes/:deliveryId"
@@ -25,7 +25,7 @@ function App() {
             element={<MapyCzMapPage />}
           />
           {/* Default route */}
-          <Route path="/" element={<DeliveriesListPage />} />
+          <Route path="/" element={<DeliveryRoutesListPage />} />
         </Routes>
       </DeliveryRouteManagerProvider>
     </Router>
