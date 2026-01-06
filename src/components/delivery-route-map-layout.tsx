@@ -2,9 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DeliverySidebar from "@/components/delivery-route-sidebar";
-import OrdersCountDisplay, {
-  BackToDeliveriesLink,
-} from "@/components/ui/orders-count-display";
+import { MapControls } from "@/components/map-controls";
 import { pl, getOrdersCountText } from "@/lib/translations";
 import {
   Drawer,
@@ -131,6 +129,7 @@ export default function DeliveryRouteMapLayout({
       updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)]
   );
 
+  const totalAvailableOrders = displayedOrders.length + unassignedOrders.length;
   const totalOrdersCount =
     displayedOrders.length + filteredUnassignedOrders.length;
 
@@ -213,32 +212,39 @@ export default function DeliveryRouteMapLayout({
           </div>
 
           {/* Back button, drawer trigger, and orders count display at top left */}
-          <div className="absolute top-4 left-16 z-20 pointer-events-auto flex gap-2 items-center">
-            <BackToDeliveriesLink />
-            <DrawerTrigger asChild>
-              <Button
-                className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium px-3 py-2 rounded shadow-md transition-colors inline-flex items-center gap-2"
-                size="sm"
-              >
-                <svg
-                  className="h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                  />
-                </svg>
-                {pl.unassigned} ({filteredUnassignedOrders.length})
-              </Button>
-            </DrawerTrigger>
-            <OrdersCountDisplay count={totalOrdersCount} />
-          </div>
+          <MapControls
+            totalOrdersCount={totalOrdersCount}
+            totalAvailableOrders={totalAvailableOrders}
+            filteredUnassignedOrdersCount={filteredUnassignedOrders.length}
+            onResetFilters={() => {
+              setPriorityFilters({
+                low: true,
+                medium: true,
+                high: true,
+              });
+              setStatusFilters({
+                pending: true,
+                "in-progress": true,
+                completed: true,
+                cancelled: true,
+              });
+              setAmountFilters({
+                low: true,
+                medium: true,
+                high: true,
+              });
+              setComplexityFilters({
+                simple: true,
+                moderate: true,
+                complex: true,
+              });
+              setUpdatedAtFilters({
+                recent: true,
+                moderate: true,
+                old: true,
+              });
+            }}
+          />
 
           {/* Sidebar trigger at top right */}
           <div className="absolute top-4 right-4 z-30 pointer-events-auto">

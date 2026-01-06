@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "./badge";
+import { Button } from "./button";
 import { pl } from "@/lib/translations";
 import { Link } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface OrdersCountDisplayProps {
   count: number;
+  totalCount: number;
   className?: string;
+  onResetFilters?: () => void;
 }
 
 export function BackToDeliveriesLink() {
@@ -36,8 +47,48 @@ export function BackToDeliveriesLink() {
 
 const OrdersCountDisplay: React.FC<OrdersCountDisplayProps> = ({
   count,
+  totalCount,
   className = "",
+  onResetFilters,
 }) => {
+  const [showResetDialog, setShowResetDialog] = useState(false);
+
+  const handleReset = () => {
+    onResetFilters?.();
+    setShowResetDialog(false);
+  };
+
+  if (onResetFilters) {
+    return (
+      <>
+        <Button
+          onClick={() => setShowResetDialog(true)}
+          className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium px-3 py-2 rounded shadow-md transition-colors inline-flex items-center gap-1 h-auto"
+          size="sm"
+          variant="default"
+        >
+          Zamówienia: {count} / {totalCount}
+        </Button>
+
+        <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+          <AlertDialogContent>
+            <AlertDialogTitle>Reset Filters?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to reset all filters? This will restore
+              default filter settings.
+            </AlertDialogDescription>
+            <div className="flex gap-2 justify-end">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleReset}>
+                Reset Filters
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
+    );
+  }
+
   return (
     <Badge
       variant="secondary"
