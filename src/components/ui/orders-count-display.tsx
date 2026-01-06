@@ -72,15 +72,14 @@ const OrdersCountDisplay: React.FC<OrdersCountDisplayProps> = ({
 
         <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
           <AlertDialogContent>
-            <AlertDialogTitle>Reset Filters?</AlertDialogTitle>
+            <AlertDialogTitle>{pl.resetFiltersTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to reset all filters? This will restore
-              default filter settings.
+              {pl.resetFiltersDescription}
             </AlertDialogDescription>
             <div className="flex gap-2 justify-end">
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{pl.cancel}</AlertDialogCancel>
               <AlertDialogAction onClick={handleReset}>
-                Reset Filters
+                {pl.resetFilters}
               </AlertDialogAction>
             </div>
           </AlertDialogContent>

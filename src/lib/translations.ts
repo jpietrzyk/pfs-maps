@@ -45,6 +45,12 @@ export const pl = {
   backToDeliveries: "Powrót do dostaw",
   loadingDeliveries: "Ładowanie dostaw...",
   noDeliveriesFound: "Brak dostaw",
+
+  // Reset filters dialog
+  resetFilters: "Resetuj filtry",
+  resetFiltersTitle: "Resetować filtry?",
+  resetFiltersDescription: "Czy na pewno chcesz zresetować wszystkie filtry? Przywróci to domyślne ustawienia filtrów.",
+  cancel: "Anuluj",
   createDeliveryPrompt: "Rozpocznij, tworząc nową dostawę.",
   details: "Szczegóły",
   viewWithLeaflet: "Zobacz w Leaflet",
