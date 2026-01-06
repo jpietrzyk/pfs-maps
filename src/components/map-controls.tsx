@@ -6,14 +6,19 @@ import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
 import { pl } from "@/lib/translations";
+import { MapPin, Map } from "lucide-react";
 
 interface MapControlsProps {
   totalOrdersCount: number;
   totalAvailableOrders: number;
   filteredUnassignedOrdersCount: number;
   onResetFilters?: () => void;
+  currentMapProvider?: "leaflet" | "mapy";
+  onMapProviderChange?: (provider: "leaflet" | "mapy") => void;
 }
 
 export function MapControls({
@@ -21,6 +26,8 @@ export function MapControls({
   totalAvailableOrders,
   filteredUnassignedOrdersCount,
   onResetFilters,
+  currentMapProvider = "leaflet",
+  onMapProviderChange,
 }: MapControlsProps) {
   return (
     <NavigationMenu className="absolute top-4 left-16 z-20">
@@ -59,6 +66,49 @@ export function MapControls({
             onResetFilters={onResetFilters}
           />
         </NavigationMenuItem>
+        {onMapProviderChange && (
+          <NavigationMenuItem>
+            <NavigationMenuTrigger className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-2 h-9">
+              {currentMapProvider === "mapy" ? (
+                <>
+                  <Map className="h-4 w-4" />
+                  Mapy.cz
+                </>
+              ) : (
+                <>
+                  <MapPin className="h-4 w-4" />
+                  Leaflet
+                </>
+              )}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <div className="w-48 p-2">
+                <button
+                  onClick={() => onMapProviderChange("leaflet")}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded transition-colors ${
+                    currentMapProvider === "leaflet"
+                      ? "bg-green-50 text-green-700 border border-green-300"
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <MapPin className="h-4 w-4" />
+                  Leaflet
+                </button>
+                <button
+                  onClick={() => onMapProviderChange("mapy")}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded transition-colors ${
+                    currentMapProvider === "mapy"
+                      ? "bg-blue-50 text-blue-700 border border-blue-300"
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <Map className="h-4 w-4" />
+                  Mapy.cz
+                </button>
+              </div>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   );
