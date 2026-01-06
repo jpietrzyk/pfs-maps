@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { pl } from "@/lib/translations";
 
-export default function DeliveriesListPage() {
+export default function DeliveryRoutesListPage() {
   const [deliveries, setDeliveries] = useState<DeliveryRoute[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import DeliveriesListPage from "@/pages/DeliveriesListPage";
+import DeliveryRoutesListPage from "@/pages/DeliveryRoutesListPage";
 import type { DeliveryRoute } from "@/types/delivery-route";
 
 jest.mock("@/services/deliveryRoutesApi", () => ({
@@ -32,12 +32,12 @@ const renderPage = () =>
   render(
     <MemoryRouter initialEntries={["/"]}>
       <Routes>
-        <Route path="/" element={<DeliveriesListPage />} />
+        <Route path="/" element={<DeliveryRoutesListPage />} />
       </Routes>
     </MemoryRouter>
   );
 
-describe("DeliveriesListPage", () => {
+describe("DeliveryRoutesListPage", () => {
   beforeEach(() => {
     (DeliveryRoutesApi.getDeliveries as jest.Mock).mockResolvedValue(
       mockDeliveries
