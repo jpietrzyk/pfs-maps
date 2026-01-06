@@ -12,7 +12,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Fanczi Lászlóné",
+    "customer": "*************né",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -34,7 +34,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Lecourbe Paul",
+    "customer": "***********ul",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -56,7 +56,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Csiszár Dávid",
+    "customer": "***********id",
     "totalAmmount": 194000,
     "items": [],
     "location": {
@@ -78,7 +78,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Borsh Eniko",
+    "customer": "*********ko",
     "totalAmmount": 298000,
     "items": [],
     "location": {
@@ -100,7 +100,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Keller Ádám",
+    "customer": "*********ám",
     "totalAmmount": 565000,
     "items": [],
     "location": {
@@ -122,7 +122,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Zátrok Gyula",
+    "customer": "**********la",
     "totalAmmount": 205000,
     "items": [],
     "location": {
@@ -144,7 +144,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Popovics Gyula",
+    "customer": "************la",
     "totalAmmount": 650000,
     "items": [],
     "location": {
@@ -166,7 +166,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 299000,
     "items": [],
     "location": {
@@ -188,7 +188,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": "1,57900",
     "items": [],
     "location": {
@@ -210,7 +210,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Benedek Marton",
+    "customer": "************on",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -232,7 +232,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Törő István",
+    "customer": "*********án",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -254,7 +254,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Vigh Norbert",
+    "customer": "**********rt",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -276,7 +276,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Mészáros László",
+    "customer": "*************ló",
     "totalAmmount": 194000,
     "items": [],
     "location": {
@@ -298,7 +298,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Mező Péter",
+    "customer": "********er",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -320,7 +320,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szaki Krisztián",
+    "customer": "*************án",
     "totalAmmount": 550000,
     "items": [],
     "location": {
@@ -342,7 +342,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Molnar Ferenc",
+    "customer": "***********nc",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -364,7 +364,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nyéki Tibor",
+    "customer": "*********or",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -386,7 +386,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Bősze Cintia",
+    "customer": "**********ia",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -408,7 +408,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -430,7 +430,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Christoff Sandler Kitty",
+    "customer": "*********************ty",
     "totalAmmount": 330000,
     "items": [],
     "location": {
@@ -452,7 +452,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Loar Sándor",
+    "customer": "*********or",
     "totalAmmount": 980000,
     "items": [],
     "location": {
@@ -474,7 +474,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Morvai József",
+    "customer": "***********ef",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -496,7 +496,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szelmák Gyula Lászlóné",
+    "customer": "********************né",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -518,7 +518,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szabóné Salánki Mária",
+    "customer": "*******************ia",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -540,7 +540,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kanalas Róbert",
+    "customer": "************rt",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -562,7 +562,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Tőzsér Anita",
+    "customer": "**********ta",
     "totalAmmount": "2,19800",
     "items": [],
     "location": {
@@ -584,7 +584,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Schrack Margit",
+    "customer": "************it",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -606,7 +606,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Németh Péter",
+    "customer": "**********er",
     "totalAmmount": 194000,
     "items": [],
     "location": {
@@ -628,7 +628,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 298000,
     "items": [],
     "location": {
@@ -650,7 +650,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Keszthelyi Edit",
+    "customer": "*************it",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -672,7 +672,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Végső János",
+    "customer": "*********os",
     "totalAmmount": 730000,
     "items": [],
     "location": {
@@ -694,7 +694,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Lakatos Egan",
+    "customer": "**********an",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -716,7 +716,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Baricz Bálint",
+    "customer": "***********nt",
     "totalAmmount": 400000,
     "items": [],
     "location": {
@@ -738,7 +738,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Vainel Gabor",
+    "customer": "**********or",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -760,7 +760,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Deak Zsuzsa",
+    "customer": "*********sa",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -782,7 +782,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -804,7 +804,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Bársony Mancsok Menedéke",
+    "customer": "**********************ke",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -826,7 +826,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Palocznyik Lászlóné",
+    "customer": "*****************né",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -848,7 +848,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gömörei Zsolt",
+    "customer": "***********lt",
     "totalAmmount": 742000,
     "items": [],
     "location": {
@@ -870,7 +870,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Leles Gyula Tamás",
+    "customer": "***************ás",
     "totalAmmount": 410000,
     "items": [],
     "location": {
@@ -892,7 +892,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Keresztesi József",
+    "customer": "***************ef",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -914,7 +914,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nardi Béla",
+    "customer": "********la",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -936,7 +936,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Hrabovszki Tibor",
+    "customer": "**************or",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -958,7 +958,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Müller Mihály",
+    "customer": "***********ly",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -980,7 +980,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szabó András",
+    "customer": "**********ás",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1002,7 +1002,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Balogh Gábor",
+    "customer": "**********or",
     "totalAmmount": 179000,
     "items": [],
     "location": {
@@ -1024,7 +1024,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 179000,
     "items": [],
     "location": {
@@ -1046,7 +1046,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Doktor Molnár Manta",
+    "customer": "*****************ta",
     "totalAmmount": 224000,
     "items": [],
     "location": {
@@ -1068,7 +1068,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Simon István",
+    "customer": "**********án",
     "totalAmmount": 550000,
     "items": [],
     "location": {
@@ -1090,7 +1090,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Tassy Csaba",
+    "customer": "*********ba",
     "totalAmmount": 194000,
     "items": [],
     "location": {
@@ -1112,7 +1112,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Baranyai -Végh Judit",
+    "customer": "******************it",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1134,7 +1134,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Pelczéder Imre Martin",
+    "customer": "*******************in",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1156,7 +1156,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Mislyenác Péter",
+    "customer": "*************er",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1178,7 +1178,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Dr.Trencsényi György",
+    "customer": "******************gy",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1200,7 +1200,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kiss Gabor",
+    "customer": "********or",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -1222,7 +1222,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Balogh Sándor",
+    "customer": "***********or",
     "totalAmmount": 179000,
     "items": [],
     "location": {
@@ -1244,7 +1244,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Jutka Zoltan",
+    "customer": "**********an",
     "totalAmmount": 410000,
     "items": [],
     "location": {
@@ -1266,7 +1266,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Török Imre",
+    "customer": "********re",
     "totalAmmount": 179000,
     "items": [],
     "location": {
@@ -1288,7 +1288,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Puháné Doktor Zita",
+    "customer": "****************ta",
     "totalAmmount": 557530,
     "items": [],
     "location": {
@@ -1310,7 +1310,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kása János",
+    "customer": "********os",
     "totalAmmount": 205000,
     "items": [],
     "location": {
@@ -1332,7 +1332,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Zámbók Tamás",
+    "customer": "**********ás",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -1354,7 +1354,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szucs Norbert",
+    "customer": "***********rt",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -1376,7 +1376,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Hantiné Barna Julianna",
+    "customer": "********************na",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1398,7 +1398,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szabics Antal",
+    "customer": "***********al",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1420,7 +1420,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gurez Metin",
+    "customer": "*********in",
     "totalAmmount": 179000,
     "items": [],
     "location": {
@@ -1442,7 +1442,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Török Imre",
+    "customer": "********re",
     "totalAmmount": 179000,
     "items": [],
     "location": {
@@ -1464,7 +1464,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kégl István",
+    "customer": "*********án",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1486,7 +1486,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Harti Vince",
+    "customer": "*********ce",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1508,7 +1508,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Balogh László",
+    "customer": "***********ló",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -1530,7 +1530,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Horváth Szabó Ildikó",
+    "customer": "******************kó",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -1552,7 +1552,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Bem u. 16",
+    "customer": "*******16",
     "totalAmmount": 209000,
     "items": [],
     "location": {
@@ -1574,7 +1574,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Galasi Gyula",
+    "customer": "**********la",
     "totalAmmount": 690000,
     "items": [],
     "location": {
@@ -1596,7 +1596,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kovács Mihályné",
+    "customer": "*************né",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1618,7 +1618,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kiss József",
+    "customer": "*********ef",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1640,7 +1640,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Józsa Zoltán",
+    "customer": "**********án",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1662,7 +1662,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Edmond Miklós",
+    "customer": "***********ós",
     "totalAmmount": 610000,
     "items": [],
     "location": {
@@ -1684,7 +1684,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gőbölös Péter",
+    "customer": "***********er",
     "totalAmmount": 378000,
     "items": [],
     "location": {
@@ -1706,7 +1706,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Békés László",
+    "customer": "**********ló",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1728,7 +1728,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kéri Csaba",
+    "customer": "********ba",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1750,7 +1750,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nagy Sándor",
+    "customer": "*********or",
     "totalAmmount": "1,09900",
     "items": [],
     "location": {
@@ -1772,7 +1772,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kantár József",
+    "customer": "***********ef",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -1794,7 +1794,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Mészáros Gáborné",
+    "customer": "**************né",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1816,7 +1816,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Damatorfy Attila",
+    "customer": "**************la",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -1838,7 +1838,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Halek Józsefné",
+    "customer": "************né",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1860,7 +1860,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Vetro Zsolt",
+    "customer": "*********lt",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1882,7 +1882,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szabó Márton",
+    "customer": "**********on",
     "totalAmmount": 398000,
     "items": [],
     "location": {
@@ -1904,7 +1904,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szabadas Attila",
+    "customer": "*************la",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1926,7 +1926,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kaldenecker Mihály",
+    "customer": "****************ly",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1948,7 +1948,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Asbóth Istvánné",
+    "customer": "*************né",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -1970,7 +1970,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Pető Gábor Márk",
+    "customer": "*************rk",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -1992,7 +1992,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nagy Mihályné",
+    "customer": "***********né",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -2014,7 +2014,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Berkes Attila",
+    "customer": "***********la",
     "totalAmmount": 796000,
     "items": [],
     "location": {
@@ -2036,7 +2036,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Aebercki ? Judith",
+    "customer": "***************th",
     "totalAmmount": 725000,
     "items": [],
     "location": {
@@ -2058,7 +2058,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 421000,
     "items": [],
     "location": {
@@ -2080,7 +2080,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Lénárt Dezső",
+    "customer": "**********ső",
     "totalAmmount": 597000,
     "items": [],
     "location": {
@@ -2102,7 +2102,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 418000,
     "items": [],
     "location": {
@@ -2124,7 +2124,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Molnár Béla",
+    "customer": "*********la",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2146,7 +2146,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szalai Zsolt",
+    "customer": "**********lt",
     "totalAmmount": 255000,
     "items": [],
     "location": {
@@ -2168,7 +2168,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Bocskai Dénes",
+    "customer": "***********es",
     "totalAmmount": 590000,
     "items": [],
     "location": {
@@ -2190,7 +2190,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Snóbli Gyula",
+    "customer": "**********la",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2212,7 +2212,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Bakarne Gömör Bernadett",
+    "customer": "*********************tt",
     "totalAmmount": 328000,
     "items": [],
     "location": {
@@ -2234,7 +2234,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Madai István",
+    "customer": "**********án",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2256,7 +2256,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -2278,7 +2278,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nagy Csaba",
+    "customer": "********ba",
     "totalAmmount": 330000,
     "items": [],
     "location": {
@@ -2300,7 +2300,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Mester Klára",
+    "customer": "**********ra",
     "totalAmmount": 566000,
     "items": [],
     "location": {
@@ -2322,7 +2322,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Utasi Miklós",
+    "customer": "**********ós",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -2344,7 +2344,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Thiesz Jenő",
+    "customer": "*********nő",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2366,7 +2366,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Marsi Tünde",
+    "customer": "*********de",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2388,7 +2388,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kovács István",
+    "customer": "***********án",
     "totalAmmount": 500000,
     "items": [],
     "location": {
@@ -2410,7 +2410,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Czepán István",
+    "customer": "***********án",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2432,7 +2432,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Ottmayer Antal",
+    "customer": "************al",
     "totalAmmount": 400000,
     "items": [],
     "location": {
@@ -2454,7 +2454,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Erdeiné Barta Zsuzsanna",
+    "customer": "*********************na",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -2476,7 +2476,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kárpáti Árpád",
+    "customer": "***********ád",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -2498,7 +2498,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Czimre János",
+    "customer": "**********os",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -2520,7 +2520,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gyepesi Józsefné",
+    "customer": "**************né",
     "totalAmmount": 357000,
     "items": [],
     "location": {
@@ -2542,7 +2542,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gabor Martin",
+    "customer": "**********in",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2564,7 +2564,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Sebők Zsanett",
+    "customer": "***********tt",
     "totalAmmount": 194000,
     "items": [],
     "location": {
@@ -2586,7 +2586,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Varga Balázs",
+    "customer": "**********zs",
     "totalAmmount": 330000,
     "items": [],
     "location": {
@@ -2608,7 +2608,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Ortner Aliz",
+    "customer": "*********iz",
     "totalAmmount": 364500,
     "items": [],
     "location": {
@@ -2630,7 +2630,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Széll Boglárka",
+    "customer": "************ka",
     "totalAmmount": 565000,
     "items": [],
     "location": {
@@ -2652,7 +2652,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gruba Nikolett",
+    "customer": "************tt",
     "totalAmmount": 260000,
     "items": [],
     "location": {
@@ -2674,7 +2674,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Godó Dániel",
+    "customer": "*********el",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2696,7 +2696,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "János Nikolett",
+    "customer": "************tt",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -2718,7 +2718,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Baras Ferenc",
+    "customer": "**********nc",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2740,7 +2740,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Juhász István",
+    "customer": "***********án",
     "totalAmmount": 249000,
     "items": [],
     "location": {
@@ -2762,7 +2762,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 208000,
     "items": [],
     "location": {
@@ -2784,7 +2784,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kiszely Jeno",
+    "customer": "**********no",
     "totalAmmount": 330000,
     "items": [],
     "location": {
@@ -2806,7 +2806,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Domán István",
+    "customer": "**********án",
     "totalAmmount": 224000,
     "items": [],
     "location": {
@@ -2828,7 +2828,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kover Kiss Imréné",
+    "customer": "***************né",
     "totalAmmount": 570000,
     "items": [],
     "location": {
@@ -2850,7 +2850,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "FIRMA",
+    "customer": "***MA",
     "totalAmmount": 298500,
     "items": [],
     "location": {
@@ -2872,7 +2872,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Antalné Deák Anita",
+    "customer": "****************ta",
     "totalAmmount": 565900,
     "items": [],
     "location": {
@@ -2894,7 +2894,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Grünfelder Gábor",
+    "customer": "**************or",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2916,7 +2916,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Kói utca 90",
+    "customer": "*********90",
     "totalAmmount": 388000,
     "items": [],
     "location": {
@@ -2938,7 +2938,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Rab Károly",
+    "customer": "********ly",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -2960,7 +2960,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Hegedus Saralta",
+    "customer": "*************ta",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -2982,7 +2982,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Szalai Zoltan",
+    "customer": "***********an",
     "totalAmmount": 565000,
     "items": [],
     "location": {
@@ -3004,7 +3004,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Farkas Réka",
+    "customer": "*********ka",
     "totalAmmount": 610000,
     "items": [],
     "location": {
@@ -3026,7 +3026,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Vágner Viktor",
+    "customer": "***********or",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -3048,7 +3048,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nagy Tibor",
+    "customer": "********or",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -3070,7 +3070,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Roda Sandor",
+    "customer": "*********or",
     "totalAmmount": 400000,
     "items": [],
     "location": {
@@ -3092,7 +3092,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Bályi Sándor",
+    "customer": "**********or",
     "totalAmmount": 270000,
     "items": [],
     "location": {
@@ -3114,7 +3114,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Gátfalve Balázs",
+    "customer": "*************zs",
     "totalAmmount": 565000,
     "items": [],
     "location": {
@@ -3136,7 +3136,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Nagy Janos",
+    "customer": "********os",
     "totalAmmount": 199000,
     "items": [],
     "location": {
@@ -3158,7 +3158,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Buzsáki Csaba",
+    "customer": "***********ba",
     "totalAmmount": 189000,
     "items": [],
     "location": {
@@ -3180,7 +3180,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Varga Tibor",
+    "customer": "*********or",
     "totalAmmount": 565000,
     "items": [],
     "location": {
@@ -3202,7 +3202,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Sike István",
+    "customer": "*********án",
     "totalAmmount": 298000,
     "items": [],
     "location": {
@@ -3224,7 +3224,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Zimmermann Mihály",
+    "customer": "***************ly",
     "totalAmmount": 194000,
     "items": [],
     "location": {
@@ -3246,7 +3246,7 @@
     "active": true,
     "createdAt": "2025-11-29T18:30:50.000Z",
     "updatedAt": "2025-11-29T18:30:50.000Z",
-    "customer": "Dombi Krisztian",
+    "customer": "*************an",
     "totalAmmount": 199000,
     "items": [],
     "location": {
