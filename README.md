@@ -21,3 +21,7 @@ PFS Maps is a delivery route management application built with React and TypeScr
 - **State Management**: React Context API with custom hooks
 - **Testing**: Jest, React Testing Library
 - **Code Quality**: ESLint, TypeScript strict mode
+
+# Od jacka
+
+Hejkum kejkum
