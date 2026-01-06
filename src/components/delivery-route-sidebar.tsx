@@ -10,7 +10,7 @@ import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteManager } from "@/hooks/use-route-manager";
 import { useRouteSegments } from "@/hooks/use-route-segments";
 import { useEffect, useState } from "react";
-import { Package, Clock, Route } from "lucide-react";
+import { Package, Clock, Route, ArrowRight, X } from "lucide-react";
 import {
   Tooltip,
   TooltipTrigger,
@@ -269,16 +269,11 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                   }
                 }
               }}
-              className="p-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors text-primary"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/50 bg-background/50 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 rounded transition-colors"
               title="Set Next Order as Current"
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <ArrowRight className="h-3.5 w-3.5" />
+              Next
             </button>
             <button
               onClick={() => {
@@ -287,16 +282,11 @@ const DeliverySidebar: React.FC<DeliverySidebarProps> = ({
                 setCurrentOrderId(null);
                 setPreviousOrderId(null);
               }}
-              className="p-1.5 rounded-full bg-destructive/10 hover:bg-destructive/20 transition-colors text-destructive"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/50 bg-background/50 hover:bg-red-50 hover:text-red-700 hover:border-red-300 rounded transition-colors"
               title="Clear Highlights"
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <X className="h-3.5 w-3.5" />
+              Clear
             </button>
           </div>
         </div>
