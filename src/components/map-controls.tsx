@@ -31,8 +31,8 @@ export function MapControls({
         <NavigationMenuItem>
           <DrawerTrigger asChild>
             <Button
-              className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium px-3 py-2 rounded shadow-md transition-colors inline-flex items-center gap-2"
-              size="sm"
+              className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-2 h-9"
+              variant="ghost"
             >
               <svg
                 className="h-4 w-4"

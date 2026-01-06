@@ -23,7 +23,7 @@ export function BackToDeliveriesLink() {
   return (
     <Link
       to="/delivery_routes"
-      className="inline-flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium px-3 py-2 rounded shadow-md transition-colors"
+      className="inline-flex items-center gap-2 border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors h-9"
       title={pl.backToDeliveries}
     >
       <svg
@@ -63,9 +63,8 @@ const OrdersCountDisplay: React.FC<OrdersCountDisplayProps> = ({
       <>
         <Button
           onClick={() => setShowResetDialog(true)}
-          className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium px-3 py-2 rounded shadow-md transition-colors inline-flex items-center gap-1 h-auto"
-          size="sm"
-          variant="default"
+          className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-1 h-9"
+          variant="ghost"
         >
           Zamówienia: {count} / {totalCount}
         </Button>
