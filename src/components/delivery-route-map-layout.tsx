@@ -251,11 +251,10 @@ export default function DeliveryRouteMapLayout({
             </div>
           </div>
 
-          {/* Back button, drawer trigger, and orders count display at top left */}
+          {/* Back button and orders count display at top left */}
           <MapControls
             totalOrdersCount={totalOrdersCount}
             totalAvailableOrders={totalAvailableOrders}
-            filteredUnassignedOrdersCount={filteredUnassignedOrders.length}
             onResetData={handleResetData}
             currentMapProvider={currentMapProvider}
             onMapProviderChange={handleMapProviderChange}

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { BackToDeliveriesLink } from "@/components/ui/orders-count-display";
 import OrdersCountDisplay from "@/components/ui/orders-count-display";
 import {
@@ -14,7 +13,6 @@ import { MapPin, Map, RefreshCcw } from "lucide-react";
 interface MapControlsProps {
   totalOrdersCount: number;
   totalAvailableOrders: number;
-  filteredUnassignedOrdersCount: number;
   onResetFilters?: () => void;
   onResetData?: () => void;
   currentMapProvider?: "leaflet" | "mapy";
@@ -24,7 +22,6 @@ interface MapControlsProps {
 export function MapControls({
   totalOrdersCount,
   totalAvailableOrders,
-  filteredUnassignedOrdersCount,
   onResetFilters,
   onResetData,
   currentMapProvider = "leaflet",
