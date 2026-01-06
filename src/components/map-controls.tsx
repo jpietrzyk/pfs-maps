@@ -10,13 +10,14 @@ import {
   NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
 import { pl } from "@/lib/translations";
-import { MapPin, Map } from "lucide-react";
+import { MapPin, Map, RefreshCcw } from "lucide-react";
 
 interface MapControlsProps {
   totalOrdersCount: number;
   totalAvailableOrders: number;
   filteredUnassignedOrdersCount: number;
   onResetFilters?: () => void;
+  onResetData?: () => void;
   currentMapProvider?: "leaflet" | "mapy";
   onMapProviderChange?: (provider: "leaflet" | "mapy") => void;
 }
@@ -26,6 +27,7 @@ export function MapControls({
   totalAvailableOrders,
   filteredUnassignedOrdersCount,
   onResetFilters,
+  onResetData,
   currentMapProvider = "leaflet",
   onMapProviderChange,
 }: MapControlsProps) {
@@ -66,6 +68,18 @@ export function MapControls({
             onResetFilters={onResetFilters}
           />
         </NavigationMenuItem>
+        {onResetData && (
+          <NavigationMenuItem>
+            <button
+              onClick={onResetData}
+              className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-2 h-9"
+              aria-label="Reset data"
+            >
+              <RefreshCcw className="h-4 w-4" />
+              {pl.reset}
+            </button>
+          </NavigationMenuItem>
+        )}
         {onMapProviderChange && (
           <NavigationMenuItem>
             <NavigationMenuTrigger className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-2 h-9">

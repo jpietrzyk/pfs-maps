@@ -17,6 +17,7 @@ import {
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
 import type { Order } from "@/types/order";
+import { resetLocalStorageAndFetchData } from "@/lib/local-storage-utils";
 
 interface DeliveryRouteMapLayoutProps {
   renderMap: (
@@ -54,6 +55,21 @@ export default function DeliveryRouteMapLayout({
       navigate(`/delivery_routes/${currentDeliveryId}/mapy`);
     } else {
       navigate(`/delivery_routes/${currentDeliveryId}/leaflet`);
+    }
+  };
+
+  const handleResetData = async () => {
+    try {
+      await resetLocalStorageAndFetchData(async () => {
+        await Promise.all([
+          refreshUnassignedOrders(),
+          currentDelivery
+            ? refreshDeliveryOrders(currentDelivery.id)
+            : Promise.resolve([]),
+        ]);
+      });
+    } catch (error) {
+      console.error("Error during reset:", error);
     }
   };
   const {
@@ -233,6 +249,7 @@ export default function DeliveryRouteMapLayout({
             totalOrdersCount={totalOrdersCount}
             totalAvailableOrders={totalAvailableOrders}
             filteredUnassignedOrdersCount={filteredUnassignedOrders.length}
+            onResetData={handleResetData}
             currentMapProvider={currentMapProvider}
             onMapProviderChange={handleMapProviderChange}
             onResetFilters={() => {

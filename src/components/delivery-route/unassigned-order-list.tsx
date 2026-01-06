@@ -65,7 +65,7 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
                 {unassignedOrders.map((order) => (
                   <li
                     key={order.id}
-                    className={`group relative overflow-hidden rounded border border-border/50 bg-background/50 shadow-sm transition-all hover:shadow-md hover:bg-blue-50 hover:border-blue-300 cursor-pointer p-2 h-full ${
+                    className={`group relative overflow-hidden rounded border border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:bg-blue-50 hover:border-blue-300 cursor-pointer p-2 h-full ${
                       highlightedOrderId === order.id
                         ? "ring-2 ring-blue-500 bg-blue-50 border-blue-300"
                         : ""
