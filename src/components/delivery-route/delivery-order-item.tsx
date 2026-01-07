@@ -71,18 +71,20 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
         style={style}
         {...attributes}
         {...listeners}
-        className={`group relative overflow-hidden rounded-lg border border-border/50 bg-background/50 shadow-sm transition-all hover:shadow-md hover:cursor-grab hover:bg-green-50 hover:border-green-300 ${
+        className={`group relative overflow-hidden rounded-lg border border-border/50 bg-background/50 shadow-sm transition-all hover:shadow-md hover:cursor-grab hover:bg-green-50 hover:border-green-200 ${
           isHighlighted
-            ? "ring-2 ring-green-500 bg-green-50 border-green-300"
+            ? "ring-1 ring-green-400 bg-green-50/50 border-green-200"
             : ""
         } ${
-          isPreviousOrderInSegment ? "ring-2 ring-primary/50 bg-purple-50" : ""
+          isPreviousOrderInSegment
+            ? "ring-1 ring-primary/40 bg-purple-50/50"
+            : ""
         }`}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
         <div className="flex items-center gap-2 p-2 select-none">
-          <div className="shrink-0 h-6 w-6 flex items-center justify-center bg-green-600 hover:bg-green-700 rounded font-semibold text-xs text-white border border-green-700">
+          <div className="shrink-0 h-6 w-6 flex items-center justify-center border border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 rounded text-xs font-medium text-green-700">
             {sequence !== undefined ? sequence + 1 : "•"}
           </div>
           <Tooltip>
@@ -138,7 +140,7 @@ export const DeliveryOrderItem = memo<DeliveryOrderItemProps>(
               onMouseDown={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}
               size="icon"
-              className="shrink-0 h-6 w-6 p-1 bg-red-600 hover:bg-red-700 text-white border border-red-700"
+              className="shrink-0 h-6 w-6 p-1 border border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 text-red-700 rounded transition-colors"
               aria-label={`${pl.ariaRemoveOrder} ${order.id}`}
             >
               <Minus className="h-3 w-3" />
