@@ -45,7 +45,7 @@ export default function DeliveryRoutesListPage() {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-6">
             {pl.plannedDeliveries}
           </h1>
           <div className="bg-white rounded-lg shadow-sm p-6">
@@ -60,7 +60,7 @@ export default function DeliveryRoutesListPage() {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-6">
             {pl.plannedDeliveries}
           </h1>
           <div className="bg-white rounded-lg shadow-sm p-6">
@@ -96,13 +96,14 @@ export default function DeliveryRoutesListPage() {
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               {pl.plannedDeliveries}
             </h1>
             <Link
               to="/delivery_routes"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 text-gray-700 rounded transition-colors"
             >
+              <Map className="h-3.5 w-3.5" />
               {pl.viewAllOnMap}
             </Link>
           </div>
@@ -123,10 +124,10 @@ export default function DeliveryRoutesListPage() {
                   d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
+              <h3 className="mt-2 text-sm font-medium text-foreground">
                 {pl.noDeliveriesFound}
               </h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {pl.createDeliveryPrompt}
               </p>
             </div>
@@ -139,7 +140,7 @@ export default function DeliveryRoutesListPage() {
                 >
                   <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                     <div className="flex justify-between items-center">
-                      <h2 className="text-lg font-semibold text-gray-800">
+                      <h2 className="text-lg font-medium text-foreground">
                         {delivery.name || `${pl.delivery} ${delivery.id}`}
                       </h2>
                       <div className="flex gap-2 flex-wrap justify-end">
@@ -198,33 +199,33 @@ export default function DeliveryRoutesListPage() {
           <div className="p-6">
             <div className="space-y-4">
               <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
                   {pl.deliveryIdLabel}
                 </p>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-sm font-medium text-foreground">
                   {selectedDelivery.id}
                 </p>
               </div>
               <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
                   {pl.nameLabel}
                 </p>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-sm font-medium text-foreground">
                   {selectedDelivery.name ||
                     `${pl.delivery} ${selectedDelivery.id}`}
                 </p>
               </div>
               <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
                   {pl.status}
                 </p>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-sm font-medium text-foreground">
                   {selectedDelivery.status}
                 </p>
               </div>
               {selectedDelivery.notes && (
                 <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
                     {pl.notes}
                   </p>
                   <p className="text-sm text-foreground">
