@@ -32,8 +32,7 @@ const createOrderPopupContent = (
   order: Order,
   isPool: boolean,
   onToggle: () => void,
-  toggleText: string,
-  toggleColor: string
+  toggleText: string
 ) => {
   const statusColors = getStatusColor(order.status);
   return (
@@ -143,26 +142,26 @@ const createOrderPopupContent = (
           style={{
             width: "100%",
             padding: "10px 16px",
-            backgroundColor: toggleColor,
-            color: "white",
-            border: "none",
+            backgroundColor: isPool ? "#eff6ff" : "#fef2f2",
+            color: isPool ? "#1d4ed8" : "#b91c1c",
+            border: isPool ? "1px solid #93c5fd" : "1px solid #fca5a5",
             borderRadius: "8px",
             fontSize: "14px",
-            fontWeight: "600",
+            fontWeight: "500",
             cursor: "pointer",
             transition: "all 0.2s",
-            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor =
-              toggleColor === "#3b82f6" ? "#2563eb" : "#dc2626";
-            e.currentTarget.style.transform = "translateY(-1px)";
-            e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.15)";
+            e.currentTarget.style.backgroundColor = isPool
+              ? "#dbeafe"
+              : "#fee2e2";
+            e.currentTarget.style.borderColor = isPool ? "#60a5fa" : "#f87171";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = toggleColor;
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.1)";
+            e.currentTarget.style.backgroundColor = isPool
+              ? "#eff6ff"
+              : "#fef2f2";
+            e.currentTarget.style.borderColor = isPool ? "#93c5fd" : "#fca5a5";
           }}
         >
           {toggleText}
@@ -283,8 +282,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
             );
           }
         },
-        isPool ? `➕ ${pl.addToDelivery}` : `➖ ${pl.removeFromDelivery}`,
-        isPool ? "#3b82f6" : "#dc2626"
+        isPool ? `➕ ${pl.addToDelivery}` : `➖ ${pl.removeFromDelivery}`
       );
 
       return {
