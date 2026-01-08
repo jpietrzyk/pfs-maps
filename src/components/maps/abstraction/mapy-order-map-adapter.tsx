@@ -12,188 +12,7 @@ import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteSegments } from "@/hooks/use-route-segments";
 import { pl } from "@/lib/translations";
 import { MapyRoutingApi, type RouteSegment } from "@/services/mapyRoutingApi";
-
-// Popup content creator (reused from OrderMapAdapter)
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "pending":
-      return { bg: "#fef3c7", text: "#92400e" };
-    case "in-progress":
-      return { bg: "#dbeafe", text: "#1e40af" };
-    case "completed":
-      return { bg: "#d1fae5", text: "#065f46" };
-    case "cancelled":
-      return { bg: "#fee2e2", text: "#991b1b" };
-    default:
-      return { bg: "#f3f4f6", text: "#374151" };
-  }
-};
-
-const createOrderPopupContent = (
-  order: Order,
-  onToggle: () => void,
-  toggleText: string,
-  toggleColor: string
-) => {
-  const statusColors = getStatusColor(order.status);
-  return (
-    <div
-      style={{
-        padding: "16px",
-        maxWidth: "280px",
-        fontFamily: "system-ui, sans-serif",
-        background: "white",
-        borderRadius: "12px",
-        boxShadow:
-          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
-        border: "1px solid #e5e7eb",
-      }}
-    >
-      {/* Header with Order ID */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-          paddingBottom: "12px",
-          borderBottom: "2px solid #f3f4f6",
-        }}
-      >
-        <span
-          style={{
-            fontSize: "16px",
-            fontWeight: "700",
-            color: "#1f2937",
-          }}
-        >
-          {order.id}
-        </span>
-        <span
-          style={{
-            fontSize: "11px",
-            fontWeight: "600",
-            padding: "4px 10px",
-            borderRadius: "12px",
-            backgroundColor: statusColors.bg,
-            color: statusColors.text,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-          }}
-        >
-          {order.status.toUpperCase()}
-        </span>
-      </div>
-
-      {/* Customer */}
-      <div style={{ marginBottom: "10px" }}>
-        <div
-          style={{
-            fontSize: "11px",
-            color: "#6b7280",
-            fontWeight: "600",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            marginBottom: "4px",
-          }}
-        >
-          {pl.customer}
-        </div>
-        <div
-          style={{
-            fontSize: "14px",
-            fontWeight: "500",
-            color: "#374151",
-          }}
-        >
-          {order.customer}
-        </div>
-      </div>
-
-      {/* Product */}
-      {order.product && (
-        <div style={{ marginBottom: "10px" }}>
-          <div
-            style={{
-              fontSize: "11px",
-              color: "#6b7280",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              marginBottom: "4px",
-            }}
-          >
-            {pl.productDetails}
-          </div>
-          <div
-            style={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#374151",
-            }}
-          >
-            {order.product.name}
-          </div>
-        </div>
-      )}
-
-      {/* Total Amount */}
-      {order.totalAmount != null && (
-        <div style={{ marginBottom: "14px" }}>
-          <div
-            style={{
-              fontSize: "11px",
-              color: "#6b7280",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              marginBottom: "4px",
-            }}
-          >
-            {pl.totalAmountLabel}
-          </div>
-          <div
-            style={{
-              fontSize: "16px",
-              fontWeight: "700",
-              color: "#059669",
-            }}
-          >
-            €{order.totalAmount.toFixed(2)}
-          </div>
-        </div>
-      )}
-
-      {/* Toggle Button */}
-      <button
-        onClick={onToggle}
-        style={{
-          width: "100%",
-          padding: "10px 16px",
-          backgroundColor: toggleColor,
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          fontSize: "13px",
-          fontWeight: "600",
-          cursor: "pointer",
-          transition: "all 0.2s",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.transform = "scale(1.02)";
-          e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.15)";
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
-        }}
-      >
-        {toggleText}
-      </button>
-    </div>
-  );
-};
+import { OrderPopupContent } from "./order-popup-content";
 
 interface MapyOrderMapAdapterProps {
   orders: Order[];
@@ -331,7 +150,6 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       };
 
       const toggleText = isPool ? pl.addToDelivery : pl.removeFromDelivery;
-      const toggleColor = isPool ? "#10b981" : "#ef4444";
 
       return {
         id: order.id,
@@ -342,11 +160,13 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
         isCurrentOrder: currentOrderId === order.id,
         isPreviousOrder: previousOrderId === order.id,
         isDisabled,
-        popupContent: createOrderPopupContent(
-          order,
-          handleToggle,
-          toggleText,
-          toggleColor
+        popupContent: (
+          <OrderPopupContent
+            order={order}
+            isPool={isPool}
+            toggleText={toggleText}
+            onToggle={handleToggle}
+          />
         ),
       };
     });

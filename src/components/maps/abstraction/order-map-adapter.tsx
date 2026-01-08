@@ -11,165 +11,7 @@ import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteSegments } from "@/hooks/use-route-segments";
 import { pl } from "@/lib/translations";
-
-// Popup content creator (extracted from LeafletMap)
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "pending":
-      return { bg: "#fef3c7", text: "#92400e" };
-    case "in-progress":
-      return { bg: "#dbeafe", text: "#1e40af" };
-    case "completed":
-      return { bg: "#d1fae5", text: "#065f46" };
-    case "cancelled":
-      return { bg: "#fee2e2", text: "#991b1b" };
-    default:
-      return { bg: "#f3f4f6", text: "#374151" };
-  }
-};
-
-const createOrderPopupContent = (
-  order: Order,
-  isPool: boolean,
-  onToggle: () => void,
-  toggleText: string
-) => {
-  const statusColors = getStatusColor(order.status);
-  return (
-    <div
-      style={{
-        padding: "16px",
-        maxWidth: "280px",
-        fontFamily: "system-ui, sans-serif",
-        background: "white",
-        borderRadius: "12px",
-        boxShadow:
-          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
-        border: "1px solid #e5e7eb",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: "600",
-          marginBottom: "12px",
-          fontSize: "16px",
-          color: "#111827",
-        }}
-      >
-        {order.product?.name || pl.unknownOrder}
-      </div>
-      <div
-        style={{
-          padding: "8px 12px",
-          backgroundColor: isPool ? "#f3f4f6" : "#dbeafe",
-          borderRadius: "8px",
-          marginBottom: "12px",
-          borderLeft: "3px solid " + (isPool ? "#9ca3af" : "#3b82f6"),
-        }}
-      >
-        <div
-          style={{
-            fontSize: "12px",
-            color: "#6b7280",
-            textTransform: "uppercase",
-            fontWeight: "600",
-            letterSpacing: "0.5px",
-          }}
-        >
-          {isPool ? pl.poolOrder : pl.deliveryOrder}
-        </div>
-      </div>
-      <div style={{ fontSize: "13px", color: "#4b5563", marginBottom: "8px" }}>
-        <strong style={{ color: "#374151" }}>{pl.customer}:</strong>{" "}
-        {order.customer}
-      </div>
-      <div style={{ fontSize: "13px", marginBottom: "8px" }}>
-        <strong style={{ color: "#374151" }}>{pl.status}:</strong>
-        <span
-          style={{
-            padding: "4px 10px",
-            borderRadius: "16px",
-            fontSize: "11px",
-            fontWeight: "600",
-            backgroundColor: statusColors.bg,
-            color: statusColors.text,
-          }}
-        >
-          {order.status.toUpperCase()}
-        </span>
-      </div>
-      <div style={{ fontSize: "13px", marginBottom: "8px" }}>
-        <strong style={{ color: "#374151" }}>{pl.priorityLabel}:</strong>
-        <span
-          style={{
-            textTransform: "uppercase",
-            fontWeight: "600",
-            color: "#3b82f6",
-          }}
-        >
-          {order.priority}
-        </span>
-      </div>
-      <div style={{ fontSize: "13px", color: "#10b981", marginBottom: "10px" }}>
-        <strong>{pl.location}:</strong> {order.location.lat.toFixed(4)},{" "}
-        {order.location.lng.toFixed(4)}
-      </div>
-      {order.totalAmount && (
-        <div
-          style={{
-            fontSize: "13px",
-            paddingTop: "10px",
-            borderTop: "1px solid #e5e7eb",
-            marginBottom: "12px",
-          }}
-        >
-          <strong style={{ color: "#374151" }}>{pl.total}:</strong> €
-          {order.totalAmount.toLocaleString()}
-        </div>
-      )}
-      <div
-        style={{
-          marginTop: "16px",
-          paddingTop: "12px",
-          borderTop: "1px solid #e5e7eb",
-        }}
-      >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-          style={{
-            width: "100%",
-            padding: "10px 16px",
-            backgroundColor: isPool ? "#eff6ff" : "#fef2f2",
-            color: isPool ? "#1d4ed8" : "#b91c1c",
-            border: isPool ? "1px solid #93c5fd" : "1px solid #fca5a5",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "500",
-            cursor: "pointer",
-            transition: "all 0.2s",
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = isPool
-              ? "#dbeafe"
-              : "#fee2e2";
-            e.currentTarget.style.borderColor = isPool ? "#60a5fa" : "#f87171";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = isPool
-              ? "#eff6ff"
-              : "#fef2f2";
-            e.currentTarget.style.borderColor = isPool ? "#93c5fd" : "#fca5a5";
-          }}
-        >
-          {toggleText}
-        </button>
-      </div>
-    </div>
-  );
-};
+import { OrderPopupContent } from "./order-popup-content";
 
 interface OrderMapAdapterProps {
   orders: Order[];
@@ -245,44 +87,48 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
             : "pool";
       }
 
-      const popupContent = createOrderPopupContent(
-        order,
-        isPool,
-        async () => {
-          try {
-            if (isPool) {
-              if (!currentDelivery) {
-                alert("Wybierz najpierw trasę dostawy");
-                return;
-              }
-
-              await addOrderToDelivery(currentDelivery.id, order.id);
-              onOrderAddedToDelivery?.(order.id);
-              onRefreshRequested?.();
-            } else {
-              if (!currentDelivery) {
-                alert("Wybierz najpierw trasę dostawy");
-                return;
-              }
-
-              await removeOrderFromDelivery(currentDelivery.id, order.id);
-              onRefreshRequested?.();
-            }
-          } catch (error) {
-            console.error(
-              isPool
-                ? "Failed to add order to delivery:"
-                : "Failed to remove order from delivery:",
-              error
-            );
-            alert(
-              isPool
-                ? "Failed to add order to delivery"
-                : "Failed to remove order from delivery"
-            );
+      const popupContent = (
+        <OrderPopupContent
+          order={order}
+          isPool={isPool}
+          toggleText={
+            isPool ? `➕ ${pl.addToDelivery}` : `➖ ${pl.removeFromDelivery}`
           }
-        },
-        isPool ? `➕ ${pl.addToDelivery}` : `➖ ${pl.removeFromDelivery}`
+          onToggle={async () => {
+            try {
+              if (isPool) {
+                if (!currentDelivery) {
+                  alert("Wybierz najpierw trasę dostawy");
+                  return;
+                }
+
+                await addOrderToDelivery(currentDelivery.id, order.id);
+                onOrderAddedToDelivery?.(order.id);
+                onRefreshRequested?.();
+              } else {
+                if (!currentDelivery) {
+                  alert("Wybierz najpierw trasę dostawy");
+                  return;
+                }
+
+                await removeOrderFromDelivery(currentDelivery.id, order.id);
+                onRefreshRequested?.();
+              }
+            } catch (error) {
+              console.error(
+                isPool
+                  ? "Failed to add order to delivery:"
+                  : "Failed to remove order from delivery:",
+                error
+              );
+              alert(
+                isPool
+                  ? "Failed to add order to delivery"
+                  : "Failed to remove order from delivery"
+              );
+            }
+          }}
+        />
       );
 
       return {
