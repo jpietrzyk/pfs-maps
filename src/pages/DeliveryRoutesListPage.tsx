@@ -96,12 +96,17 @@ export default function DeliveryRoutesListPage() {
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              {pl.plannedDeliveries}
-            </h3>
+            <div>
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                {pl.plannedDeliveries}
+              </h3>
+              <p className="text-lg text-muted-foreground mt-1">
+                Wybierz trasę dostawy i zarządzaj jej punktami
+              </p>
+            </div>
             <Link
               to="/delivery_routes"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 text-gray-700 rounded transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 text-gray-700 rounded transition-colors shrink-0"
             >
               <Map className="h-3.5 w-3.5" />
               {pl.viewAllOnMap}
@@ -179,53 +184,56 @@ export default function DeliveryRoutesListPage() {
         </div>
       </div>
 
-      <DrawerContent side="right" className="bg-background/95 backdrop-blur-sm">
-        <DrawerHeader className="border-b border-border/50 bg-purple-50/30">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple-100 border border-purple-200">
-              <Info className="h-4 w-4 text-purple-700" />
+      <DrawerContent
+        side="right"
+        className="bg-background/95 backdrop-blur-sm h-[calc(100vh-2rem)] md:h-[calc(100vh-4rem)]"
+      >
+        <DrawerHeader className="border-b border-border/50 bg-purple-50/30 pb-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-purple-100 border border-purple-200">
+              <Info className="h-5 w-5 text-purple-700" />
             </div>
             <div>
-              <DrawerTitle className="text-purple-900">
+              <DrawerTitle className="text-purple-900 text-xl">
                 {pl.deliveryDetails}
               </DrawerTitle>
-              <DrawerDescription className="text-purple-700/70">
+              <DrawerDescription className="text-purple-700/70 text-sm mt-1">
                 {pl.deliveryInfo}
               </DrawerDescription>
             </div>
           </div>
         </DrawerHeader>
         {selectedDelivery && (
-          <div className="p-6">
-            <div className="space-y-4">
-              <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
+          <div className="p-6 md:p-8 flex-1 overflow-y-auto">
+            <div className="space-y-6">
+              <div className="rounded-lg border border-border/50 bg-background/50 p-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
                   {pl.deliveryIdLabel}
                 </p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-base font-medium text-gray-900">
                   {selectedDelivery.id}
                 </p>
               </div>
-              <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
+              <div className="rounded-lg border border-border/50 bg-background/50 p-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
                   {pl.nameLabel}
                 </p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-base font-medium text-gray-900">
                   {selectedDelivery.name ||
                     `${pl.delivery} ${selectedDelivery.id}`}
                 </p>
               </div>
-              <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
+              <div className="rounded-lg border border-border/50 bg-background/50 p-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
                   {pl.status}
                 </p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-base font-medium text-gray-900">
                   {selectedDelivery.status}
                 </p>
               </div>
               {selectedDelivery.notes && (
-                <div className="rounded-lg border border-border/50 bg-background/50 p-3">
-                  <p className="text-xs font-medium text-muted-foreground uppercase mb-1">
+                <div className="rounded-lg border border-border/50 bg-background/50 p-4">
+                  <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
                     {pl.notes}
                   </p>
                   <p className="text-sm text-gray-900">
