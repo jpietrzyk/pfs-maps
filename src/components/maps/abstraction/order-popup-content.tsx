@@ -38,48 +38,15 @@ export const OrderPopupContent: React.FC<OrderPopupContentProps> = ({
   const buttonColor = isPool ? "#10b981" : "#ef4444";
 
   return (
-    <div
-      style={{
-        padding: "16px",
-        maxWidth: "280px",
-        fontFamily: "system-ui, sans-serif",
-        background: "rgba(255, 255, 255, 0.95)",
-        borderRadius: "12px",
-        boxShadow:
-          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
-        border: "1px solid #e5e7eb",
-      }}
-    >
+    <div className="p-4 max-w-70 font-sans bg-white/90 rounded-lg shadow-lg border border-gray-200">
       {/* Header with Order ID */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-          paddingBottom: "12px",
-          borderBottom: "2px solid #f3f4f6",
-        }}
-      >
+      <div className="flex justify-between items-center mb-3 pb-3 border-b-2 border-gray-100">
+        <span className="text-base font-bold text-gray-800">{order.id}</span>
         <span
+          className="text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide"
           style={{
-            fontSize: "16px",
-            fontWeight: "700",
-            color: "#1f2937",
-          }}
-        >
-          {order.id}
-        </span>
-        <span
-          style={{
-            fontSize: "11px",
-            fontWeight: "600",
-            padding: "4px 10px",
-            borderRadius: "12px",
             backgroundColor: statusColors.bg,
             color: statusColors.text,
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
           }}
         >
           {order.status.toUpperCase()}
@@ -87,116 +54,55 @@ export const OrderPopupContent: React.FC<OrderPopupContentProps> = ({
       </div>
 
       {/* Order/Product Name */}
-      <div
-        style={{
-          fontWeight: "600",
-          marginBottom: "12px",
-          fontSize: "15px",
-          color: "#111827",
-        }}
-      >
+      <div className="font-semibold mb-3 text-sm text-gray-900">
         {order.product?.name || pl.unknownOrder}
       </div>
 
       {/* Pool/Delivery Badge */}
       <div
+        className="p-2 rounded-lg mb-3 border-l-4"
         style={{
-          padding: "8px 12px",
           backgroundColor: isPool
             ? "rgba(243, 244, 246, 0.8)"
             : "rgba(219, 234, 254, 0.6)",
-          borderRadius: "8px",
-          marginBottom: "12px",
-          borderLeft: "3px solid " + (isPool ? "#9ca3af" : "#3b82f6"),
+          borderLeftColor: isPool ? "#9ca3af" : "#3b82f6",
         }}
       >
-        <div
-          style={{
-            fontSize: "12px",
-            color: "#6b7280",
-            textTransform: "uppercase",
-            fontWeight: "600",
-            letterSpacing: "0.5px",
-          }}
-        >
+        <div className="text-xs text-gray-500 uppercase font-semibold tracking-wide">
           {isPool ? pl.poolOrder : pl.deliveryOrder}
         </div>
       </div>
 
       {/* Customer */}
-      <div style={{ marginBottom: "10px" }}>
-        <div
-          style={{
-            fontSize: "11px",
-            color: "#6b7280",
-            fontWeight: "600",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            marginBottom: "4px",
-          }}
-        >
+      <div className="mb-2.5">
+        <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
           {pl.customer}
         </div>
-        <div
-          style={{
-            fontSize: "14px",
-            fontWeight: "500",
-            color: "#374151",
-          }}
-        >
+        <div className="text-sm font-medium text-gray-700">
           {order.customer}
         </div>
       </div>
 
       {/* Priority */}
-      <div style={{ marginBottom: "10px" }}>
-        <div
-          style={{
-            fontSize: "11px",
-            color: "#6b7280",
-            fontWeight: "600",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-            marginBottom: "4px",
-          }}
-        >
+      <div className="mb-2.5">
+        <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">
           {pl.priorityLabel}
         </div>
-        <div
-          style={{
-            fontSize: "14px",
-            fontWeight: "600",
-            color: "#3b82f6",
-            textTransform: "uppercase",
-          }}
-        >
+        <div className="text-sm font-semibold text-blue-600 uppercase">
           {order.priority}
         </div>
       </div>
 
       {/* Location */}
-      <div
-        style={{
-          fontSize: "13px",
-          color: "#10b981",
-          marginBottom: "10px",
-        }}
-      >
-        <strong style={{ color: "#374151" }}>{pl.location}:</strong>{" "}
+      <div className="text-sm text-emerald-600 mb-2.5">
+        <strong className="text-gray-700">{pl.location}:</strong>{" "}
         {order.location.lat.toFixed(4)}, {order.location.lng.toFixed(4)}
       </div>
 
       {/* Total Amount */}
       {order.totalAmount != null && (
-        <div
-          style={{
-            fontSize: "13px",
-            paddingTop: "10px",
-            borderTop: "1px solid #e5e7eb",
-            marginBottom: "12px",
-          }}
-        >
-          <strong style={{ color: "#374151" }}>{pl.total}:</strong> €
+        <div className="text-sm pt-2.5 border-t border-gray-200 mb-3">
+          <strong className="text-gray-700">{pl.total}:</strong> €
           {order.totalAmount.toLocaleString()}
         </div>
       )}
@@ -207,17 +113,10 @@ export const OrderPopupContent: React.FC<OrderPopupContentProps> = ({
           e.stopPropagation();
           onToggle();
         }}
+        className="w-full py-2.5 px-4 bg-transparent border-2 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-opacity-10"
         style={{
-          width: "100%",
-          padding: "10px 16px",
-          backgroundColor: "transparent",
           color: buttonColor,
-          border: `1.5px solid ${buttonColor}`,
-          borderRadius: "8px",
-          fontSize: "13px",
-          fontWeight: "600",
-          cursor: "pointer",
-          transition: "all 0.2s",
+          borderColor: buttonColor,
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.backgroundColor = `${buttonColor}10`;

@@ -8,6 +8,25 @@ import {
   Polyline,
 } from "react-leaflet";
 
+// Custom styles for Leaflet popups
+const popupStyles = `
+  .leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(229, 231, 235, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  .leaflet-popup-content {
+    margin: 0 !important;
+    font-family: system-ui, sans-serif !important;
+  }
+  .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(229, 231, 235, 0.8) !important;
+  }
+`;
+
 import L from "leaflet";
 import React from "react";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
@@ -15,6 +34,7 @@ import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { usePolylineHighlight } from "@/hooks/use-polyline-highlight";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
+import { pl } from "@/lib/translations";
 import type { Order } from "@/types/order";
 
 // DEPRECATED: Logic should be moved to provider abstraction layer.
@@ -152,26 +172,22 @@ const createOrderPopupContent = (
           style={{
             width: "100%",
             padding: "10px 16px",
-            backgroundColor: toggleColor,
-            color: "white",
-            border: "none",
+            backgroundColor: "transparent",
+            color: toggleColor,
+            border: `2px solid ${toggleColor}`,
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: "600",
             cursor: "pointer",
             transition: "all 0.2s",
-            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor =
-              toggleColor === "#3b82f6" ? "#2563eb" : "#dc2626";
+            e.currentTarget.style.backgroundColor = `${toggleColor}20`;
             e.currentTarget.style.transform = "translateY(-1px)";
-            e.currentTarget.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.15)";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = toggleColor;
+            e.currentTarget.style.backgroundColor = "transparent";
             e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.1)";
           }}
         >
           {toggleText}
@@ -400,6 +416,7 @@ const LeafletMap = ({
 
   return (
     <MapContainer style={{ width: "100%", height: "100%" }}>
+      <style dangerouslySetInnerHTML={{ __html: popupStyles }} />
       <MapFitter orders={orders} unassignedOrders={unassignedOrders} />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {polylinePositions.length > 0 &&
@@ -542,7 +559,7 @@ const LeafletMap = ({
                     );
                   }
                 },
-                isPool ? "➕ Add to Delivery" : "➖ Remove from Delivery",
+                isPool ? pl.addToDelivery : pl.removeFromDelivery,
                 isPool ? "#3b82f6" : "#dc2626"
               )}
             </Popup>
