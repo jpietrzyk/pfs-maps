@@ -321,33 +321,33 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   pressed={amounts.low}
                   onPressedChange={() => handleAmountChange("low")}
                   size="sm"
-                  aria-label="Filter by Low amount (0 - 10,000)"
+                  aria-label="Filter by Low amount (0 - 300,000)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-cyan-50 data-[state=on]:text-cyan-700 data-[state=on]:border-cyan-300 data-[state=on]:*:[svg]:stroke-cyan-700 justify-start h-8 font-normal"
                 >
                   <DollarSign className="h-3.5 w-3.5 mr-1.5" />
-                  0-10K
+                  0-300K
                 </Toggle>
 
                 <Toggle
                   pressed={amounts.medium}
                   onPressedChange={() => handleAmountChange("medium")}
                   size="sm"
-                  aria-label="Filter by Medium amount (10,001 - 100,000)"
+                  aria-label="Filter by Medium amount (300,001 - 1,000,000)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-orange-50 data-[state=on]:text-orange-700 data-[state=on]:border-orange-300 data-[state=on]:*:[svg]:stroke-orange-700 justify-start h-8 font-normal"
                 >
                   <DollarSign className="h-3.5 w-3.5 mr-1.5" />
-                  10K-100K
+                  300K-1M
                 </Toggle>
 
                 <Toggle
                   pressed={amounts.high}
                   onPressedChange={() => handleAmountChange("high")}
                   size="sm"
-                  aria-label="Filter by High amount (above 100,000)"
+                  aria-label="Filter by High amount (above 1,000,000)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-rose-50 data-[state=on]:text-rose-700 data-[state=on]:border-rose-300 data-[state=on]:*:[svg]:stroke-rose-700 justify-start h-8 font-normal col-span-2"
                 >
                   <DollarSign className="h-3.5 w-3.5 mr-1.5" />
-                  100K+
+                  1M+
                 </Toggle>
               </div>
             </div>

@@ -35,23 +35,26 @@ async function loadOrders(): Promise<void> {
     }
 
     const ordersJson = (await response.json()) as Order[];
-    sampleOrdersData = ordersJson.map((order) => ({
-      id: order.id,
-      product: order.product as Product,
-      comment: order.comment,
-      status: (order.status === 'cancelled' ? 'cancelled' : order.status) as Order['status'],
-      priority: order.priority as Order['priority'],
-      active: order.active !== false, // Default to true if missing
-      createdAt: new Date(order.createdAt),
-      updatedAt: new Date(order.updatedAt),
-      customer: order.customer,
-      totalAmount: (order as any).totalAmount ?? (order as any).totalAmmount ?? 0, // Handle both spellings
-      items: order.items,
-      location: {
-        lat: typeof order.location.lat === 'string' ? parseFloat(order.location.lat) : order.location.lat,
-        lng: typeof order.location.lng === 'string' ? parseFloat(order.location.lng) : order.location.lng
-      }
-    }));
+    sampleOrdersData = ordersJson.map((order) => {
+      const orderRecord = order as unknown as Record<string, unknown>;
+      return {
+        id: order.id,
+        product: order.product as Product,
+        comment: order.comment,
+        status: (order.status === 'cancelled' ? 'cancelled' : order.status) as Order['status'],
+        priority: order.priority as Order['priority'],
+        active: order.active !== false, // Default to true if missing
+        createdAt: new Date(order.createdAt),
+        updatedAt: new Date(order.updatedAt),
+        customer: order.customer,
+        totalAmount: (orderRecord.totalAmount as number) ?? (orderRecord.totalAmmount as number) ?? 0, // Handle both spellings
+        items: order.items,
+        location: {
+          lat: typeof order.location.lat === 'string' ? parseFloat(order.location.lat) : order.location.lat,
+          lng: typeof order.location.lng === 'string' ? parseFloat(order.location.lng) : order.location.lng
+        }
+      };
+    });
 
     ordersLoaded = true;
   } catch (error) {

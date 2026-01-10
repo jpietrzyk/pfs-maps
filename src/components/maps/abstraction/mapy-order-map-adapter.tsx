@@ -47,7 +47,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
   const [calculatedRoutes, setCalculatedRoutes] = useState<RouteSegment[]>([]);
 
-  const ORANGE_THRESHOLD = 13000;
+  const ORANGE_THRESHOLD = 500000;
   const mapyApiKey = import.meta.env.VITE_MAPY_COM_API_KEY as
     | string
     | undefined;
@@ -116,7 +116,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
     return allOrders.map((order) => {
       // Check if order is in delivery by checking if it's in the orders array (not by deliveryId field)
       const isPool = !deliveryOrderIds.has(order.id);
-      const isHighValue = order.totalAmount > ORANGE_THRESHOLD;
+      const isHighValue = order.product.price > ORANGE_THRESHOLD;
 
       // Check if this unassigned order is filtered out
       const isDisabled =

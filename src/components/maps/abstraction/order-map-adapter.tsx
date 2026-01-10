@@ -53,7 +53,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
     setRouteSegments([]);
   }, [setRouteSegments]);
 
-  const ORANGE_THRESHOLD = 13000;
+  const ORANGE_THRESHOLD = 500000;
 
   // Transform orders to markers
   const markers: MapMarkerData[] = React.useMemo(() => {
@@ -82,9 +82,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
 
       if (isPool) {
         type =
-          (order.totalAmount ?? 0) > ORANGE_THRESHOLD
-            ? "pool-high-value"
-            : "pool";
+          order.product.price > ORANGE_THRESHOLD ? "pool-high-value" : "pool";
       }
 
       const popupContent = (

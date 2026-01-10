@@ -135,8 +135,8 @@ export default function DeliveryRouteMapLayout({
 
   // Helper function to determine amount tier
   const getAmountTier = (amount: number): keyof AmountFilterState => {
-    if (amount <= 10000) return "low";
-    if (amount <= 100000) return "medium";
+    if (amount <= 300000) return "low";
+    if (amount <= 1000000) return "medium";
     return "high";
   };
 
@@ -165,7 +165,7 @@ export default function DeliveryRouteMapLayout({
     (order) =>
       priorityFilters[order.priority] &&
       statusFilters[order.status] &&
-      amountFilters[getAmountTier(order.totalAmount)] &&
+      amountFilters[getAmountTier(order.totalAmount ?? 0)] &&
       complexityFilters[getComplexityTier(order.product.complexity)] &&
       updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)]
   );

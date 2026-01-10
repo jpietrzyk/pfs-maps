@@ -392,7 +392,7 @@ const LeafletMap = ({
   );
 
   // Use fixed threshold for orange marker
-  const ORANGE_THRESHOLD = 13000;
+  const ORANGE_THRESHOLD = 500000;
 
   // State for tracking which polyline is currently hovered
   const [hoveredPolylineIndex, setHoveredPolylineIndex] = React.useState<
@@ -479,7 +479,7 @@ const LeafletMap = ({
           "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png";
         let icon = defaultIcon;
         if (isPool) {
-          if ((order.totalAmount ?? 0) > ORANGE_THRESHOLD) {
+          if (order.product.price > ORANGE_THRESHOLD) {
             iconUrl =
               "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png";
             icon = poolHighPriceIcon;
