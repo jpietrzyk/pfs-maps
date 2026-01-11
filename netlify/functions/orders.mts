@@ -1,18 +1,37 @@
 import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler: Handler = async (_event: HandlerEvent, _context: HandlerContext) => {
   try {
-    // Use __dirname to locate the JSON file relative to this function
-    const filePath = join(__dirname, '../../public', 'orders.json');
-    const data = await readFile(filePath, 'utf8');
+    // Try multiple possible paths to handle both dev and production environments
+    const possiblePaths = [
+      // Production: Netlify deployment structure
+      join('/var/task', 'public', 'orders.json'),
+      // Development: local development
+      join(process.cwd(), 'public', 'orders.json'),
+    ];
+
+    let data;
+    let lastError;
+
+    for (const filePath of possiblePaths) {
+      try {
+        data = await readFile(filePath, 'utf8');
+        console.log(`Successfully loaded orders from: ${filePath}`);
+        break;
+      } catch (err) {
+        lastError = err;
+        console.log(`Tried path ${filePath}, continuing...`);
+      }
+    }
+
+    if (!data) {
+      throw lastError || new Error('Could not find orders.json in any expected location');
+    }
+
+    const orders = JSON.parse(data);
     const orders = JSON.parse(data);
 
     return {
