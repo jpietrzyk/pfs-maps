@@ -15,13 +15,20 @@ module.exports = {
       tsconfig: 'tsconfig.app.json',
       useESM: true,
       isolatedModules: true
+    }],
+    '^.+\.mts$': ['ts-jest', {
+      tsconfig: 'tsconfig.node.json',
+      useESM: true
     }]
   },
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
     "**/?(*.)+(spec|test).[tj]s?(x)"
   ],
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx', '.mts'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(@netlify)/)'
+  ],
   testEnvironmentOptions: {
     customExportConditions: ["node", "node-addons"]
   }
