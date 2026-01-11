@@ -1,5 +1,5 @@
-name: learn-github-actions
-run-name: ${{ github.actor }} runs tests
+name: test-and-lint
+run-name: test-and-lint-ci
 on: [push]
 jobs:
   test:
