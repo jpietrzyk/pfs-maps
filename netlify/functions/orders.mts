@@ -19,14 +19,12 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
       },
       body: JSON.stringify(orders),
     };
-  } catch {
+  } catch (error: unknown) {
+    console.error('Error loading orders:', error);
     return {
       statusCode: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({ error: 'Failed to load orders' }),
     };
