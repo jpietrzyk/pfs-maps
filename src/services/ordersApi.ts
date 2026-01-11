@@ -1,4 +1,5 @@
 import type { Order, Product } from "@/types/order";
+import { PFS_ORDERS_API_URL, PFS_API_KEY, ensureOrdersApiConfig, USE_LIVE_API } from "@/config/apiConfig";
 
 // Mock delay to simulate network request
 const mockDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -12,26 +13,50 @@ async function loadOrders(): Promise<void> {
   if (ordersLoaded) return;
 
   try {
-    const response = await fetch('/orders.json');
+    // Ensure config is present (logs warnings in dev if missing) only when using live API
+    if (USE_LIVE_API) {
+      ensureOrdersApiConfig();
+    }
+
+    const url = USE_LIVE_API && PFS_ORDERS_API_URL ? PFS_ORDERS_API_URL : "/orders.json"; // use local file for mock
+    const headers: Record<string, string> = {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    };
+    if (USE_LIVE_API && PFS_API_KEY) {
+      headers["x-make-apikey"] = PFS_API_KEY;
+    }
+
+    // Debug: log the request details
+    console.log("Fetching orders from:", url);
+    console.log("Headers:", JSON.stringify({ "x-make-apikey": PFS_API_KEY ? "***" : "not-set", "Accept": headers["Accept"], "Content-Type": headers["Content-Type"] }));
+
+    const response = await fetch(url, { method: "GET", headers });
     if (!response.ok) {
       throw new Error('Failed to load orders data');
     }
 
     const ordersJson = (await response.json()) as Order[];
-    sampleOrdersData = ordersJson.map((order) => ({
-      id: order.id,
-      product: order.product as Product,
-      comment: order.comment,
-      status: order.status as Order['status'],
-      priority: order.priority as Order['priority'],
-      active: order.active,
-      createdAt: new Date(order.createdAt),
-      updatedAt: new Date(order.updatedAt),
-      customer: order.customer,
-      totalAmount: order.totalAmount,
-      items: order.items,
-      location: order.location
-    }));
+    sampleOrdersData = ordersJson.map((order) => {
+      const orderRecord = order as unknown as Record<string, unknown>;
+      return {
+        id: order.id,
+        product: order.product as Product,
+        comment: order.comment,
+        status: (order.status === 'cancelled' ? 'cancelled' : order.status) as Order['status'],
+        priority: order.priority as Order['priority'],
+        active: order.active !== false, // Default to true if missing
+        createdAt: new Date(order.createdAt),
+        updatedAt: new Date(order.updatedAt),
+        customer: order.customer,
+        totalAmount: orderRecord.totalAmmount as number ?? 0,
+        items: order.items,
+        location: {
+          lat: typeof order.location.lat === 'string' ? parseFloat(order.location.lat) : order.location.lat,
+          lng: typeof order.location.lng === 'string' ? parseFloat(order.location.lng) : order.location.lng
+        }
+      };
+    });
 
     ordersLoaded = true;
   } catch (error) {
