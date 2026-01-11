@@ -16,7 +16,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
       },
       body: JSON.stringify(orders),
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error loading orders:', error);
     return {
       statusCode: 500,
