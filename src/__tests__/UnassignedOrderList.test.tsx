@@ -170,7 +170,7 @@ describe("UnassignedOrderList", () => {
     // Should render both product names
     expect(screen.getByText("Short Product")).toBeInTheDocument();
     expect(
-      screen.getByText("Very Long Product Name That Should Be Truncated")
+      screen.getByText("Very Long Product Name That Sh...")
     ).toBeInTheDocument();
   });
 

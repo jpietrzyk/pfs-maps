@@ -71,7 +71,7 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
             <Table>
               <TableHeader className="bg-muted/30">
                 <TableRow className="border-border/50 hover:bg-muted/50">
-                  <TableHead className="font-semibold text-foreground/80">
+                  <TableHead className="font-semibold text-foreground/80 w-[20%]">
                     Product
                   </TableHead>
                   <TableHead className="font-semibold text-foreground/80">
@@ -111,8 +111,12 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
                     onMouseEnter={() => setHighlightedOrderId?.(order.id)}
                     onMouseLeave={() => setHighlightedOrderId?.(null)}
                   >
-                    <TableCell className="font-medium text-foreground">
-                      {order.product?.name || `Order ${order.id}`}
+                    <TableCell className="font-medium text-foreground w-[20%]">
+                      {order.product?.name
+                        ? order.product.name.length > 30
+                          ? order.product.name.slice(0, 30) + "..."
+                          : order.product.name
+                        : `Order ${order.id}`}
                     </TableCell>
                     <TableCell className="text-foreground/80">
                       {order.customer}
