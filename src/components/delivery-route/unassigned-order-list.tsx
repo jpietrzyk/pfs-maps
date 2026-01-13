@@ -1,7 +1,5 @@
 import React from "react";
 import type { Order } from "@/types/order";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { pl } from "@/lib/translations";
 import {
   DndContext,
@@ -61,63 +59,51 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
               items={unassignedOrders}
               strategy={verticalListSortingStrategy}
             >
-              <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-3">
+              <ul className="grid grid-cols-8 sm:grid-cols-10 lg:grid-cols-12 xl:grid-cols-16 gap-2">
                 {unassignedOrders.map((order) => (
-                  <li
-                    key={order.id}
-                    className={`group relative overflow-hidden rounded border border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:bg-blue-50/50 hover:border-blue-200 cursor-pointer p-2 h-full ${
-                      highlightedOrderId === order.id
-                        ? "ring-1 ring-blue-400 bg-blue-50/50 border-blue-200"
-                        : ""
-                    }`}
-                    onClick={() => onAddToDelivery(order.id)}
-                    onMouseEnter={() => setHighlightedOrderId?.(order.id)}
-                    onMouseLeave={() => setHighlightedOrderId?.(null)}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <div
-                          className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-50 text-blue-700 border border-blue-200 shrink-0"
-                          data-testid="product-icon"
+                  <li key={order.id} className="h-full">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className={`relative w-full aspect-3/1 rounded border border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:bg-blue-50/50 hover:border-blue-200 cursor-pointer flex items-center justify-center ${
+                            highlightedOrderId === order.id
+                              ? "ring-1 ring-blue-400 bg-blue-50/50 border-blue-200"
+                              : ""
+                          }`}
+                          onClick={() => onAddToDelivery(order.id)}
+                          onMouseEnter={() => setHighlightedOrderId?.(order.id)}
+                          onMouseLeave={() => setHighlightedOrderId?.(null)}
+                          aria-label={`Add order ${order.id} to delivery`}
                         >
+                          {/* Marker icon (map pin) */}
                           <svg
-                            className="h-3 w-3"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
+                            className="h-5 w-5 text-blue-600 opacity-80"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
                           >
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 21c-4.418 0-8-5.373-8-10a8 8 0 1116 0c0 4.627-3.582 10-8 10zm0-7a3 3 0 100-6 3 3 0 000 6z"
+                            />
                           </svg>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <h4 className="truncate text-xs font-medium text-foreground cursor-help">
-                                {order.product?.name || `Order ${order.id}`}
-                              </h4>
-                            </TooltipTrigger>
-                            <TooltipContent
-                              side="left"
-                              align="center"
-                              sideOffset={12}
-                              className="p-0 overflow-hidden"
-                            >
-                              {createExpandedTooltipContent(order)}
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToDelivery(order.id);
-                        }}
-                        size="icon"
-                        className="shrink-0 h-6 w-6 p-1 border border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-blue-700 rounded transition-colors"
-                        aria-label={`Add order ${order.id} to delivery`}
+                          <span className="ml-1 text-xs truncate">
+                            {order.product?.name || `Order ${order.id}`}
+                          </span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="left"
+                        align="center"
+                        sideOffset={12}
+                        className="p-0 overflow-hidden"
                       >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
+                        {createExpandedTooltipContent(order)}
+                      </TooltipContent>
+                    </Tooltip>
                   </li>
                 ))}
               </ul>
