@@ -66,7 +66,7 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
                       <TooltipTrigger asChild>
                         <button
                           type="button"
-                          className={`relative w-full aspect-[3/1] rounded border border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:bg-blue-50/50 hover:border-blue-200 cursor-pointer flex items-center justify-center ${
+                          className={`relative w-full aspect-3/1 rounded border border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:bg-blue-50/50 hover:border-blue-200 cursor-pointer flex items-center justify-center ${
                             highlightedOrderId === order.id
                               ? "ring-1 ring-blue-400 bg-blue-50/50 border-blue-200"
                               : ""
@@ -90,6 +90,9 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
                               d="M12 21c-4.418 0-8-5.373-8-10a8 8 0 1116 0c0 4.627-3.582 10-8 10zm0-7a3 3 0 100-6 3 3 0 000 6z"
                             />
                           </svg>
+                          <span className="ml-1 text-xs truncate">
+                            {order.product?.name || `Order ${order.id}`}
+                          </span>
                         </button>
                       </TooltipTrigger>
                       <TooltipContent

@@ -173,9 +173,9 @@ describe("OrderFilters", () => {
   it("should display toggle labels correctly", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    expect(screen.getByText("Niski")).toBeInTheDocument();
-    expect(screen.getByText("Średni")).toBeInTheDocument();
-    expect(screen.getByText("Wysoki")).toBeInTheDocument();
+    expect(screen.getByTitle("Niski")).toBeInTheDocument();
+    expect(screen.getByTitle("Średni")).toBeInTheDocument();
+    expect(screen.getByTitle("Wysoki")).toBeInTheDocument();
   });
 
   it("should maintain toggle states across multiple interactions", () => {

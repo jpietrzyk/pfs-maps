@@ -142,9 +142,13 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   }, [priorityFilters]);
 
   useEffect(() => {
-    if (statusFilters) {
+    if (
+      statusFilters &&
+      JSON.stringify(statusFilters) !== JSON.stringify(statuses)
+    ) {
       setStatuses(statusFilters);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilters]);
 
   useEffect(() => {
@@ -312,7 +316,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={priorities.low}
                   onPressedChange={() => handlePriorityChange("low")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Low priority"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.priorityLow}
@@ -323,7 +327,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={priorities.medium}
                   onPressedChange={() => handlePriorityChange("medium")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Medium priority"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-yellow-50 data-[state=on]:text-yellow-700 data-[state=on]:border-yellow-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.priorityMedium}
@@ -334,7 +338,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={priorities.high}
                   onPressedChange={() => handlePriorityChange("high")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by High priority"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-red-50 data-[state=on]:text-red-700 data-[state=on]:border-red-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.priorityHigh}
@@ -367,7 +371,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={statuses.pending}
                   onPressedChange={() => handleStatusChange("pending")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Pending status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-blue-50 data-[state=on]:text-blue-700 data-[state=on]:border-blue-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusPending}
@@ -378,7 +382,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={statuses["in-progress"]}
                   onPressedChange={() => handleStatusChange("in-progress")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by In Progress status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-purple-50 data-[state=on]:text-purple-700 data-[state=on]:border-purple-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusInProgress}
@@ -389,7 +393,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={statuses.completed}
                   onPressedChange={() => handleStatusChange("completed")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Completed status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-emerald-50 data-[state=on]:text-emerald-700 data-[state=on]:border-emerald-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusCompleted}
@@ -400,7 +404,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={statuses.cancelled}
                   onPressedChange={() => handleStatusChange("cancelled")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Cancelled status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-gray-50 data-[state=on]:text-gray-700 data-[state=on]:border-gray-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusCancelled}
@@ -433,7 +437,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={amounts.low}
                   onPressedChange={() => handleAmountChange("low")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Low amount (0 - 300,000)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-cyan-50 data-[state=on]:text-cyan-700 data-[state=on]:border-cyan-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.amountLow}
@@ -445,7 +449,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={amounts.medium}
                   onPressedChange={() => handleAmountChange("medium")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Medium amount (300,001 - 1,000,000)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-orange-50 data-[state=on]:text-orange-700 data-[state=on]:border-orange-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.amountMedium}
@@ -457,7 +461,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={amounts.high}
                   onPressedChange={() => handleAmountChange("high")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by High amount (above 1,000,000)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-rose-50 data-[state=on]:text-rose-700 data-[state=on]:border-rose-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.amountHigh}
@@ -491,7 +495,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={complexities.simple}
                   onPressedChange={() => handleComplexityChange("simple")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Simple complexity (Level 1)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-sky-50 data-[state=on]:text-sky-700 data-[state=on]:border-sky-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.complexitySimple}
@@ -502,7 +506,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={complexities.moderate}
                   onPressedChange={() => handleComplexityChange("moderate")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Moderate complexity (Level 2)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-amber-50 data-[state=on]:text-amber-700 data-[state=on]:border-amber-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.complexityModerate}
@@ -513,7 +517,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={complexities.complex}
                   onPressedChange={() => handleComplexityChange("complex")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Complex (Level 3)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-red-50 data-[state=on]:text-red-700 data-[state=on]:border-red-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.complexityComplex}
@@ -546,7 +550,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={updatedAt.recent}
                   onPressedChange={() => handleUpdatedAtChange("recent")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Recent updates (less than 1 week)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.updatedRecent}
@@ -557,7 +561,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={updatedAt.moderate}
                   onPressedChange={() => handleUpdatedAtChange("moderate")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Moderate updates (1 week - 1 month)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-yellow-50 data-[state=on]:text-yellow-700 data-[state=on]:border-yellow-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.updatedModerate}
@@ -568,7 +572,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 <Toggle
                   pressed={updatedAt.old}
                   onPressedChange={() => handleUpdatedAtChange("old")}
-                  size="icon"
+                  size="sm"
                   aria-label="Filter by Old updates (more than 1 month)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-gray-50 data-[state=on]:text-gray-700 data-[state=on]:border-gray-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.updatedOld}
