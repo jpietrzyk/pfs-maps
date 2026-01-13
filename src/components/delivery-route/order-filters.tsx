@@ -165,21 +165,26 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     }
   }, [updatedAtFilters]);
 
-  // Compute if all filters across categories are selected
-  const allSelected = useMemo(() => {
-    const allPriorities = Object.values(priorities).every(Boolean);
-    const allStatuses = Object.values(statuses).every(Boolean);
-    const allAmounts = Object.values(amounts).every(Boolean);
-    const allComplexities = Object.values(complexities).every(Boolean);
-    const allUpdatedAt = Object.values(updatedAt).every(Boolean);
-    return (
-      allPriorities &&
-      allStatuses &&
-      allAmounts &&
-      allComplexities &&
-      allUpdatedAt
-    );
-  }, [priorities, statuses, amounts, complexities, updatedAt]);
+  // Compute if all filters in each group are selected
+  const allPrioritiesSelected = useMemo(() => {
+    return Object.values(priorities).every(Boolean);
+  }, [priorities]);
+
+  const allStatusesSelected = useMemo(() => {
+    return Object.values(statuses).every(Boolean);
+  }, [statuses]);
+
+  const allAmountsSelected = useMemo(() => {
+    return Object.values(amounts).every(Boolean);
+  }, [amounts]);
+
+  const allComplexitiesSelected = useMemo(() => {
+    return Object.values(complexities).every(Boolean);
+  }, [complexities]);
+
+  const allUpdatedAtSelected = useMemo(() => {
+    return Object.values(updatedAt).every(Boolean);
+  }, [updatedAt]);
 
   const handlePriorityChange = (priority: keyof PriorityFilterState) => {
     const newFilters = { ...priorities, [priority]: !priorities[priority] };
@@ -214,85 +219,94 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     onUpdatedAtChange?.(newFilters);
   };
 
-  const handleSelectAllToggle = () => {
-    const nextState = true; // Always select all
-    // Priorities
-    const nextPriorities: PriorityFilterState = {
+  const handleSelectAllPriorities = () => {
+    const nextState = !allPrioritiesSelected;
+    const newFilters: PriorityFilterState = {
       low: nextState,
       medium: nextState,
       high: nextState,
     };
-    setPriorities(nextPriorities);
-    onPriorityChange(nextPriorities);
+    setPriorities(newFilters);
+    onPriorityChange(newFilters);
+  };
 
-    // Statuses
-    const nextStatuses: StatusFilterState = {
+  const handleSelectAllStatuses = () => {
+    const nextState = !allStatusesSelected;
+    const newFilters: StatusFilterState = {
       pending: nextState,
       "in-progress": nextState,
       completed: nextState,
       cancelled: nextState,
     };
-    setStatuses(nextStatuses);
-    onStatusChange?.(nextStatuses);
+    setStatuses(newFilters);
+    onStatusChange?.(newFilters);
+  };
 
-    // Amounts
-    const nextAmounts: AmountFilterState = {
+  const handleSelectAllAmounts = () => {
+    const nextState = !allAmountsSelected;
+    const newFilters: AmountFilterState = {
       low: nextState,
       medium: nextState,
       high: nextState,
     };
-    setAmounts(nextAmounts);
-    onAmountChange?.(nextAmounts);
+    setAmounts(newFilters);
+    onAmountChange?.(newFilters);
+  };
 
-    // Complexities
-    const nextComplexities: ComplexityFilterState = {
+  const handleSelectAllComplexities = () => {
+    const nextState = !allComplexitiesSelected;
+    const newFilters: ComplexityFilterState = {
       simple: nextState,
       moderate: nextState,
       complex: nextState,
     };
-    setComplexities(nextComplexities);
-    onComplexityChange?.(nextComplexities);
+    setComplexities(newFilters);
+    onComplexityChange?.(newFilters);
+  };
 
-    // UpdatedAt
-    const nextUpdatedAt: UpdatedAtFilterState = {
+  const handleSelectAllUpdatedAt = () => {
+    const nextState = !allUpdatedAtSelected;
+    const newFilters: UpdatedAtFilterState = {
       recent: nextState,
       moderate: nextState,
       old: nextState,
     };
-    setUpdatedAt(nextUpdatedAt);
-    onUpdatedAtChange?.(nextUpdatedAt);
+    setUpdatedAt(newFilters);
+    onUpdatedAtChange?.(newFilters);
   };
 
   return (
     <div className="w-full px-6 py-4 border-b border-border bg-muted/50">
       <div className="flex gap-4">
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center">
           <h3
             className="text-sm font-semibold text-foreground/70 tracking-wider whitespace-nowrap"
             style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
           >
             {pl.filters.toUpperCase()}
           </h3>
-          <Toggle
-            pressed={allSelected}
-            onPressedChange={handleSelectAllToggle}
-            size="sm"
-            aria-label="Select all filters"
-            className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-blue-50 data-[state=on]:text-blue-700 data-[state=on]:border-blue-300 h-8 w-8 p-0"
-          >
-            {allSelected ? (
-              <Check className="h-3.5 w-3.5" />
-            ) : (
-              <Square className="h-3.5 w-3.5" />
-            )}
-          </Toggle>
         </div>
         <div className="flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <div className="space-y-2">
-              <p className="text-xs font-medium text-foreground/70">
-                {pl.priority}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-foreground/70">
+                  {pl.priority}
+                </p>
+                <Toggle
+                  pressed={allPrioritiesSelected}
+                  onPressedChange={handleSelectAllPriorities}
+                  size="sm"
+                  aria-label="Select all priorities"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-6 w-6 p-0"
+                >
+                  {allPrioritiesSelected ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Square className="h-3 w-3" />
+                  )}
+                </Toggle>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Toggle
                   pressed={priorities.low}
@@ -330,9 +344,24 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium text-foreground/70">
-                {pl.status}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-foreground/70">
+                  {pl.status}
+                </p>
+                <Toggle
+                  pressed={allStatusesSelected}
+                  onPressedChange={handleSelectAllStatuses}
+                  size="sm"
+                  aria-label="Select all statuses"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-blue-50 data-[state=on]:text-blue-700 data-[state=on]:border-blue-300 h-6 w-6 p-0"
+                >
+                  {allStatusesSelected ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Square className="h-3 w-3" />
+                  )}
+                </Toggle>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Toggle
                   pressed={statuses.pending}
@@ -381,9 +410,24 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium text-foreground/70">
-                {pl.amount}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-foreground/70">
+                  {pl.amount}
+                </p>
+                <Toggle
+                  pressed={allAmountsSelected}
+                  onPressedChange={handleSelectAllAmounts}
+                  size="sm"
+                  aria-label="Select all amounts"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-cyan-50 data-[state=on]:text-cyan-700 data-[state=on]:border-cyan-300 h-6 w-6 p-0"
+                >
+                  {allAmountsSelected ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Square className="h-3 w-3" />
+                  )}
+                </Toggle>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Toggle
                   pressed={amounts.low}
@@ -421,9 +465,24 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium text-foreground/70">
-                {pl.complexity}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-foreground/70">
+                  {pl.complexity}
+                </p>
+                <Toggle
+                  pressed={allComplexitiesSelected}
+                  onPressedChange={handleSelectAllComplexities}
+                  size="sm"
+                  aria-label="Select all complexities"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-sky-50 data-[state=on]:text-sky-700 data-[state=on]:border-sky-300 h-6 w-6 p-0"
+                >
+                  {allComplexitiesSelected ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Square className="h-3 w-3" />
+                  )}
+                </Toggle>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Toggle
                   pressed={complexities.simple}
@@ -461,9 +520,24 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-medium text-foreground/70">
-                {pl.updatedAt}
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-foreground/70">
+                  {pl.updatedAt}
+                </p>
+                <Toggle
+                  pressed={allUpdatedAtSelected}
+                  onPressedChange={handleSelectAllUpdatedAt}
+                  size="sm"
+                  aria-label="Select all updated periods"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-6 w-6 p-0"
+                >
+                  {allUpdatedAtSelected ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Square className="h-3 w-3" />
+                  )}
+                </Toggle>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Toggle
                   pressed={updatedAt.recent}

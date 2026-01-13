@@ -580,102 +580,115 @@ describe("OrderFilters - All Filters Together", () => {
 });
 
 describe("OrderFilters - Select All Toggle", () => {
-  it("should render Select All toggle above filter categories", () => {
+  it("should render Select All toggle for each filter group", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    expect(screen.getByLabelText("Select all filters")).toBeInTheDocument();
+    expect(screen.getByLabelText("Select all priorities")).toBeInTheDocument();
+    expect(screen.getByLabelText("Select all statuses")).toBeInTheDocument();
+    expect(screen.getByLabelText("Select all amounts")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Select all complexities")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Select all updated periods")
+    ).toBeInTheDocument();
   });
 
-  it("should have Select All toggle checked by default when all filters are enabled", () => {
+  it("should have Select All toggle checked by default for each group", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    const selectAllToggle = screen.getByLabelText("Select all filters");
-    expect(selectAllToggle).toHaveAttribute("data-state", "on");
+    expect(screen.getByLabelText("Select all priorities")).toHaveAttribute(
+      "data-state",
+      "on"
+    );
+    expect(screen.getByLabelText("Select all statuses")).toHaveAttribute(
+      "data-state",
+      "on"
+    );
+    expect(screen.getByLabelText("Select all amounts")).toHaveAttribute(
+      "data-state",
+      "on"
+    );
+    expect(screen.getByLabelText("Select all complexities")).toHaveAttribute(
+      "data-state",
+      "on"
+    );
+    expect(screen.getByLabelText("Select all updated periods")).toHaveAttribute(
+      "data-state",
+      "on"
+    );
   });
 
-  it("should show unchecked state when any filter is disabled", () => {
+  it("should show unchecked state for priority group when any priority is disabled", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
     const lowPriorityToggle = screen.getByLabelText("Filter by Low priority");
     fireEvent.click(lowPriorityToggle);
 
-    const selectAllToggle = screen.getByLabelText("Select all filters");
+    const selectAllToggle = screen.getByLabelText("Select all priorities");
     expect(selectAllToggle).toHaveAttribute("data-state", "off");
   });
 
-  it("should enable all filters when Select All is clicked", () => {
+  it("should enable all priorities in group when priority Select All is clicked", () => {
     const mockOnPriorityChange = jest.fn();
-    const mockOnStatusChange = jest.fn();
-    const mockOnAmountChange = jest.fn();
-    const mockOnComplexityChange = jest.fn();
-    const mockOnUpdatedAtChange = jest.fn();
+    render(<OrderFilters onPriorityChange={mockOnPriorityChange} />);
 
-    render(
-      <OrderFilters
-        onPriorityChange={mockOnPriorityChange}
-        onStatusChange={mockOnStatusChange}
-        onAmountChange={mockOnAmountChange}
-        onComplexityChange={mockOnComplexityChange}
-        onUpdatedAtChange={mockOnUpdatedAtChange}
-      />
-    );
-
-    // Disable some filters first
+    // Disable some priorities first
     fireEvent.click(screen.getByLabelText("Filter by Low priority"));
-    fireEvent.click(screen.getByLabelText("Filter by Pending status"));
+    fireEvent.click(screen.getByLabelText("Filter by Medium priority"));
 
-    // Reset mock call counts
+    // Reset mock call count
     mockOnPriorityChange.mockClear();
-    mockOnStatusChange.mockClear();
-    mockOnAmountChange.mockClear();
-    mockOnComplexityChange.mockClear();
-    mockOnUpdatedAtChange.mockClear();
 
-    // Click Select All
-    const selectAllToggle = screen.getByLabelText("Select all filters");
+    // Click Select All for priorities
+    const selectAllToggle = screen.getByLabelText("Select all priorities");
     fireEvent.click(selectAllToggle);
 
-    // All filters should be enabled
+    // All priorities should be enabled
     expect(mockOnPriorityChange).toHaveBeenCalledWith({
       low: true,
       medium: true,
       high: true,
     });
-    expect(mockOnStatusChange).toHaveBeenCalledWith({
-      pending: true,
-      "in-progress": true,
-      completed: true,
-      cancelled: true,
-    });
-    expect(mockOnAmountChange).toHaveBeenCalledWith({
+  });
+
+  it("should toggle all items in group when Select All is clicked and some are disabled", () => {
+    const mockOnPriorityChange = jest.fn();
+    render(<OrderFilters onPriorityChange={mockOnPriorityChange} />);
+
+    // Disable all priorities first
+    fireEvent.click(screen.getByLabelText("Filter by Low priority"));
+    fireEvent.click(screen.getByLabelText("Filter by Medium priority"));
+    fireEvent.click(screen.getByLabelText("Filter by High priority"));
+
+    mockOnPriorityChange.mockClear();
+
+    // Click Select All - should toggle to enable all
+    const selectAllToggle = screen.getByLabelText("Select all priorities");
+    fireEvent.click(selectAllToggle);
+
+    expect(mockOnPriorityChange).toHaveBeenCalledWith({
       low: true,
       medium: true,
       high: true,
     });
-    expect(mockOnComplexityChange).toHaveBeenCalledWith({
-      simple: true,
-      moderate: true,
-      complex: true,
-    });
-    expect(mockOnUpdatedAtChange).toHaveBeenCalledWith({
-      recent: true,
-      moderate: true,
-      old: true,
-    });
   });
 
-  it("should display checkbox icon when all filters are selected", () => {
+  it("should display checkbox icon in Select All toggles", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    const selectAllToggle = screen.getByLabelText("Select all filters");
-    // Check that the toggle contains the checkbox icon (rendered as SVG)
-    expect(selectAllToggle.querySelector("svg")).toBeInTheDocument();
+    const selectAllPriorities = screen.getByLabelText("Select all priorities");
+    const selectAllStatuses = screen.getByLabelText("Select all statuses");
+
+    // Check that toggles contain SVG icons
+    expect(selectAllPriorities.querySelector("svg")).toBeInTheDocument();
+    expect(selectAllStatuses.querySelector("svg")).toBeInTheDocument();
   });
 
-  it("should update Select All state when individual filters change", () => {
+  it("should update priority Select All state when individual priorities change", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    const selectAllToggle = screen.getByLabelText("Select all filters");
+    const selectAllToggle = screen.getByLabelText("Select all priorities");
 
     // Initially all should be checked
     expect(selectAllToggle).toHaveAttribute("data-state", "on");
@@ -686,5 +699,47 @@ describe("OrderFilters - Select All Toggle", () => {
 
     // Select All should now be unchecked
     expect(selectAllToggle).toHaveAttribute("data-state", "off");
+  });
+
+  it("should handle independent Select All toggles for each group", () => {
+    const mockOnPriorityChange = jest.fn();
+    const mockOnStatusChange = jest.fn();
+
+    render(
+      <OrderFilters
+        onPriorityChange={mockOnPriorityChange}
+        onStatusChange={mockOnStatusChange}
+      />
+    );
+
+    // Disable a priority and a status
+    fireEvent.click(screen.getByLabelText("Filter by Low priority"));
+    fireEvent.click(screen.getByLabelText("Filter by Pending status"));
+
+    // Priority Select All should be unchecked, Status Select All should be unchecked
+    expect(screen.getByLabelText("Select all priorities")).toHaveAttribute(
+      "data-state",
+      "off"
+    );
+    expect(screen.getByLabelText("Select all statuses")).toHaveAttribute(
+      "data-state",
+      "off"
+    );
+
+    // Clear mocks
+    mockOnPriorityChange.mockClear();
+    mockOnStatusChange.mockClear();
+
+    // Click Select All for priorities only
+    fireEvent.click(screen.getByLabelText("Select all priorities"));
+
+    // Only priority callback should be called
+    expect(mockOnPriorityChange).toHaveBeenCalledWith({
+      low: true,
+      medium: true,
+      high: true,
+    });
+    // Status callback should not be called
+    expect(mockOnStatusChange).not.toHaveBeenCalled();
   });
 });
