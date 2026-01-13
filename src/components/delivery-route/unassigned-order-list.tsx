@@ -2,24 +2,16 @@ import React from "react";
 import type { Order } from "@/types/order";
 import { pl } from "@/lib/translations";
 import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import { createExpandedTooltipContent } from "./order-tooltip-utils";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus } from "lucide-react";
 
 interface UnassignedOrderListProps {
   unassignedOrders: Order[];
@@ -36,16 +28,37 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
   highlightedOrderId,
   setHighlightedOrderId,
 }) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "in-progress":
+        return "bg-blue-100 text-blue-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "low":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   return (
     <div className="px-4 py-2">
-      <div className="font-semibold text-sm mb-2 text-foreground/70">
+      <div className="font-semibold text-sm mb-4 text-foreground/70">
         {title}
       </div>
       <div>
@@ -54,61 +67,103 @@ export const UnassignedOrderList: React.FC<UnassignedOrderListProps> = ({
             {pl.noUnassignedOrders}
           </div>
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter}>
-            <SortableContext
-              items={unassignedOrders}
-              strategy={verticalListSortingStrategy}
-            >
-              <ul className="grid grid-cols-8 sm:grid-cols-10 lg:grid-cols-12 xl:grid-cols-16 gap-2">
-                {unassignedOrders.map((order) => (
-                  <li key={order.id} className="h-full">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className={`relative w-full aspect-3/1 rounded border border-border/50 bg-card shadow-sm transition-all hover:shadow-md hover:bg-blue-50/50 hover:border-blue-200 cursor-pointer flex items-center justify-center ${
-                            highlightedOrderId === order.id
-                              ? "ring-1 ring-blue-400 bg-blue-50/50 border-blue-200"
-                              : ""
-                          }`}
-                          onClick={() => onAddToDelivery(order.id)}
-                          onMouseEnter={() => setHighlightedOrderId?.(order.id)}
-                          onMouseLeave={() => setHighlightedOrderId?.(null)}
-                          aria-label={`Add order ${order.id} to delivery`}
-                        >
-                          {/* Marker icon (map pin) */}
-                          <svg
-                            className="h-5 w-5 text-blue-600 opacity-80"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 21c-4.418 0-8-5.373-8-10a8 8 0 1116 0c0 4.627-3.582 10-8 10zm0-7a3 3 0 100-6 3 3 0 000 6z"
-                            />
-                          </svg>
-                          <span className="ml-1 text-xs truncate">
-                            {order.product?.name || `Order ${order.id}`}
-                          </span>
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="left"
-                        align="center"
-                        sideOffset={12}
-                        className="p-0 overflow-hidden"
+          <div className="bg-card/50 rounded-lg border border-border/50 overflow-hidden">
+            <Table>
+              <TableHeader className="bg-muted/30">
+                <TableRow className="border-border/50 hover:bg-muted/50">
+                  <TableHead className="font-semibold text-foreground/80 w-[20%]">
+                    Product
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Customer
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Priority
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Status
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Amount
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Location
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Created
+                  </TableHead>
+                  <TableHead className="font-semibold text-foreground/80">
+                    Action
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {unassignedOrders.map((order, index) => (
+                  <TableRow
+                    key={order.id}
+                    className={`border-border/30 ${
+                      index % 2 === 0 ? "bg-background/50" : "bg-muted/20"
+                    } ${
+                      highlightedOrderId === order.id
+                        ? "bg-blue-50/80 border-blue-200/50"
+                        : "hover:bg-muted/40"
+                    }`}
+                    onMouseEnter={() => setHighlightedOrderId?.(order.id)}
+                    onMouseLeave={() => setHighlightedOrderId?.(null)}
+                  >
+                    <TableCell className="font-medium text-foreground w-[20%]">
+                      {order.product?.name
+                        ? order.product.name.length > 30
+                          ? order.product.name.slice(0, 30) + "..."
+                          : order.product.name
+                        : `Order ${order.id}`}
+                    </TableCell>
+                    <TableCell className="text-foreground/80">
+                      {order.customer}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`${getPriorityColor(
+                          order.priority
+                        )} border-0`}
                       >
-                        {createExpandedTooltipContent(order)}
-                      </TooltipContent>
-                    </Tooltip>
-                  </li>
+                        {order.priority}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`${getStatusColor(order.status)} border-0`}
+                      >
+                        {order.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-foreground/80">
+                      €{order.totalAmount?.toLocaleString() || "0"}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-foreground/70">
+                      {order.location.lat.toFixed(4)},{" "}
+                      {order.location.lng.toFixed(4)}
+                    </TableCell>
+                    <TableCell className="text-foreground/70 text-sm">
+                      {order.createdAt.toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary hover:text-primary"
+                        onClick={() => onAddToDelivery(order.id)}
+                        aria-label={`Add order ${order.id} to delivery`}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </ul>
-            </SortableContext>
-          </DndContext>
+              </TableBody>
+            </Table>
+          </div>
         )}
       </div>
     </div>

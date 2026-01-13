@@ -170,7 +170,7 @@ describe("UnassignedOrderList", () => {
     // Should render both product names
     expect(screen.getByText("Short Product")).toBeInTheDocument();
     expect(
-      screen.getByText("Very Long Product Name That Should Be Truncated")
+      screen.getByText("Very Long Product Name That Sh...")
     ).toBeInTheDocument();
   });
 
@@ -203,14 +203,11 @@ describe("UnassignedOrderList", () => {
       />
     );
 
-    // Should have the expected styling classes
+    // Should have the button with proper styling
     const orderButton = container.querySelector("button");
-    expect(orderButton).toHaveClass("rounded");
-    expect(orderButton).toHaveClass("border");
-    expect(orderButton).toHaveClass("bg-card");
-    expect(orderButton).toHaveClass("shadow-sm");
-    expect(orderButton).toHaveClass("hover:shadow-md");
-    expect(orderButton).toHaveClass("cursor-pointer");
+    expect(orderButton).toBeInTheDocument();
+    expect(orderButton).toHaveClass("rounded-md");
+    expect(orderButton).toHaveClass("bg-primary/10");
   });
 
   it("should handle large numbers of unassigned orders", () => {
@@ -251,15 +248,16 @@ describe("UnassignedOrderList", () => {
     );
 
     // Check that orders appear in the correct sequence
-    const orderItems = screen.getAllByRole("listitem");
-    expect(orderItems).toHaveLength(3);
+    const tableRows = screen.getAllByRole("row");
+    // Table has header row + 3 data rows
+    expect(tableRows).toHaveLength(4);
 
-    // First item should contain "First Product"
-    expect(orderItems[0]).toHaveTextContent("First Product");
-    // Second item should contain "Second Product"
-    expect(orderItems[1]).toHaveTextContent("Second Product");
-    // Third item should contain "Third Product"
-    expect(orderItems[2]).toHaveTextContent("Third Product");
+    // First data row should contain "First Product"
+    expect(tableRows[1]).toHaveTextContent("First Product");
+    // Second data row should contain "Second Product"
+    expect(tableRows[2]).toHaveTextContent("Second Product");
+    // Third data row should contain "Third Product"
+    expect(tableRows[3]).toHaveTextContent("Third Product");
   });
 
   it("should show add button with correct icon", () => {
