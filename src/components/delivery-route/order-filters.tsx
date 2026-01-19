@@ -34,6 +34,12 @@ export type ComplexityFilterState = {
   complex: boolean;
 };
 
+export type AmountFilterState = {
+  low: boolean;
+  medium: boolean;
+  high: boolean;
+};
+
 export type UpdatedAtFilterState = {
   recent: boolean; // Less than 1 week
   moderate: boolean; // 1 week - 1 month
@@ -72,6 +78,12 @@ const COMPLEXITY_DEFAULT: ComplexityFilterState = {
   complex: true,
 };
 
+const AMOUNT_DEFAULT: AmountFilterState = {
+  low: true,
+  medium: true,
+  high: true,
+};
+
 const UPDATED_AT_DEFAULT: UpdatedAtFilterState = {
   recent: true,
   moderate: true,
@@ -92,10 +104,12 @@ const cloneUpdatedAtDefaults = (): UpdatedAtFilterState => ({
 export const OrderFilters: React.FC<OrderFiltersProps> = ({
   priorityFilters,
   statusFilters,
+  amountFilters,
   complexityFilters,
   updatedAtFilters,
   onPriorityChange,
   onStatusChange,
+  onAmountChange,
   onComplexityChange,
   onUpdatedAtChange,
 }) => {
@@ -109,6 +123,10 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 
   const [complexities, setComplexities] = useState<ComplexityFilterState>(
     complexityFilters ?? cloneComplexityDefaults()
+  );
+
+  const [amounts, setAmounts] = useState<AmountFilterState>(
+    amountFilters ?? AMOUNT_DEFAULT
   );
 
   const [updatedAt, setUpdatedAt] = useState<UpdatedAtFilterState>(
@@ -130,6 +148,12 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilters]);
+
+  useEffect(() => {
+    if (amountFilters) {
+      setAmounts(amountFilters);
+    }
+  }, [amountFilters]);
 
   useEffect(() => {
     if (complexityFilters) {
@@ -156,6 +180,10 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     return Object.values(complexities).every(Boolean);
   }, [complexities]);
 
+  const allAmountsSelected = useMemo(() => {
+    return Object.values(amounts).every(Boolean);
+  }, [amounts]);
+
   const allUpdatedAtSelected = useMemo(() => {
     return Object.values(updatedAt).every(Boolean);
   }, [updatedAt]);
@@ -179,6 +207,12 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     };
     setComplexities(newFilters);
     onComplexityChange?.(newFilters);
+  };
+
+  const handleAmountChange = (amount: keyof AmountFilterState) => {
+    const newFilters = { ...amounts, [amount]: !amounts[amount] };
+    setAmounts(newFilters);
+    onAmountChange?.(newFilters);
   };
 
   const handleUpdatedAtChange = (period: keyof UpdatedAtFilterState) => {
@@ -219,6 +253,17 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     };
     setComplexities(newFilters);
     onComplexityChange?.(newFilters);
+  };
+
+  const handleSelectAllAmounts = () => {
+    const nextState = !allAmountsSelected;
+    const newFilters: AmountFilterState = {
+      low: nextState,
+      medium: nextState,
+      high: nextState,
+    };
+    setAmounts(newFilters);
+    onAmountChange?.(newFilters);
   };
 
   const handleSelectAllUpdatedAt = () => {
@@ -363,6 +408,61 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   title={pl.statusCancelled}
                 >
                   <XCircle className="h-4 w-4" />
+                </Toggle>
+              </div>
+            </div>
+            {/* AMOUNT GROUP */}
+            <div className="space-y-1">
+              <div className="flex items-center gap-1 mb-1">
+                <Toggle
+                  pressed={allAmountsSelected}
+                  onPressedChange={handleSelectAllAmounts}
+                  size="sm"
+                  aria-label="Select all amounts"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-indigo-50 data-[state=on]:text-indigo-700 data-[state=on]:border-indigo-300 h-6 w-6 p-0"
+                >
+                  {allAmountsSelected ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Square className="h-3 w-3" />
+                  )}
+                </Toggle>
+                <span className="text-xs font-medium text-foreground/70">
+                  {pl.amount}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <Toggle
+                  pressed={amounts.low}
+                  onPressedChange={() => handleAmountChange("low")}
+                  size="sm"
+                  aria-label="Filter by Low amount"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-indigo-50 data-[state=on]:text-indigo-700 data-[state=on]:border-indigo-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title={pl.amountLow}
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Toggle>
+
+                <Toggle
+                  pressed={amounts.medium}
+                  onPressedChange={() => handleAmountChange("medium")}
+                  size="sm"
+                  aria-label="Filter by Medium amount"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-purple-50 data-[state=on]:text-purple-700 data-[state=on]:border-purple-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title={pl.amountMedium}
+                >
+                  <AlertCircle className="h-4 w-4" />
+                </Toggle>
+
+                <Toggle
+                  pressed={amounts.high}
+                  onPressedChange={() => handleAmountChange("high")}
+                  size="sm"
+                  aria-label="Filter by High amount"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-pink-50 data-[state=on]:text-pink-700 data-[state=on]:border-pink-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title={pl.amountHigh}
+                >
+                  <Zap className="h-4 w-4" />
                 </Toggle>
               </div>
             </div>
