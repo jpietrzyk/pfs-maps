@@ -9,7 +9,6 @@ import {
   Play,
   CheckCircle,
   XCircle,
-  DollarSign,
   Wrench,
   Calendar,
   Check,
@@ -27,12 +26,6 @@ export type StatusFilterState = {
   "in-progress": boolean;
   completed: boolean;
   cancelled: boolean;
-};
-
-export type AmountFilterState = {
-  low: boolean;
-  medium: boolean;
-  high: boolean;
 };
 
 export type ComplexityFilterState = {
@@ -73,12 +66,6 @@ const STATUS_DEFAULT: StatusFilterState = {
   cancelled: true,
 };
 
-const AMOUNT_DEFAULT: AmountFilterState = {
-  low: true,
-  medium: true,
-  high: true,
-};
-
 const COMPLEXITY_DEFAULT: ComplexityFilterState = {
   simple: true,
   moderate: true,
@@ -95,7 +82,6 @@ const clonePriorityDefaults = (): PriorityFilterState => ({
   ...PRIORITY_DEFAULT,
 });
 const cloneStatusDefaults = (): StatusFilterState => ({ ...STATUS_DEFAULT });
-const cloneAmountDefaults = (): AmountFilterState => ({ ...AMOUNT_DEFAULT });
 const cloneComplexityDefaults = (): ComplexityFilterState => ({
   ...COMPLEXITY_DEFAULT,
 });
@@ -106,12 +92,10 @@ const cloneUpdatedAtDefaults = (): UpdatedAtFilterState => ({
 export const OrderFilters: React.FC<OrderFiltersProps> = ({
   priorityFilters,
   statusFilters,
-  amountFilters,
   complexityFilters,
   updatedAtFilters,
   onPriorityChange,
   onStatusChange,
-  onAmountChange,
   onComplexityChange,
   onUpdatedAtChange,
 }) => {
@@ -121,10 +105,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 
   const [statuses, setStatuses] = useState<StatusFilterState>(
     statusFilters ?? cloneStatusDefaults()
-  );
-
-  const [amounts, setAmounts] = useState<AmountFilterState>(
-    amountFilters ?? cloneAmountDefaults()
   );
 
   const [complexities, setComplexities] = useState<ComplexityFilterState>(
@@ -152,12 +132,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   }, [statusFilters]);
 
   useEffect(() => {
-    if (amountFilters) {
-      setAmounts(amountFilters);
-    }
-  }, [amountFilters]);
-
-  useEffect(() => {
     if (complexityFilters) {
       setComplexities(complexityFilters);
     }
@@ -178,10 +152,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     return Object.values(statuses).every(Boolean);
   }, [statuses]);
 
-  const allAmountsSelected = useMemo(() => {
-    return Object.values(amounts).every(Boolean);
-  }, [amounts]);
-
   const allComplexitiesSelected = useMemo(() => {
     return Object.values(complexities).every(Boolean);
   }, [complexities]);
@@ -200,12 +170,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     const newFilters = { ...statuses, [status]: !statuses[status] };
     setStatuses(newFilters);
     onStatusChange?.(newFilters);
-  };
-
-  const handleAmountChange = (amount: keyof AmountFilterState) => {
-    const newFilters = { ...amounts, [amount]: !amounts[amount] };
-    setAmounts(newFilters);
-    onAmountChange?.(newFilters);
   };
 
   const handleComplexityChange = (complexity: keyof ComplexityFilterState) => {
@@ -246,17 +210,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     onStatusChange?.(newFilters);
   };
 
-  const handleSelectAllAmounts = () => {
-    const nextState = !allAmountsSelected;
-    const newFilters: AmountFilterState = {
-      low: nextState,
-      medium: nextState,
-      high: nextState,
-    };
-    setAmounts(newFilters);
-    onAmountChange?.(newFilters);
-  };
-
   const handleSelectAllComplexities = () => {
     const nextState = !allComplexitiesSelected;
     const newFilters: ComplexityFilterState = {
@@ -291,7 +244,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
           </h3>
         </div>
         <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {/* PRIORITY GROUP */}
             <div className="space-y-1">
               <div className="flex items-center gap-1 mb-1">
@@ -410,64 +363,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   title={pl.statusCancelled}
                 >
                   <XCircle className="h-4 w-4" />
-                </Toggle>
-              </div>
-            </div>
-            {/* AMOUNT GROUP */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 mb-1">
-                <Toggle
-                  pressed={allAmountsSelected}
-                  onPressedChange={handleSelectAllAmounts}
-                  size="sm"
-                  aria-label="Select all amounts"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-cyan-50 data-[state=on]:text-cyan-700 data-[state=on]:border-cyan-300 h-6 w-6 p-0"
-                >
-                  {allAmountsSelected ? (
-                    <Check className="h-3 w-3" />
-                  ) : (
-                    <Square className="h-3 w-3" />
-                  )}
-                </Toggle>
-                <span className="text-xs font-medium text-foreground/70">
-                  {pl.amount}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <Toggle
-                  pressed={amounts.low}
-                  onPressedChange={() => handleAmountChange("low")}
-                  size="sm"
-                  aria-label="Filter by Low amount (0 - 300,000)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-cyan-50 data-[state=on]:text-cyan-700 data-[state=on]:border-cyan-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountLow}
-                >
-                  <DollarSign className="h-4 w-4 mr-1" />
-                  <span className="text-xs">0-300K</span>
-                </Toggle>
-
-                <Toggle
-                  pressed={amounts.medium}
-                  onPressedChange={() => handleAmountChange("medium")}
-                  size="sm"
-                  aria-label="Filter by Medium amount (300,001 - 1,000,000)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-orange-50 data-[state=on]:text-orange-700 data-[state=on]:border-orange-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountMedium}
-                >
-                  <DollarSign className="h-4 w-4 mr-1" />
-                  <span className="text-xs">300K-1M</span>
-                </Toggle>
-
-                <Toggle
-                  pressed={amounts.high}
-                  onPressedChange={() => handleAmountChange("high")}
-                  size="sm"
-                  aria-label="Filter by High amount (above 1,000,000)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-rose-50 data-[state=on]:text-rose-700 data-[state=on]:border-rose-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountHigh}
-                >
-                  <DollarSign className="h-4 w-4 mr-1" />
-                  <span className="text-xs">1M+</span>
                 </Toggle>
               </div>
             </div>

@@ -298,20 +298,6 @@ const LeafletMap = ({
       }),
     []
   );
-  const poolHighPriceIcon = React.useMemo(
-    () =>
-      L.icon({
-        iconUrl:
-          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-        shadowSize: [41, 41],
-      }),
-    []
-  );
   const highlightIcon = React.useMemo(
     () =>
       L.icon({
@@ -390,9 +376,6 @@ const LeafletMap = ({
     },
     []
   );
-
-  // Use fixed threshold for orange marker
-  const ORANGE_THRESHOLD = 500000;
 
   // State for tracking which polyline is currently hovered
   const [hoveredPolylineIndex, setHoveredPolylineIndex] = React.useState<
@@ -479,15 +462,9 @@ const LeafletMap = ({
           "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png";
         let icon = defaultIcon;
         if (isPool) {
-          if (order.product.price > ORANGE_THRESHOLD) {
-            iconUrl =
-              "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png";
-            icon = poolHighPriceIcon;
-          } else {
-            iconUrl =
-              "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png";
-            icon = poolIcon;
-          }
+          iconUrl =
+            "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png";
+          icon = poolIcon;
         }
         if (highlightedOrderId === order.id) {
           iconUrl =

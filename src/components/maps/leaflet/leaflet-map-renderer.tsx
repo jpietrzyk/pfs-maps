@@ -50,17 +50,6 @@ const poolIcon = L.icon({
   shadowSize: [41, 41],
 });
 
-const poolHighValueIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  shadowSize: [41, 41],
-});
-
 const highlightIcon = L.icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
@@ -147,10 +136,8 @@ const getIconForMarker = (marker: MapMarkerData) => {
   } else {
     switch (marker.type) {
       case "pool":
-        iconUrl = poolIcon.options.iconUrl as string;
-        break;
       case "pool-high-value":
-        iconUrl = poolHighValueIcon.options.iconUrl as string;
+        iconUrl = poolIcon.options.iconUrl as string;
         break;
       case "delivery":
       default:
