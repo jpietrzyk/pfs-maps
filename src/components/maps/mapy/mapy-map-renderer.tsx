@@ -100,28 +100,13 @@ const createNumberedIcon = (iconUrl: string, badgeNumber?: number) => {
 const getIconForMarker = (marker: MapMarkerData) => {
   const isDelivery = marker.type === "delivery";
 
-  // Disabled markers always use gray icon
-  if (marker.isDisabled) {
-    const grayIconUrl = poolIcon.options.iconUrl as string;
-    if (isDelivery && marker.waypointIndex !== undefined) {
-      return createNumberedIcon(grayIconUrl, marker.waypointIndex);
-    }
-    return L.icon({
-      iconUrl: grayIconUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-      shadowSize: [41, 41],
-    });
-  }
-
   // Determine base icon URL with priority: highlight > current/previous > type
   let iconUrl = defaultIcon.options.iconUrl as string;
   // Priority: highlight > current/previous > type
   if (marker.isHighlighted) {
     iconUrl = highlightIcon.options.iconUrl as string;
+  } else if (marker.isDisabled) {
+    iconUrl = poolIcon.options.iconUrl as string;
   } else if (marker.isCurrentOrder) {
     iconUrl = currentOrderIcon.options.iconUrl as string;
   } else if (marker.isPreviousOrder) {
