@@ -83,84 +83,7 @@ const previousOrderIcon = L.icon({
   shadowSize: [41, 41],
 });
 
-// Create a divIcon with a numeric badge for waypoint sequence
-const createNumberedIcon = (iconUrl: string, badgeNumber?: number) => {
-  const badge =
-    badgeNumber !== undefined
-      ? `<span style="position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#111827;color:white;border-radius:9999px;padding:0 6px;font-size:12px;font-weight:700;line-height:18px;box-shadow:0 1px 2px rgba(0,0,0,0.25);">${badgeNumber}</span>`
-      : "";
-
-  return L.divIcon({
-    html:
-      `<div style="position:relative;display:inline-block;width:25px;height:41px;">` +
-      `<img src="${iconUrl}" alt="marker" style="width:25px;height:41px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));" />` +
-      badge +
-      "</div>",
-    className: "",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-  });
-};
-
-// Get icon based on marker data
-const getIconForMarker = (marker: MapMarkerData) => {
-  const isDelivery = marker.type === "delivery";
-
-  // Disabled markers always use gray icon
-  if (marker.isDisabled) {
-    const grayIconUrl = poolIcon.options.iconUrl as string;
-    if (isDelivery && marker.waypointIndex !== undefined) {
-      return createNumberedIcon(grayIconUrl, marker.waypointIndex);
-    }
-    return L.icon({
-      iconUrl: grayIconUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-      shadowSize: [41, 41],
-    });
-  }
-
-  // Determine base icon URL with priority: highlight > current/previous > type
-  let iconUrl = defaultIcon.options.iconUrl as string;
-  // Priority: highlight > current/previous > type
-  if (marker.isHighlighted) {
-    iconUrl = highlightIcon.options.iconUrl as string;
-  } else if (marker.isCurrentOrder) {
-    iconUrl = currentOrderIcon.options.iconUrl as string;
-  } else if (marker.isPreviousOrder) {
-    iconUrl = previousOrderIcon.options.iconUrl as string;
-  } else {
-    switch (marker.type) {
-      case "pool":
-      case "pool-high-value":
-        iconUrl = poolIcon.options.iconUrl as string;
-        break;
-      case "delivery":
-      default:
-        iconUrl = defaultIcon.options.iconUrl as string;
-        break;
-    }
-  }
-
-  // Attach waypoint index badge only for delivery markers with a known sequence
-  if (isDelivery && marker.waypointIndex !== undefined) {
-    return createNumberedIcon(iconUrl, marker.waypointIndex);
-  }
-
-  return L.icon({
-    iconUrl,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    shadowSize: [41, 41],
-  });
-};
+import { getMarkerStyle } from "../abstraction/marker-style";
 
 // Map fitter component - handles bounds fitting
 function MapFitter({ bounds }: { bounds: MapBounds }) {
@@ -175,7 +98,7 @@ function MapFitter({ bounds }: { bounds: MapBounds }) {
       map.setView([deliveryPoints[0].lat, deliveryPoints[0].lng], 13);
     } else if (deliveryPoints.length > 1) {
       const leafletBounds = L.latLngBounds(
-        deliveryPoints.map((p) => [p.lat, p.lng])
+        deliveryPoints.map((p) => [p.lat, p.lng]),
       );
       map.fitBounds(leafletBounds, { padding: [40, 40] });
     }
@@ -250,9 +173,7 @@ const LeafletMapRenderer: React.FC<LeafletMapRendererProps> = ({
       {markersWithIndex
         .filter((marker) => marker.type !== "delivery")
         .map((marker) => {
-          const icon = getIconForMarker(marker);
-          const opacity = marker.matchesFilters === false ? 0.4 : 1.0;
-
+          const { icon, opacity } = getMarkerStyle(marker);
           return (
             <Marker
               key={marker.id}
@@ -273,15 +194,14 @@ const LeafletMapRenderer: React.FC<LeafletMapRendererProps> = ({
       {markersWithIndex
         .filter((marker) => marker.type === "delivery")
         .map((marker) => {
-          const icon = getIconForMarker(marker);
-
+          const { icon, opacity } = getMarkerStyle(marker);
           return (
             <Marker
               key={marker.id}
               position={[marker.location.lat, marker.location.lng]}
               // @ts-expect-error: icon is supported by react-leaflet Marker
               icon={icon}
-              opacity={1.0}
+              opacity={opacity}
               eventHandlers={{
                 mouseover: () => onMarkerHover?.(marker.id, true),
                 mouseout: () => onMarkerHover?.(marker.id, false),
