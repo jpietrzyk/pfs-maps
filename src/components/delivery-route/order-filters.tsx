@@ -172,25 +172,25 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     }
   }, [updatedAtFilters]);
 
-  // Compute if all filters in each group are selected
+  // Compute if any filters in each group are selected
   const allPrioritiesSelected = useMemo(() => {
-    return Object.values(priorities).every(Boolean);
+    return Object.values(priorities).some(Boolean);
   }, [priorities]);
 
   const allStatusesSelected = useMemo(() => {
-    return Object.values(statuses).every(Boolean);
+    return Object.values(statuses).some(Boolean);
   }, [statuses]);
 
   const allComplexitiesSelected = useMemo(() => {
-    return Object.values(complexities).every(Boolean);
+    return Object.values(complexities).some(Boolean);
   }, [complexities]);
 
   const allAmountsSelected = useMemo(() => {
-    return Object.values(amounts).every(Boolean);
+    return Object.values(amounts).some(Boolean);
   }, [amounts]);
 
   const allUpdatedAtSelected = useMemo(() => {
-    return Object.values(updatedAt).every(Boolean);
+    return Object.values(updatedAt).some(Boolean);
   }, [updatedAt]);
 
   const handlePriorityChange = (priority: keyof PriorityFilterState) => {
