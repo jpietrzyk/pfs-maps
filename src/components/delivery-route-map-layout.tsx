@@ -162,26 +162,81 @@ export default function DeliveryRouteMapLayout({
     return "old";
   };
 
-  // Filter unassigned orders based on all filters (for UI display)
-  const filteredUnassignedOrders = unassignedOrders.filter(
-    (order) =>
-      priorityFilters[order.priority] &&
-      statusFilters[order.status] &&
-      amountFilters[getAmountTier(order.totalAmount ?? 0)] &&
-      complexityFilters[getComplexityTier(order.product.complexity)] &&
-      updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)],
-  );
+  // Filter unassigned orders based on active filters (for UI display)
+  const filteredUnassignedOrders = unassignedOrders.filter((order) => {
+    const priorityMatch = priorityFilters[order.priority] ?? false;
+    const statusMatch = statusFilters[order.status] ?? false;
+    const amountMatch =
+      amountFilters[getAmountTier(order.totalAmount ?? 0)] ?? false;
+    const complexityMatch =
+      complexityFilters[getComplexityTier(order.product.complexity)] ?? false;
+    const updatedAtMatch =
+      updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)] ?? false;
+
+    // Only apply filter if the group has any filters checked
+    const activePriorityMatch = Object.values(priorityFilters).some(Boolean)
+      ? priorityMatch
+      : true;
+    const activeStatusMatch = Object.values(statusFilters).some(Boolean)
+      ? statusMatch
+      : true;
+    const activeAmountMatch = Object.values(amountFilters).some(Boolean)
+      ? amountMatch
+      : true;
+    const activeComplexityMatch = Object.values(complexityFilters).some(Boolean)
+      ? complexityMatch
+      : true;
+    const activeUpdatedAtMatch = Object.values(updatedAtFilters).some(Boolean)
+      ? updatedAtMatch
+      : true;
+
+    return (
+      activePriorityMatch &&
+      activeStatusMatch &&
+      activeAmountMatch &&
+      activeComplexityMatch &&
+      activeUpdatedAtMatch
+    );
+  });
 
   // Create filter match status for all unassigned orders
   const unassignedOrderFilterStatus = React.useMemo(() => {
     const statusMap = new Map<string, boolean>();
     unassignedOrders.forEach((order) => {
+      const priorityMatch = priorityFilters[order.priority] ?? false;
+      const statusMatch = statusFilters[order.status] ?? false;
+      const amountMatch =
+        amountFilters[getAmountTier(order.totalAmount ?? 0)] ?? false;
+      const complexityMatch =
+        complexityFilters[getComplexityTier(order.product.complexity)] ?? false;
+      const updatedAtMatch =
+        updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)] ?? false;
+
+      // Only apply filter if the group has any filters checked
+      const activePriorityMatch = Object.values(priorityFilters).some(Boolean)
+        ? priorityMatch
+        : true;
+      const activeStatusMatch = Object.values(statusFilters).some(Boolean)
+        ? statusMatch
+        : true;
+      const activeAmountMatch = Object.values(amountFilters).some(Boolean)
+        ? amountMatch
+        : true;
+      const activeComplexityMatch = Object.values(complexityFilters).some(
+        Boolean,
+      )
+        ? complexityMatch
+        : true;
+      const activeUpdatedAtMatch = Object.values(updatedAtFilters).some(Boolean)
+        ? updatedAtMatch
+        : true;
+
       const matchesFilters =
-        priorityFilters[order.priority] &&
-        statusFilters[order.status] &&
-        amountFilters[getAmountTier(order.totalAmount ?? 0)] &&
-        complexityFilters[getComplexityTier(order.product.complexity)] &&
-        updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)];
+        activePriorityMatch &&
+        activeStatusMatch &&
+        activeAmountMatch &&
+        activeComplexityMatch &&
+        activeUpdatedAtMatch;
       statusMap.set(order.id, matchesFilters);
     });
     return statusMap;
