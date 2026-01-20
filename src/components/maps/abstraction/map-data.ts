@@ -18,6 +18,14 @@ export interface MapMarkerData {
   isDisabled?: boolean; // True for filtered-out markers (shown but grayed and non-clickable)
   matchesFilters?: boolean; // True if the marker matches current filter criteria
   popupContent?: React.ReactNode;
+  // Additional fields for filter-based styling
+  priority?: string;
+  status?: string;
+  totalAmount?: number;
+  product?: {
+    complexity: number;
+  };
+  customIconUrl?: string; // For filter-based coloring
 }
 
 export interface MapRouteSegmentData {
