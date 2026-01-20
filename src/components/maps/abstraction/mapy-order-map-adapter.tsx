@@ -119,8 +119,9 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       const isHighValue = order.product.price > ORANGE_THRESHOLD;
 
       // Check if this unassigned order is filtered out
-      const isDisabled =
-        isPool && filteredOrderIds ? !filteredOrderIds.has(order.id) : false;
+      const matchesFilters =
+        isPool && filteredOrderIds ? filteredOrderIds.has(order.id) : true;
+      const isDisabled = !matchesFilters;
 
       // Determine marker type
       let type: "delivery" | "pool" | "pool-high-value" = "delivery";
@@ -160,6 +161,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
         isCurrentOrder: currentOrderId === order.id,
         isPreviousOrder: previousOrderId === order.id,
         isDisabled,
+        matchesFilters,
         popupContent: (
           <OrderPopupContent
             order={order}

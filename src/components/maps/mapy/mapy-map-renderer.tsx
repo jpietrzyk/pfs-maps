@@ -166,10 +166,10 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
   const markerLayerRef = useRef<ReturnType<typeof L.layerGroup> | null>(null);
   const routeLayerRef = useRef<ReturnType<typeof L.layerGroup> | null>(null);
   const markerInstancesRef = useRef<Map<string, ReturnType<typeof L.marker>>>(
-    new Map()
+    new Map(),
   );
   const routeInstancesRef = useRef<Map<string, ReturnType<typeof L.polyline>>>(
-    new Map()
+    new Map(),
   );
   const popupDataRef = useRef<
     Map<string, { container: HTMLElement; root: ReturnType<typeof createRoot> }>
@@ -265,7 +265,7 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
       map.setView([deliveryPoints[0].lat, deliveryPoints[0].lng], 13);
     } else if (deliveryPoints.length > 1) {
       const leafletBounds = L.latLngBounds(
-        deliveryPoints.map((p) => [p.lat, p.lng])
+        deliveryPoints.map((p) => [p.lat, p.lng]),
       );
       map.fitBounds(leafletBounds, { padding: [40, 40] });
     }
@@ -279,12 +279,10 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
     const markerLayer = markerLayerRef.current;
     const markerInstances = markerInstancesRef.current;
 
-    // Exclude disabled markers entirely from rendering
-    const activeMarkersWithIndex = markersWithIndex.filter(
-      (m) => !m.isDisabled
-    );
+    // Include all markers for rendering (disabled ones will be grayed/faded)
+    const activeMarkersWithIndex = markersWithIndex;
 
-    // Get current marker IDs (only active ones)
+    // Get current marker IDs (all markers)
     const currentMarkerIds = new Set(activeMarkersWithIndex.map((m) => m.id));
 
     // Check if any markers are being removed
@@ -317,10 +315,10 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
     // Add or update markers - first pool markers, then delivery markers so delivery markers appear on top
     // Separate markers by type for proper z-ordering
     const poolMarkers = activeMarkersWithIndex.filter(
-      (m) => m.type !== "delivery"
+      (m) => m.type !== "delivery",
     );
     const deliveryMarkers = activeMarkersWithIndex.filter(
-      (m) => m.type === "delivery"
+      (m) => m.type === "delivery",
     );
 
     // Process pool markers first (rendered below)
