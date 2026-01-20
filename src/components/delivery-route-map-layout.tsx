@@ -14,13 +14,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
 import { UnassignedOrderList } from "@/components/delivery-route/unassigned-order-list";
-import {
-  OrderFilters,
-  type PriorityFilterState,
-  type StatusFilterState,
-  type AmountFilterState,
-  type ComplexityFilterState,
-  type UpdatedAtFilterState,
+import { OrderFilters } from "@/components/delivery-route/order-filters";
+import type {
+  AmountFilterState,
+  ComplexityFilterState,
+  UpdatedAtFilterState,
 } from "@/components/delivery-route/order-filters";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
@@ -98,32 +96,42 @@ export default function DeliveryRouteMapLayout({
 
   // Use shared filter state from context
   const { filters, setFilters } = useMapFilters();
-  const priorityFilters = filters.priorityFilters ?? {
-    low: true,
-    medium: true,
-    high: true,
-  };
-  const statusFilters = filters.statusFilters ?? {
-    pending: true,
-    "in-progress": true,
-    completed: true,
-    cancelled: true,
-  };
-  const amountFilters = filters.amountFilters ?? {
-    low: true,
-    medium: true,
-    high: true,
-  };
-  const complexityFilters = filters.complexityFilters ?? {
-    simple: true,
-    moderate: true,
-    complex: true,
-  };
-  const updatedAtFilters = filters.updatedAtFilters ?? {
-    recent: true,
-    moderate: true,
-    old: true,
-  };
+  const priorityFilters = React.useMemo(
+    () => filters.priorityFilters ?? { low: true, medium: true, high: true },
+    [filters.priorityFilters],
+  );
+  const statusFilters = React.useMemo(
+    () =>
+      filters.statusFilters ?? {
+        pending: true,
+        "in-progress": true,
+        completed: true,
+        cancelled: true,
+      },
+    [filters.statusFilters],
+  );
+  const amountFilters = React.useMemo(
+    () => filters.amountFilters ?? { low: true, medium: true, high: true },
+    [filters.amountFilters],
+  );
+  const complexityFilters = React.useMemo(
+    () =>
+      filters.complexityFilters ?? {
+        simple: true,
+        moderate: true,
+        complex: true,
+      },
+    [filters.complexityFilters],
+  );
+  const updatedAtFilters = React.useMemo(
+    () =>
+      filters.updatedAtFilters ?? {
+        recent: true,
+        moderate: true,
+        old: true,
+      },
+    [filters.updatedAtFilters],
+  );
 
   // Remove localStorage filter logic (now handled by context)
 

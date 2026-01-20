@@ -1,12 +1,32 @@
+import type {
+  PriorityFilterState,
+  StatusFilterState,
+  AmountFilterState,
+  ComplexityFilterState,
+  UpdatedAtFilterState,
+} from "@/components/delivery-route/order-filters";
+
 import React, { createContext, useContext, useState, useMemo } from "react";
 
 export type MapFiltersState = {
-  status: string[];
-  // Add other filter fields as needed
+  priorityFilters: PriorityFilterState;
+  statusFilters: StatusFilterState;
+  amountFilters: AmountFilterState;
+  complexityFilters: ComplexityFilterState;
+  updatedAtFilters: UpdatedAtFilterState;
 };
 
 const defaultFilters: MapFiltersState = {
-  status: [],
+  priorityFilters: { low: true, medium: true, high: true },
+  statusFilters: {
+    pending: true,
+    "in-progress": true,
+    completed: true,
+    cancelled: true,
+  },
+  amountFilters: { low: true, medium: true, high: true },
+  complexityFilters: { simple: true, moderate: true, complex: true },
+  updatedAtFilters: { recent: true, moderate: true, old: true },
 };
 
 interface MapFiltersContextType {

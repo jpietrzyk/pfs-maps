@@ -19,6 +19,7 @@ export type PriorityFilterState = {
   low: boolean;
   medium: boolean;
   high: boolean;
+  [key: string]: boolean;
 };
 
 export type StatusFilterState = {
@@ -26,24 +27,28 @@ export type StatusFilterState = {
   "in-progress": boolean;
   completed: boolean;
   cancelled: boolean;
+  [key: string]: boolean;
 };
 
 export type ComplexityFilterState = {
   simple: boolean;
   moderate: boolean;
   complex: boolean;
+  [key: string]: boolean;
 };
 
 export type AmountFilterState = {
   low: boolean;
   medium: boolean;
   high: boolean;
+  [key: string]: boolean;
 };
 
 export type UpdatedAtFilterState = {
   recent: boolean; // Less than 1 week
   moderate: boolean; // 1 week - 1 month
   old: boolean; // More than 1 month
+  [key: string]: boolean;
 };
 
 interface OrderFiltersProps {
@@ -114,23 +119,23 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   onUpdatedAtChange,
 }) => {
   const [priorities, setPriorities] = useState<PriorityFilterState>(
-    priorityFilters ?? clonePriorityDefaults()
+    priorityFilters ?? clonePriorityDefaults(),
   );
 
   const [statuses, setStatuses] = useState<StatusFilterState>(
-    statusFilters ?? cloneStatusDefaults()
+    statusFilters ?? cloneStatusDefaults(),
   );
 
   const [complexities, setComplexities] = useState<ComplexityFilterState>(
-    complexityFilters ?? cloneComplexityDefaults()
+    complexityFilters ?? cloneComplexityDefaults(),
   );
 
   const [amounts, setAmounts] = useState<AmountFilterState>(
-    amountFilters ?? AMOUNT_DEFAULT
+    amountFilters ?? AMOUNT_DEFAULT,
   );
 
   const [updatedAt, setUpdatedAt] = useState<UpdatedAtFilterState>(
-    updatedAtFilters ?? cloneUpdatedAtDefaults()
+    updatedAtFilters ?? cloneUpdatedAtDefaults(),
   );
 
   useEffect(() => {
