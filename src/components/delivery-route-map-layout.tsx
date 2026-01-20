@@ -133,6 +133,41 @@ export default function DeliveryRouteMapLayout({
       old: true,
     });
 
+  // Load filter states from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("orderFilters");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setPriorityFilters((prev) => parsed.priorityFilters || prev);
+        setStatusFilters((prev) => parsed.statusFilters || prev);
+        setAmountFilters((prev) => parsed.amountFilters || prev);
+        setComplexityFilters((prev) => parsed.complexityFilters || prev);
+        setUpdatedAtFilters((prev) => parsed.updatedAtFilters || prev);
+      } catch (error) {
+        console.warn("Failed to parse saved filters:", error);
+      }
+    }
+  }, []);
+
+  // Save filter states to localStorage when they change
+  useEffect(() => {
+    const filters = {
+      priorityFilters,
+      statusFilters,
+      amountFilters,
+      complexityFilters,
+      updatedAtFilters,
+    };
+    localStorage.setItem("orderFilters", JSON.stringify(filters));
+  }, [
+    priorityFilters,
+    statusFilters,
+    amountFilters,
+    complexityFilters,
+    updatedAtFilters,
+  ]);
+
   // Helper function to determine amount tier
   const getAmountTier = (amount: number): keyof AmountFilterState => {
     if (amount <= 300000) return "low";

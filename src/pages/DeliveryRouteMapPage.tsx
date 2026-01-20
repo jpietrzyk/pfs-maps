@@ -10,12 +10,13 @@ export default function DeliveryMapPage() {
 
   return (
     <DeliveryRouteMapLayout
+      key={window.location.pathname}
       renderMap={(
         displayedOrders: Order[],
         allUnassignedOrders: Order[],
         unassignedOrderFilterStatus: Map<string, boolean>,
         onOrderAddedToDelivery,
-        onRefreshRequested
+        onRefreshRequested,
       ) => (
         <MapView
           orders={displayedOrders}

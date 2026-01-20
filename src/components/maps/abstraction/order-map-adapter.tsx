@@ -85,7 +85,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
         <OrderPopupContent
           order={order}
           isPool={isPool}
-          toggleText={isPool ? pl.addToDelivery : `➖ ${pl.removeFromDelivery}`}
+          toggleText={isPool ? pl.addToDelivery : pl.removeFromDelivery}
           onToggle={async () => {
             try {
               if (isPool) {
