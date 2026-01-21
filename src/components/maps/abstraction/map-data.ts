@@ -10,7 +10,7 @@ export interface MapMarkerData {
     lat: number;
     lng: number;
   };
-  type: 'delivery' | 'pool' | 'pool-high-value';
+    type: 'delivery' | 'pool' | 'pool-high-value' | 'outfiltered';
   waypointIndex?: number; // 1-based position in delivery route when applicable
   isHighlighted?: boolean;
   isCurrentOrder?: boolean;

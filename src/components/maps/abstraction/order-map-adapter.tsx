@@ -127,10 +127,12 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
       );
 
       // Create marker data for styling
+      // If marker is outfiltered, force type to "outfiltered" for gray icon (applies to all marker types)
+      const markerType = !matchesFilters ? "outfiltered" : type;
       const markerData: MapMarkerData = {
         id: order.id,
         location: order.location,
-        type,
+        type: markerType,
         isHighlighted: highlightedOrderId === order.id,
         isCurrentOrder: currentOrderId === order.id,
         isPreviousOrder: previousOrderId === order.id,
@@ -144,9 +146,17 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
       };
 
       // Get custom icon URL based on filters
-      const { icon } = getMarkerStyle(markerData, filters);
-      const customIconUrl = (icon as { options: { iconUrl?: string } }).options
-        ?.iconUrl;
+      const markerStyle = getMarkerStyle(markerData, filters);
+      let customIconUrl: string | undefined = undefined;
+      if (
+        markerStyle &&
+        markerStyle.icon &&
+        "options" in markerStyle.icon &&
+        markerStyle.icon.options &&
+        "iconUrl" in markerStyle.icon.options
+      ) {
+        customIconUrl = markerStyle.icon.options.iconUrl;
+      }
 
       return {
         ...markerData,

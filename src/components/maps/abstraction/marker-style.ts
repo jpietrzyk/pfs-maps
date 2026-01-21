@@ -38,8 +38,10 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
   // Determine icon URL
   let iconUrl = ICONS.default;
 
-  // Check for filter-based coloring for pool markers
-  if (marker.type === "pool" || marker.type === "pool-high-value") {
+  // Special case: outfiltered markers always gray
+  if (marker.type === "outfiltered") {
+    iconUrl = ICONS.pool;
+  } else if (marker.type === "pool" || marker.type === "pool-high-value") {
     if (filters) {
       // Priority filters (highest priority)
       if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
