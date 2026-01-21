@@ -17,16 +17,16 @@ export type MapFiltersState = {
 };
 
 export const defaultFilters: MapFiltersState = {
-  priorityFilters: { low: true, medium: true, high: true },
+  priorityFilters: { low: false, medium: false, high: false },
   statusFilters: {
-    pending: true,
-    "in-progress": true,
-    completed: true,
-    cancelled: true,
+    pending: false,
+    "in-progress": false,
+    completed: false,
+    cancelled: false,
   },
-  amountFilters: { low: true, medium: true, high: true },
-  complexityFilters: { simple: true, moderate: true, complex: true },
-  updatedAtFilters: { recent: true, moderate: true, old: true },
+  amountFilters: { low: false, medium: false, high: false },
+  complexityFilters: { simple: false, moderate: false, complex: false },
+  updatedAtFilters: { recent: false, moderate: false, old: false },
 };
 
 export interface MapFiltersContextType {

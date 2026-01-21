@@ -140,34 +140,35 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 
   useEffect(() => {
     if (priorityFilters) {
+      // eslint-disable-next-line
       setPriorities(priorityFilters);
     }
   }, [priorityFilters]);
 
   useEffect(() => {
-    if (
-      statusFilters &&
-      JSON.stringify(statusFilters) !== JSON.stringify(statuses)
-    ) {
+    if (statusFilters) {
+      // eslint-disable-next-line
       setStatuses(statusFilters);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilters]);
 
   useEffect(() => {
     if (amountFilters) {
+      // eslint-disable-next-line
       setAmounts(amountFilters);
     }
   }, [amountFilters]);
 
   useEffect(() => {
     if (complexityFilters) {
+      // eslint-disable-next-line
       setComplexities(complexityFilters);
     }
   }, [complexityFilters]);
 
   useEffect(() => {
     if (updatedAtFilters) {
+      // eslint-disable-next-line
       setUpdatedAt(updatedAtFilters);
     }
   }, [updatedAtFilters]);

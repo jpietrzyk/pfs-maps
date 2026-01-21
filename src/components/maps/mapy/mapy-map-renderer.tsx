@@ -11,6 +11,7 @@ import type {
   MapRouteSegmentData,
   MapBounds,
 } from "../abstraction/map-data";
+import { createNumberedIcon } from "../abstraction/marker-style";
 
 interface MapyMapRendererProps {
   markers: MapMarkerData[];
@@ -20,124 +21,7 @@ interface MapyMapRendererProps {
   onRouteSegmentHover?: (segmentId: string, isHovering: boolean) => void;
 }
 
-// Marker icons (matching LeafletMapRenderer for consistency)
-const defaultIcon = L.icon({
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  shadowSize: [41, 41],
-});
-
-const poolIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  shadowSize: [41, 41],
-});
-
-const highlightIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  shadowSize: [41, 41],
-});
-
-const currentOrderIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  shadowSize: [41, 41],
-});
-
-const previousOrderIcon = L.icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  shadowSize: [41, 41],
-});
-
-// Create a divIcon with a numeric badge for waypoint sequence
-const createNumberedIcon = (iconUrl: string, badgeNumber?: number) => {
-  const badge =
-    badgeNumber !== undefined
-      ? `<span style="position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#111827;color:white;border-radius:9999px;padding:0 6px;font-size:12px;font-weight:700;line-height:18px;box-shadow:0 1px 2px rgba(0,0,0,0.25);">${badgeNumber}</span>`
-      : "";
-
-  return L.divIcon({
-    html:
-      `<div style="position:relative;display:inline-block;width:25px;height:41px;">` +
-      `<img src="${iconUrl}" alt="marker" style="width:25px;height:41px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25));" />` +
-      badge +
-      "</div>",
-    className: "",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-  });
-};
-
-// Get icon based on marker data
-const getIconForMarker = (marker: MapMarkerData) => {
-  const isDelivery = marker.type === "delivery";
-
-  // Determine base icon URL with priority: highlight > current/previous > type
-  let iconUrl = defaultIcon.options.iconUrl as string;
-  // Priority: highlight > current/previous > type
-  if (marker.isHighlighted) {
-    iconUrl = highlightIcon.options.iconUrl as string;
-  } else if (marker.isDisabled) {
-    iconUrl = poolIcon.options.iconUrl as string;
-  } else if (marker.isCurrentOrder) {
-    iconUrl = currentOrderIcon.options.iconUrl as string;
-  } else if (marker.isPreviousOrder) {
-    iconUrl = previousOrderIcon.options.iconUrl as string;
-  } else {
-    switch (marker.type) {
-      case "pool":
-      case "pool-high-value":
-        iconUrl = poolIcon.options.iconUrl as string;
-        break;
-      case "delivery":
-      default:
-        iconUrl = defaultIcon.options.iconUrl as string;
-        break;
-    }
-  }
-
-  if (isDelivery && marker.waypointIndex !== undefined) {
-    return createNumberedIcon(iconUrl, marker.waypointIndex);
-  }
-
-  return L.icon({
-    iconUrl,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-    shadowSize: [41, 41],
-  });
-};
+import { getMarkerStyle } from "../abstraction/marker-style";
 
 const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
   markers,
@@ -309,12 +193,32 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
     // Process pool markers first (rendered below)
     poolMarkers.forEach((markerData) => {
       const existingMarker = markerInstances.get(markerData.id);
-      const icon = getIconForMarker(markerData);
+      let icon, opacity;
+      if (markerData.customIconUrl) {
+        const baseIcon = L.icon({
+          iconUrl: markerData.customIconUrl,
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+          shadowSize: [41, 41],
+        });
+        icon =
+          markerData.waypointIndex !== undefined
+            ? createNumberedIcon(
+                markerData.customIconUrl,
+                markerData.waypointIndex,
+              )
+            : baseIcon;
+        opacity = markerData.matchesFilters === false ? 0.4 : 1.0;
+      } else {
+        ({ icon, opacity } = getMarkerStyle(markerData));
+      }
       const position: [number, number] = [
         markerData.location.lat,
         markerData.location.lng,
       ];
-      const opacity = markerData.matchesFilters === false ? 0.4 : 1.0;
 
       if (existingMarker) {
         // Update existing marker
@@ -379,7 +283,21 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
     // Process delivery markers second (rendered on top)
     deliveryMarkers.forEach((markerData) => {
       const existingMarker = markerInstances.get(markerData.id);
-      const icon = getIconForMarker(markerData);
+      let icon, opacity;
+      if (markerData.customIconUrl) {
+        icon = L.icon({
+          iconUrl: markerData.customIconUrl,
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+          shadowSize: [41, 41],
+        });
+        opacity = markerData.matchesFilters === false ? 0.4 : 1.0;
+      } else {
+        ({ icon, opacity } = getMarkerStyle(markerData));
+      }
       const position: [number, number] = [
         markerData.location.lat,
         markerData.location.lng,
@@ -389,7 +307,7 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
         // Update existing marker
         existingMarker.setLatLng(position);
         existingMarker.setIcon(icon);
-        existingMarker.setOpacity(1.0);
+        existingMarker.setOpacity(opacity);
 
         // Update popup if needed
         if (markerData.popupContent && !markerData.isDisabled) {
@@ -413,7 +331,7 @@ const MapyMapRenderer: React.FC<MapyMapRendererProps> = ({
         // Create new marker
         const newMarker = L.marker(position, {
           icon,
-          opacity: 1.0,
+          opacity,
         });
 
         // Add popup if provided and not disabled

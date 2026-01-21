@@ -3,6 +3,7 @@
  * Extends OrderMapAdapter functionality with Mapy.cz routing API integration
  */
 import React, { useEffect, useState } from "react";
+import L from "leaflet";
 import type { Order } from "@/types/order";
 import type { MapMarkerData, MapRouteSegmentData, MapBounds } from "./map-data";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
@@ -10,9 +11,11 @@ import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteSegments } from "@/hooks/use-route-segments";
+import { useMapFilters } from "@/hooks/useMapFilters";
 import { pl } from "@/lib/translations";
 import { MapyRoutingApi, type RouteSegment } from "@/services/mapyRoutingApi";
 import { OrderPopupContent } from "./order-popup-content";
+import { getMarkerStyle } from "./marker-style";
 
 interface MapyOrderMapAdapterProps {
   orders: Order[];
@@ -44,6 +47,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDeliveryRoute();
   const { setRouteSegments } = useRouteSegments();
+  const { filters } = useMapFilters();
 
   const [calculatedRoutes, setCalculatedRoutes] = useState<RouteSegment[]>([]);
 
@@ -152,7 +156,8 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
       const toggleText = isPool ? pl.addToDelivery : pl.removeFromDelivery;
 
-      return {
+      // Create marker data for styling
+      const markerData: MapMarkerData = {
         id: order.id,
         location: order.location,
         type,
@@ -162,6 +167,10 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
         isPreviousOrder: previousOrderId === order.id,
         isDisabled,
         matchesFilters,
+        priority: order.priority,
+        status: order.status,
+        totalAmount: order.totalAmount,
+        product: order.product,
         popupContent: (
           <OrderPopupContent
             order={order}
@@ -170,6 +179,16 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
             onToggle={handleToggle}
           />
         ),
+      };
+
+      // Get custom icon URL based on filters
+      const { icon } = getMarkerStyle(markerData, filters);
+      const customIconUrl =
+        icon instanceof L.Icon ? icon.options.iconUrl : undefined;
+
+      return {
+        ...markerData,
+        customIconUrl,
       };
     });
   }, [
@@ -185,6 +204,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
     onOrderAddedToDelivery,
     onRefreshRequested,
     waypointIndexMap,
+    filters,
   ]);
 
   // Transform calculated routes to route segments

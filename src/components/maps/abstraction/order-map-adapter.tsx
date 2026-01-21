@@ -10,8 +10,10 @@ import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteSegments } from "@/hooks/use-route-segments";
+import { useMapFilters } from "@/hooks/useMapFilters";
 import { pl } from "@/lib/translations";
 import { OrderPopupContent } from "./order-popup-content";
+import { getMarkerStyle } from "./marker-style";
 
 interface OrderMapAdapterProps {
   orders: Order[];
@@ -47,6 +49,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
   const { currentDelivery, removeOrderFromDelivery, addOrderToDelivery } =
     useDeliveryRoute();
   const { setRouteSegments } = useRouteSegments();
+  const { filters } = useMapFilters();
 
   // Clear route segments for Leaflet (uses geometric calculations)
   React.useEffect(() => {
@@ -123,16 +126,41 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
         />
       );
 
-      return {
+      // Create marker data for styling
+      // If marker is outfiltered, force type to "outfiltered" for gray icon (applies to all marker types)
+      const markerType = !matchesFilters ? "outfiltered" : type;
+      const markerData: MapMarkerData = {
         id: order.id,
         location: order.location,
-        type,
+        type: markerType,
         isHighlighted: highlightedOrderId === order.id,
         isCurrentOrder: currentOrderId === order.id,
         isPreviousOrder: previousOrderId === order.id,
         isDisabled: false, // No longer disabling markers, using opacity instead
         matchesFilters,
+        priority: order.priority,
+        status: order.status,
+        totalAmount: order.totalAmount,
+        product: order.product,
         popupContent,
+      };
+
+      // Get custom icon URL based on filters
+      const markerStyle = getMarkerStyle(markerData, filters);
+      let customIconUrl: string | undefined = undefined;
+      if (
+        markerStyle &&
+        markerStyle.icon &&
+        "options" in markerStyle.icon &&
+        markerStyle.icon.options &&
+        "iconUrl" in markerStyle.icon.options
+      ) {
+        customIconUrl = markerStyle.icon.options.iconUrl;
+      }
+
+      return {
+        ...markerData,
+        customIconUrl,
       };
     });
   }, [
@@ -147,6 +175,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
     removeOrderFromDelivery,
     onOrderAddedToDelivery,
     onRefreshRequested,
+    filters,
   ]);
 
   // Transform consecutive orders to route segments
