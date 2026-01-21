@@ -284,8 +284,8 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   };
 
   return (
-    <div className="w-full px-6 py-4 border-b border-border bg-muted/50">
-      <div className="flex gap-4">
+    <div className="w-full px-4 py-3 border-b border-border bg-muted/50">
+      <div className="flex gap-3">
         <div className="flex items-center">
           <h3
             className="text-sm font-semibold text-foreground/70 tracking-wider whitespace-nowrap"
@@ -295,9 +295,9 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
           </h3>
         </div>
         <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
             {/* PRIORITY GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-[140px]">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allPrioritiesSelected}
@@ -352,7 +352,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               </div>
             </div>
             {/* STATUS GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-[140px]">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allStatusesSelected}
@@ -418,7 +418,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               </div>
             </div>
             {/* AMOUNT GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-[140px]">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allAmountsSelected}
@@ -473,7 +473,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               </div>
             </div>
             {/* COMPLEXITY GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-[140px]">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allComplexitiesSelected}
