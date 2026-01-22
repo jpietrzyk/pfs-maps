@@ -66,30 +66,39 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
     iconUrl = ICONS.pool;
   } else if (marker.type === "pool" || marker.type === "pool-high-value") {
     if (filters) {
-      // Priority filters
-      if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
-        iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
-      }
-      // Status filters
-      else if (filters.statusFilters[marker.status as keyof typeof filters.statusFilters]) {
-        iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
-      }
-      // Amount filters
-      else if (marker.totalAmount !== undefined) {
-        const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
-        if (filters.amountFilters[amountTier as keyof typeof filters.amountFilters]) {
-          iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
-        }
-      }
-      // Complexity filters
-      else if (marker.product?.complexity !== undefined) {
+      // Complexity filters take precedence
+      if (marker.product?.complexity !== undefined) {
         const complexityTier = marker.product.complexity === 1 ? "simple" : marker.product.complexity === 2 ? "moderate" : "complex";
         if (filters.complexityFilters[complexityTier as keyof typeof filters.complexityFilters]) {
           iconUrl = COMPLEXITY_COLORS[complexityTier as keyof typeof COMPLEXITY_COLORS] || ICONS.default;
         }
-      }
-      // If no specific filter match, use default pool
-      else {
+        // If not active, check other filters
+        else if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
+          iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
+        } else if (filters.statusFilters[marker.status as keyof typeof filters.statusFilters]) {
+          iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
+        } else if (marker.totalAmount !== undefined) {
+          const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
+          if (filters.amountFilters[amountTier as keyof typeof filters.amountFilters]) {
+            iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
+          } else {
+            iconUrl = ICONS.pool;
+          }
+        } else {
+          iconUrl = ICONS.pool;
+        }
+      } else if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
+        iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
+      } else if (filters.statusFilters[marker.status as keyof typeof filters.statusFilters]) {
+        iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
+      } else if (marker.totalAmount !== undefined) {
+        const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
+        if (filters.amountFilters[amountTier as keyof typeof filters.amountFilters]) {
+          iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
+        } else {
+          iconUrl = ICONS.pool;
+        }
+      } else {
         iconUrl = ICONS.pool;
       }
     } else {

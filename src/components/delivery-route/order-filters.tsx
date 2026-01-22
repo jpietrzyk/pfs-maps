@@ -1,3 +1,15 @@
+export interface OrderFiltersProps {
+  priorityFilters?: PriorityFilterState;
+  statusFilters?: StatusFilterState;
+  amountFilters?: AmountFilterState;
+  complexityFilters?: ComplexityFilterState;
+  updatedAtFilters?: any; // can be removed if not used
+  onPriorityChange?: (filters: PriorityFilterState) => void;
+  onStatusChange?: (filters: StatusFilterState) => void;
+  onAmountChange?: (filters: AmountFilterState) => void;
+  onComplexityChange?: (filters: ComplexityFilterState) => void;
+  onUpdatedAtChange?: any; // can be removed if not used
+}
 import React, { useEffect, useMemo, useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { pl } from "@/lib/translations";
@@ -92,6 +104,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   amountFilters,
   complexityFilters,
   updatedAtFilters,
+  onPriorityChange,
   onStatusChange,
   onAmountChange,
   onComplexityChange,
@@ -161,7 +174,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
   const handlePriorityChange = (priority: keyof PriorityFilterState) => {
     const newFilters = { ...priorities, [priority]: !priorities[priority] };
     setPriorities(newFilters);
-    onPriorityChange(newFilters);
+    onPriorityChange?.(newFilters);
   };
 
   const handleStatusChange = (status: keyof StatusFilterState) => {
@@ -193,7 +206,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
       high: nextState,
     };
     setPriorities(newFilters);
-    onPriorityChange(newFilters);
+    onPriorityChange?.(newFilters);
   };
 
   const handleSelectAllStatuses = () => {
