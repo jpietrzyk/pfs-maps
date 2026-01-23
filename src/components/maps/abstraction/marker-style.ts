@@ -5,15 +5,27 @@ import type { MapFiltersState } from "../../../contexts/MapFiltersContextTypes";
 
 // Marker icon URLs (should match across providers)
 const ICONS = {
-  default: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  pool: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png",
-  highlight: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-  current: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
-  previous: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
-  green: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
-  orange: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png",
-  violet: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png",
+    waypoint: "/markers/marker-waypoint.svg",
+  default: "/markers/pool-marker.svg",
+  pool: "/markers/pool-marker.svg",
   shadow: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  // Priority
+  priorityLow: "/markers/marker-priority-low.svg",
+  priorityMedium: "/markers/marker-priority-medium.svg",
+  priorityHigh: "/markers/marker-priority-high.svg",
+  // Status
+  statusPending: "/markers/marker-status-pending.svg",
+  statusInProgress: "/markers/marker-status-inprogress.svg",
+  statusCompleted: "/markers/marker-status-completed.svg",
+  statusCancelled: "/markers/marker-status-cancelled.svg",
+  // Amount
+  amountLow: "/markers/marker-amount-low.svg",
+  amountMedium: "/markers/marker-amount-medium.svg",
+  amountHigh: "/markers/marker-amount-high.svg",
+  // Complexity
+  complexitySimple: "/markers/marker-complexity-simple.svg",
+  complexityModerate: "/markers/marker-complexity-moderate.svg",
+  complexityComplex: "/markers/marker-complexity-complex.svg",
 };
 
 export function createNumberedIcon(iconUrl: string, badgeNumber?: number) {
@@ -40,25 +52,25 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
 
   // Color mapping for filter values (should match filter toggle button colors)
   const PRIORITY_COLORS = {
-    low: ICONS.green,
-    medium: ICONS.orange,
-    high: ICONS.highlight,
+    low: ICONS.priorityLow,
+    medium: ICONS.priorityMedium,
+    high: ICONS.priorityHigh,
   };
   const STATUS_COLORS = {
-    pending: ICONS.green,
-    "in-progress": ICONS.orange,
-    completed: ICONS.highlight,
-    cancelled: ICONS.pool,
+    pending: ICONS.statusPending,
+    "in-progress": ICONS.statusInProgress,
+    completed: ICONS.statusCompleted,
+    cancelled: ICONS.statusCancelled,
   };
   const AMOUNT_COLORS = {
-    low: ICONS.green,
-    medium: ICONS.orange,
-    high: ICONS.highlight,
+    low: ICONS.amountLow,
+    medium: ICONS.amountMedium,
+    high: ICONS.amountHigh,
   };
   const COMPLEXITY_COLORS = {
-    simple: ICONS.green,
-    moderate: ICONS.orange,
-    complex: ICONS.highlight,
+    simple: ICONS.complexitySimple,
+    moderate: ICONS.complexityModerate,
+    complex: ICONS.complexityComplex,
   };
 
   // Special case: outfiltered markers always gray
@@ -104,8 +116,10 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
     } else {
       iconUrl = ICONS.pool;
     }
+  } else if (marker.type === "waypoint") {
+    iconUrl = ICONS.waypoint;
   } else {
-    // For delivery markers, use default logic
+    // For delivery markers, use color mapping based on marker properties
     if (marker.isHighlighted) {
       iconUrl = ICONS.highlight;
     } else if (marker.isDisabled) {
@@ -114,6 +128,17 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
       iconUrl = ICONS.current;
     } else if (marker.isPreviousOrder) {
       iconUrl = ICONS.previous;
+    } else if (marker.product?.complexity !== undefined) {
+      // Use complexity color if available
+      const complexityTier = marker.product.complexity === 1 ? "simple" : marker.product.complexity === 2 ? "moderate" : "complex";
+      iconUrl = COMPLEXITY_COLORS[complexityTier as keyof typeof COMPLEXITY_COLORS] || ICONS.default;
+    } else if (marker.priority && PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS]) {
+      iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
+    } else if (marker.status && STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS]) {
+      iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
+    } else if (marker.totalAmount !== undefined) {
+      const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
+      iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
     } else {
       iconUrl = ICONS.default;
     }
@@ -129,6 +154,12 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
 
   // Faded if filtered out
   const opacity = marker.matchesFilters === false ? 0.4 : 1.0;
+
+  // Fallback for undefined iconUrl
+  if (!iconUrl) {
+    console.warn("Marker iconUrl is undefined for marker:", marker);
+    iconUrl = ICONS.default;
+  }
 
   return {
     icon: L.icon({
