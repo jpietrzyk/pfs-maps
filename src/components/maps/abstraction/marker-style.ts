@@ -45,20 +45,20 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
     high: ICONS.highlight,
   };
   const STATUS_COLORS = {
-    pending: ICONS.current, // blue-50
-    "in-progress": ICONS.violet, // purple-50
-    completed: ICONS.green, // emerald-50
-    cancelled: ICONS.pool, // gray-50
+    pending: ICONS.green,
+    "in-progress": ICONS.orange,
+    completed: ICONS.highlight,
+    cancelled: ICONS.pool,
   };
   const AMOUNT_COLORS = {
-    low: ICONS.current, // indigo-50
-    medium: ICONS.violet, // purple-50
-    high: ICONS.highlight, // pink-50 (use red for now)
+    low: ICONS.green,
+    medium: ICONS.orange,
+    high: ICONS.highlight,
   };
   const COMPLEXITY_COLORS = {
-    simple: ICONS.green, // sky-50
-    moderate: ICONS.previous, // amber-50 (yellow)
-    complex: ICONS.highlight, // red-50
+    simple: ICONS.green,
+    moderate: ICONS.orange,
+    complex: ICONS.highlight,
   };
 
   // Special case: outfiltered markers always gray

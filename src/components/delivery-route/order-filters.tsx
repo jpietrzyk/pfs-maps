@@ -349,10 +349,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleStatusChange("pending")}
                   size="sm"
                   aria-label="Filter by Pending status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-blue-50 data-[state=on]:text-blue-700 data-[state=on]:border-blue-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusPending}
                 >
-                  <Clock className="h-4 w-4" />
+                  <Clock
+                    className={
+                      statuses.pending ? "h-4 w-4 text-[#90EE90]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -360,10 +364,16 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleStatusChange("in-progress")}
                   size="sm"
                   aria-label="Filter by In Progress status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-purple-50 data-[state=on]:text-purple-700 data-[state=on]:border-purple-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusInProgress}
                 >
-                  <Play className="h-4 w-4" />
+                  <Play
+                    className={
+                      statuses["in-progress"]
+                        ? "h-4 w-4 text-[#3CB371]"
+                        : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -371,10 +381,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleStatusChange("completed")}
                   size="sm"
                   aria-label="Filter by Completed status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-emerald-50 data-[state=on]:text-emerald-700 data-[state=on]:border-emerald-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusCompleted}
                 >
-                  <CheckCircle className="h-4 w-4" />
+                  <CheckCircle
+                    className={
+                      statuses.completed ? "h-4 w-4 text-[#2E8B57]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -382,10 +396,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleStatusChange("cancelled")}
                   size="sm"
                   aria-label="Filter by Cancelled status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-gray-50 data-[state=on]:text-gray-700 data-[state=on]:border-gray-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.statusCancelled}
                 >
-                  <XCircle className="h-4 w-4" />
+                  <XCircle
+                    className={
+                      statuses.cancelled ? "h-4 w-4 text-[#444C38]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
@@ -415,10 +433,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleAmountChange("low")}
                   size="sm"
                   aria-label="Filter by Low amount"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-indigo-50 data-[state=on]:text-indigo-700 data-[state=on]:border-indigo-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.amountLow}
                 >
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown
+                    className={
+                      amounts.low ? "h-4 w-4 text-[#eec0c8]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -426,10 +448,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleAmountChange("medium")}
                   size="sm"
                   aria-label="Filter by Medium amount"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-purple-50 data-[state=on]:text-purple-700 data-[state=on]:border-purple-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.amountMedium}
                 >
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle
+                    className={
+                      amounts.medium ? "h-4 w-4 text-[#F9629F]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -437,10 +463,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleAmountChange("high")}
                   size="sm"
                   aria-label="Filter by High amount"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-pink-50 data-[state=on]:text-pink-700 data-[state=on]:border-pink-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.amountHigh}
                 >
-                  <Zap className="h-4 w-4" />
+                  <Zap
+                    className={
+                      amounts.high ? "h-4 w-4 text-[#FF00FF]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
@@ -470,10 +500,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleComplexityChange("simple")}
                   size="sm"
                   aria-label="Filter by Simple complexity (Level 1)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-sky-50 data-[state=on]:text-sky-700 data-[state=on]:border-sky-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.complexitySimple}
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench
+                    className={
+                      complexities.simple ? "h-4 w-4 text-[#F0E68C]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -481,10 +515,16 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleComplexityChange("moderate")}
                   size="sm"
                   aria-label="Filter by Moderate complexity (Level 2)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-amber-50 data-[state=on]:text-amber-700 data-[state=on]:border-amber-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.complexityModerate}
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench
+                    className={
+                      complexities.moderate
+                        ? "h-4 w-4 text-[#FFFF00]"
+                        : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -492,10 +532,16 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleComplexityChange("complex")}
                   size="sm"
                   aria-label="Filter by Complex (Level 3)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-red-50 data-[state=on]:text-red-700 data-[state=on]:border-red-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.complexityComplex}
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench
+                    className={
+                      complexities.complex
+                        ? "h-4 w-4 text-[#FEBE10]"
+                        : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
