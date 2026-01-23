@@ -154,7 +154,7 @@ export default function DeliveryRouteMapLayout({
   // Filter unassigned orders based on active filters (for UI display)
   const filteredUnassignedOrders = unassignedOrders.filter((order) => {
     if (!hasActiveFilters) {
-      return false; // No filters active, so no orders match
+      return true; // No filters active, so show all orders
     }
 
     const priorityMatch = priorityFilters[order.priority] ?? false;
@@ -191,7 +191,7 @@ export default function DeliveryRouteMapLayout({
     const statusMap = new Map<string, boolean>();
     unassignedOrders.forEach((order) => {
       if (!hasActiveFilters) {
-        statusMap.set(order.id, false); // No filters active, so no orders match
+        statusMap.set(order.id, true); // No filters active, so all orders match
         return;
       }
 

@@ -257,7 +257,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
         <div className="flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
             {/* PRIORITY GROUP */}
-            <div className="space-y-1 max-w-[140px]">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allPrioritiesSelected}
@@ -282,10 +282,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handlePriorityChange("low")}
                   size="sm"
                   aria-label="Filter by Low priority"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.priorityLow}
                 >
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown
+                    className={
+                      priorities.low ? "h-4 w-4 text-[#fd5c63]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -293,10 +297,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handlePriorityChange("medium")}
                   size="sm"
                   aria-label="Filter by Medium priority"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-yellow-50 data-[state=on]:text-yellow-700 data-[state=on]:border-yellow-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.priorityMedium}
                 >
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle
+                    className={
+                      priorities.medium ? "h-4 w-4 text-[#BD3039]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -304,15 +312,19 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handlePriorityChange("high")}
                   size="sm"
                   aria-label="Filter by High priority"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-red-50 data-[state=on]:text-red-700 data-[state=on]:border-red-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
                   title={pl.priorityHigh}
                 >
-                  <Zap className="h-4 w-4" />
+                  <Zap
+                    className={
+                      priorities.high ? "h-4 w-4 text-[#C6011F]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
             {/* STATUS GROUP */}
-            <div className="space-y-1 max-w-[140px]">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allStatusesSelected}
@@ -378,7 +390,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               </div>
             </div>
             {/* AMOUNT GROUP */}
-            <div className="space-y-1 max-w-[140px]">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allAmountsSelected}
@@ -433,7 +445,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
               </div>
             </div>
             {/* COMPLEXITY GROUP */}
-            <div className="space-y-1 max-w-[140px]">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allComplexitiesSelected}

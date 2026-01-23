@@ -40,9 +40,9 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
 
   // Color mapping for filter values (should match filter toggle button colors)
   const PRIORITY_COLORS = {
-    low: ICONS.green, // green-50
-    medium: ICONS.orange, // orange/yellow-50
-    high: ICONS.highlight, // red-50
+    low: ICONS.green,
+    medium: ICONS.orange,
+    high: ICONS.highlight,
   };
   const STATUS_COLORS = {
     pending: ICONS.current, // blue-50
