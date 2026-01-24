@@ -3,16 +3,13 @@ export interface OrderFiltersProps {
   statusFilters?: StatusFilterState;
   amountFilters?: AmountFilterState;
   complexityFilters?: ComplexityFilterState;
-  updatedAtFilters?: any; // can be removed if not used
   onPriorityChange?: (filters: PriorityFilterState) => void;
   onStatusChange?: (filters: StatusFilterState) => void;
   onAmountChange?: (filters: AmountFilterState) => void;
   onComplexityChange?: (filters: ComplexityFilterState) => void;
-  onUpdatedAtChange?: any; // can be removed if not used
 }
 import React, { useEffect, useMemo, useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
-import { pl } from "@/lib/translations";
 import {
   ChevronDown,
   AlertCircle,
@@ -81,12 +78,6 @@ const AMOUNT_DEFAULT: AmountFilterState = {
   high: true,
 };
 
-const UPDATED_AT_DEFAULT: UpdatedAtFilterState = {
-  recent: true,
-  moderate: true,
-  old: true,
-};
-
 const clonePriorityDefaults = (): PriorityFilterState => ({
   ...PRIORITY_DEFAULT,
 });
@@ -94,22 +85,17 @@ const cloneStatusDefaults = (): StatusFilterState => ({ ...STATUS_DEFAULT });
 const cloneComplexityDefaults = (): ComplexityFilterState => ({
   ...COMPLEXITY_DEFAULT,
 });
-const cloneUpdatedAtDefaults = (): UpdatedAtFilterState => ({
-  ...UPDATED_AT_DEFAULT,
-});
 
-export const OrderFilters: React.FC<OrderFiltersProps> = ({
+export const OrderFilters = ({
   priorityFilters,
   statusFilters,
   amountFilters,
   complexityFilters,
-  updatedAtFilters,
   onPriorityChange,
   onStatusChange,
   onAmountChange,
   onComplexityChange,
-  onUpdatedAtChange,
-}) => {
+}: OrderFiltersProps) => {
   const [priorities, setPriorities] = useState<PriorityFilterState>(
     priorityFilters ?? clonePriorityDefaults(),
   );
@@ -251,7 +237,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             className="text-sm font-semibold text-foreground/70 tracking-wider whitespace-nowrap"
             style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
           >
-            {pl.filters.toUpperCase()}
+            FILTRY
           </h3>
         </div>
         <div className="flex-1">
@@ -273,7 +259,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.priority}
+                  Priorytet
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -283,7 +269,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   size="sm"
                   aria-label="Filter by Low priority"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.priorityLow}
+                  title="Niski priorytet"
                 >
                   <ChevronDown
                     className={
@@ -298,7 +284,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   size="sm"
                   aria-label="Filter by Medium priority"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.priorityMedium}
+                  title="Średni priorytet"
                 >
                   <AlertCircle
                     className={
@@ -313,7 +299,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   size="sm"
                   aria-label="Filter by High priority"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.priorityHigh}
+                  title="Wysoki priorytet"
                 >
                   <Zap
                     className={
@@ -340,7 +326,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.status}
+                  Status
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-2">
@@ -350,54 +336,51 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   size="sm"
                   aria-label="Filter by Pending status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusPending}
+                  title="Oczekujący"
                 >
-                  <Clock
+                  <Play
                     className={
-                      statuses.pending ? "h-4 w-4 text-[#90EE90]" : "h-4 w-4"
+                      statuses.pending ? "h-4 w-4 text-[#F0E68C]" : "h-4 w-4"
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={statuses["in-progress"]}
                   onPressedChange={() => handleStatusChange("in-progress")}
                   size="sm"
                   aria-label="Filter by In Progress status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusInProgress}
+                  title="W trakcie"
                 >
-                  <Play
+                  <Clock
                     className={
                       statuses["in-progress"]
-                        ? "h-4 w-4 text-[#3CB371]"
+                        ? "h-4 w-4 text-[#FFA500]"
                         : "h-4 w-4"
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={statuses.completed}
                   onPressedChange={() => handleStatusChange("completed")}
                   size="sm"
                   aria-label="Filter by Completed status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusCompleted}
+                  title="Zakończony"
                 >
                   <CheckCircle
                     className={
-                      statuses.completed ? "h-4 w-4 text-[#2E8B57]" : "h-4 w-4"
+                      statuses.completed ? "h-4 w-4 text-[#4CAF50]" : "h-4 w-4"
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={statuses.cancelled}
                   onPressedChange={() => handleStatusChange("cancelled")}
                   size="sm"
                   aria-label="Filter by Cancelled status"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusCancelled}
+                  title="Anulowany"
                 >
                   <XCircle
                     className={
@@ -424,7 +407,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.amount}
+                  Kwota
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -434,7 +417,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   size="sm"
                   aria-label="Filter by Low amount"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountLow}
+                  title="Niski"
                 >
                   <ChevronDown
                     className={
@@ -442,14 +425,13 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={amounts.medium}
                   onPressedChange={() => handleAmountChange("medium")}
                   size="sm"
                   aria-label="Filter by Medium amount"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountMedium}
+                  title="Średnia kwota"
                 >
                   <AlertCircle
                     className={
@@ -457,14 +439,13 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={amounts.high}
                   onPressedChange={() => handleAmountChange("high")}
                   size="sm"
                   aria-label="Filter by High amount"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountHigh}
+                  title="Wysoka kwota"
                 >
                   <Zap
                     className={
@@ -491,7 +472,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.complexity}
+                  Złożoność
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -501,7 +482,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   size="sm"
                   aria-label="Filter by Simple complexity (Level 1)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.complexitySimple}
+                  title="Prosty"
                 >
                   <Wrench
                     className={
@@ -509,14 +490,13 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={complexities.moderate}
                   onPressedChange={() => handleComplexityChange("moderate")}
                   size="sm"
                   aria-label="Filter by Moderate complexity (Level 2)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.complexityModerate}
+                  title="Średnia złożoność"
                 >
                   <Wrench
                     className={
@@ -526,14 +506,13 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                     }
                   />
                 </Toggle>
-
                 <Toggle
                   pressed={complexities.complex}
                   onPressedChange={() => handleComplexityChange("complex")}
                   size="sm"
                   aria-label="Filter by Complex (Level 3)"
                   className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.complexityComplex}
+                  title="Złożony"
                 >
                   <Wrench
                     className={
@@ -545,9 +524,12 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                 </Toggle>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div>{" "}
+          {/* end grid */}
+        </div>{" "}
+        {/* end flex-1 */}
+      </div>{" "}
+      {/* end flex gap-3 */}
     </div>
   );
 };
