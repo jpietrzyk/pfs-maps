@@ -3,24 +3,49 @@
 const fs = require('fs');
 const path = require('path');
 
+
+// Import filterColors from map.config.ts
+const tsConfigPath = path.join(__dirname, '../src/config/map.config.ts');
+const tsConfigContent = fs.readFileSync(tsConfigPath, 'utf8');
+
+function extractColors(section) {
+  const regex = new RegExp(section + ': ?{([\s\S]*?)}', 'm');
+  const match = tsConfigContent.match(regex);
+  if (!match) return {};
+  const obj = {};
+  const lines = match[1].split('\n').map(l => l.trim()).filter(Boolean);
+  lines.forEach(line => {
+    const m = line.match(/(\w+): ?['"](#\w{3,6})['"]/);
+    if (m) obj[m[1]] = m[2];
+  });
+  return obj;
+}
+
+const filterColors = {
+  priority: extractColors('priority'),
+  status: extractColors('status'),
+  amount: extractColors('amount'),
+  complexity: extractColors('complexity'),
+};
+
 const markers = [
   // Priority
-  { name: 'priority-low', color: '#fd5c63' },
-  { name: 'priority-medium', color: '#BD3039' },
-  { name: 'priority-high', color: '#C6011F' },
+  { name: 'priority-low', color: filterColors.priority.low },
+  { name: 'priority-medium', color: filterColors.priority.medium },
+  { name: 'priority-high', color: filterColors.priority.high },
   // Status
-  { name: 'status-pending', color: '#90EE90' },
-  { name: 'status-inprogress', color: '#3CB371' },
-  { name: 'status-completed', color: '#2E8B57' },
-  { name: 'status-cancelled', color: '#444C38' },
+  { name: 'status-pending', color: filterColors.status.pending },
+  { name: 'status-inprogress', color: filterColors.status.inprogress },
+  { name: 'status-completed', color: filterColors.status.completed },
+  { name: 'status-cancelled', color: filterColors.status.cancelled },
   // Amount
-  { name: 'amount-low', color: '#eec0c8' },
-  { name: 'amount-medium', color: '#F9629F' },
-  { name: 'amount-high', color: '#FF00FF' },
+  { name: 'amount-low', color: filterColors.amount.low },
+  { name: 'amount-medium', color: filterColors.amount.medium },
+  { name: 'amount-high', color: filterColors.amount.high },
   // Complexity
-  { name: 'complexity-simple', color: '#F0E68C' },
-  { name: 'complexity-moderate', color: '#FFFF00' },
-  { name: 'complexity-complex', color: '#FEBE10' },
+  { name: 'complexity-simple', color: filterColors.complexity.simple },
+  { name: 'complexity-moderate', color: filterColors.complexity.moderate },
+  { name: 'complexity-complex', color: filterColors.complexity.complex },
 ];
 
 const svgTemplate = (color) => `<?xml version="1.0" encoding="UTF-8"?>
