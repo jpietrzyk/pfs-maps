@@ -8,7 +8,7 @@ export interface OrderFiltersProps {
   onAmountChange?: (filters: AmountFilterState) => void;
   onComplexityChange?: (filters: ComplexityFilterState) => void;
 }
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import {
   ChevronDown,
