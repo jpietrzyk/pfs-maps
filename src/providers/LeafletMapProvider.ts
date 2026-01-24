@@ -68,7 +68,7 @@ export class LeafletMapProvider implements MapProvider {
       shadowSize: [41, 41],
     }));
 
-    // High-value icon (orange) - for high-value pool orders
+    // High-value icon (orange) - for high-value orders
     this.markerIcons.set("high-value", L.icon({
       iconUrl:
         "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png",
