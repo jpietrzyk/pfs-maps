@@ -18,7 +18,6 @@ import { OrderFilters } from "@/components/delivery-route/order-filters";
 import type {
   AmountFilterState,
   ComplexityFilterState,
-  UpdatedAtFilterState,
 } from "@/components/delivery-route/order-filters";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useMarkerHighlight } from "@/hooks/use-marker-highlight";
@@ -123,15 +122,6 @@ export default function DeliveryRouteMapLayout({
       },
     [filters.complexityFilters],
   );
-  const updatedAtFilters = React.useMemo(
-    () =>
-      filters.updatedAtFilters ?? {
-        recent: true,
-        moderate: true,
-        old: true,
-      },
-    [filters.updatedAtFilters],
-  );
 
   // Remove localStorage filter logic (now handled by context)
 
@@ -151,38 +141,20 @@ export default function DeliveryRouteMapLayout({
     return "complex";
   };
 
-  // Helper function to determine updatedAt period
-  const getUpdatedAtPeriod = (updatedAt: Date): keyof UpdatedAtFilterState => {
-    const now = new Date();
-    const diffMs = now.getTime() - new Date(updatedAt).getTime();
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-    if (diffDays < 7) return "recent";
-    if (diffDays < 30) return "moderate";
-    return "old";
-  };
-
   // Check if any filter groups are active
   const hasActiveFilters = React.useMemo(() => {
     return (
       Object.values(priorityFilters).some(Boolean) ||
       Object.values(statusFilters).some(Boolean) ||
       Object.values(amountFilters).some(Boolean) ||
-      Object.values(complexityFilters).some(Boolean) ||
-      Object.values(updatedAtFilters).some(Boolean)
+      Object.values(complexityFilters).some(Boolean)
     );
-  }, [
-    priorityFilters,
-    statusFilters,
-    amountFilters,
-    complexityFilters,
-    updatedAtFilters,
-  ]);
+  }, [priorityFilters, statusFilters, amountFilters, complexityFilters]);
 
   // Filter unassigned orders based on active filters (for UI display)
   const filteredUnassignedOrders = unassignedOrders.filter((order) => {
     if (!hasActiveFilters) {
-      return false; // No filters active, so no orders match
+      return true; // No filters active, so show all orders
     }
 
     const priorityMatch = priorityFilters[order.priority] ?? false;
@@ -191,8 +163,6 @@ export default function DeliveryRouteMapLayout({
       amountFilters[getAmountTier(order.totalAmount ?? 0)] ?? false;
     const complexityMatch =
       complexityFilters[getComplexityTier(order.product.complexity)] ?? false;
-    const updatedAtMatch =
-      updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)] ?? false;
 
     // Only apply filter if the group has any filters checked
     const activePriorityMatch = Object.values(priorityFilters).some(Boolean)
@@ -207,16 +177,12 @@ export default function DeliveryRouteMapLayout({
     const activeComplexityMatch = Object.values(complexityFilters).some(Boolean)
       ? complexityMatch
       : true;
-    const activeUpdatedAtMatch = Object.values(updatedAtFilters).some(Boolean)
-      ? updatedAtMatch
-      : true;
 
     return (
       activePriorityMatch &&
       activeStatusMatch &&
       activeAmountMatch &&
-      activeComplexityMatch &&
-      activeUpdatedAtMatch
+      activeComplexityMatch
     );
   });
 
@@ -225,7 +191,7 @@ export default function DeliveryRouteMapLayout({
     const statusMap = new Map<string, boolean>();
     unassignedOrders.forEach((order) => {
       if (!hasActiveFilters) {
-        statusMap.set(order.id, false); // No filters active, so no orders match
+        statusMap.set(order.id, true); // No filters active, so all orders match
         return;
       }
 
@@ -235,8 +201,6 @@ export default function DeliveryRouteMapLayout({
         amountFilters[getAmountTier(order.totalAmount ?? 0)] ?? false;
       const complexityMatch =
         complexityFilters[getComplexityTier(order.product.complexity)] ?? false;
-      const updatedAtMatch =
-        updatedAtFilters[getUpdatedAtPeriod(order.updatedAt)] ?? false;
 
       // Only apply filter if the group has any filters checked
       const activePriorityMatch = Object.values(priorityFilters).some(Boolean)
@@ -253,16 +217,12 @@ export default function DeliveryRouteMapLayout({
       )
         ? complexityMatch
         : true;
-      const activeUpdatedAtMatch = Object.values(updatedAtFilters).some(Boolean)
-        ? updatedAtMatch
-        : true;
 
       const matchesFilters =
         activePriorityMatch &&
         activeStatusMatch &&
         activeAmountMatch &&
-        activeComplexityMatch &&
-        activeUpdatedAtMatch;
+        activeComplexityMatch;
       statusMap.set(order.id, matchesFilters);
     });
     return statusMap;
@@ -273,7 +233,6 @@ export default function DeliveryRouteMapLayout({
     statusFilters,
     amountFilters,
     complexityFilters,
-    updatedAtFilters,
   ]);
 
   const totalAvailableOrders = displayedOrders.length + unassignedOrders.length;
@@ -382,7 +341,6 @@ export default function DeliveryRouteMapLayout({
                   moderate: true,
                   complex: true,
                 },
-                updatedAtFilters: { recent: true, moderate: true, old: true },
               });
             }}
           />
@@ -424,7 +382,6 @@ export default function DeliveryRouteMapLayout({
                 statusFilters={statusFilters}
                 amountFilters={amountFilters}
                 complexityFilters={complexityFilters}
-                updatedAtFilters={updatedAtFilters}
                 onPriorityChange={(filters) =>
                   setFilters((prev) => ({ ...prev, priorityFilters: filters }))
                 }
@@ -439,9 +396,6 @@ export default function DeliveryRouteMapLayout({
                     ...prev,
                     complexityFilters: filters,
                   }))
-                }
-                onUpdatedAtChange={(filters) =>
-                  setFilters((prev) => ({ ...prev, updatedAtFilters: filters }))
                 }
               />
             </div>

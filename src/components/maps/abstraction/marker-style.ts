@@ -5,15 +5,27 @@ import type { MapFiltersState } from "../../../contexts/MapFiltersContextTypes";
 
 // Marker icon URLs (should match across providers)
 const ICONS = {
-  default: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  pool: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png",
-  highlight: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-  current: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
-  previous: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
-  green: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
-  orange: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png",
-  violet: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png",
+    waypoint: "/markers/marker-waypoint.svg",
+  default: "/markers/pool-marker.svg",
+  pool: "/markers/pool-marker.svg",
   shadow: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  // Priority
+  priorityLow: "/markers/marker-priority-low.svg",
+  priorityMedium: "/markers/marker-priority-medium.svg",
+  priorityHigh: "/markers/marker-priority-high.svg",
+  // Status
+  statusPending: "/markers/marker-status-pending.svg",
+  statusInProgress: "/markers/marker-status-inprogress.svg",
+  statusCompleted: "/markers/marker-status-completed.svg",
+  statusCancelled: "/markers/marker-status-cancelled.svg",
+  // Amount
+  amountLow: "/markers/marker-amount-low.svg",
+  amountMedium: "/markers/marker-amount-medium.svg",
+  amountHigh: "/markers/marker-amount-high.svg",
+  // Complexity
+  complexitySimple: "/markers/marker-complexity-simple.svg",
+  complexityModerate: "/markers/marker-complexity-moderate.svg",
+  complexityComplex: "/markers/marker-complexity-complex.svg",
 };
 
 export function createNumberedIcon(iconUrl: string, badgeNumber?: number) {
@@ -36,61 +48,87 @@ export function createNumberedIcon(iconUrl: string, badgeNumber?: number) {
 
 export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState) {
   // Determine icon URL
-  let iconUrl = ICONS.default;
+  let iconUrl = ICONS.pool;
+
+  // Color mapping for filter values (should match filter toggle button colors)
+  const PRIORITY_COLORS = {
+    low: ICONS.priorityLow,
+    medium: ICONS.priorityMedium,
+    high: ICONS.priorityHigh,
+  };
+  const STATUS_COLORS = {
+    pending: ICONS.statusPending,
+    "in-progress": ICONS.statusInProgress,
+    completed: ICONS.statusCompleted,
+    cancelled: ICONS.statusCancelled,
+  };
+  const AMOUNT_COLORS = {
+    low: ICONS.amountLow,
+    medium: ICONS.amountMedium,
+    high: ICONS.amountHigh,
+  };
+  const COMPLEXITY_COLORS = {
+    simple: ICONS.complexitySimple,
+    moderate: ICONS.complexityModerate,
+    complex: ICONS.complexityComplex,
+  };
 
   // Special case: outfiltered markers always gray
   if (marker.type === "outfiltered") {
     iconUrl = ICONS.pool;
   } else if (marker.type === "pool" || marker.type === "pool-high-value") {
     if (filters) {
-      // Priority filters (highest priority)
-      if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
-        if (marker.priority === "low") iconUrl = ICONS.green;
-        else if (marker.priority === "medium") iconUrl = ICONS.orange;
-        else if (marker.priority === "high") iconUrl = ICONS.highlight; // red
-      }
-      // Status filters
-      else if (filters.statusFilters[marker.status as keyof typeof filters.statusFilters]) {
-        if (marker.status === "pending") iconUrl = ICONS.current; // blue
-        else if (marker.status === "in-progress") iconUrl = ICONS.violet;
-        else if (marker.status === "completed") iconUrl = ICONS.green;
-        else if (marker.status === "cancelled") iconUrl = ICONS.pool; // grey
-      }
-      // Amount filters
-      else if (marker.totalAmount !== undefined) {
-        const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
-        if (filters.amountFilters[amountTier as keyof typeof filters.amountFilters]) {
-          if (amountTier === "low") iconUrl = ICONS.current; // blue
-          else if (amountTier === "medium") iconUrl = ICONS.orange;
-          else if (amountTier === "high") iconUrl = ICONS.highlight; // red
-        }
-      }
-      // Complexity filters
-      else if (marker.product?.complexity !== undefined) {
+      // Complexity filters take precedence
+      if (marker.product?.complexity !== undefined) {
         const complexityTier = marker.product.complexity === 1 ? "simple" : marker.product.complexity === 2 ? "moderate" : "complex";
         if (filters.complexityFilters[complexityTier as keyof typeof filters.complexityFilters]) {
-          if (complexityTier === "simple") iconUrl = ICONS.green;
-          else if (complexityTier === "moderate") iconUrl = ICONS.previous; // yellow
-          else if (complexityTier === "complex") iconUrl = ICONS.highlight; // red
+          iconUrl = COMPLEXITY_COLORS[complexityTier as keyof typeof COMPLEXITY_COLORS] || ICONS.default;
         }
-      }
-      // If no specific filter match, use default pool
-      else {
+        // If not active, check other filters
+        else if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
+          iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
+        } else if (filters.statusFilters[marker.status as keyof typeof filters.statusFilters]) {
+          iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
+        } else if (marker.totalAmount !== undefined) {
+          const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
+          if (filters.amountFilters[amountTier as keyof typeof filters.amountFilters]) {
+            iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
+          } else {
+            iconUrl = ICONS.pool;
+          }
+        } else {
+          iconUrl = ICONS.pool;
+        }
+      } else if (filters.priorityFilters[marker.priority as keyof typeof filters.priorityFilters]) {
+        iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
+      } else if (filters.statusFilters[marker.status as keyof typeof filters.statusFilters]) {
+        iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
+      } else if (marker.totalAmount !== undefined) {
+        const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
+        if (filters.amountFilters[amountTier as keyof typeof filters.amountFilters]) {
+          iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
+        } else {
+          iconUrl = ICONS.pool;
+        }
+      } else {
         iconUrl = ICONS.pool;
       }
     } else {
       iconUrl = ICONS.pool;
     }
   } else {
-    // For delivery markers, use default logic
-    if (marker.isHighlighted) {
-      iconUrl = ICONS.highlight;
-    } else if (marker.isDisabled) {
-      iconUrl = ICONS.pool;
-    } else if (marker.isCurrentOrder) {
-      iconUrl = ICONS.current;
-    } else if (marker.isPreviousOrder) {
-      iconUrl = ICONS.previous;
+    // For delivery markers, use color mapping based on marker properties
+    if (marker.product?.complexity !== undefined) {
+      // Use complexity color if available
+      const complexityTier = marker.product.complexity === 1 ? "simple" : marker.product.complexity === 2 ? "moderate" : "complex";
+      iconUrl = COMPLEXITY_COLORS[complexityTier as keyof typeof COMPLEXITY_COLORS] || ICONS.default;
+    } else if (marker.priority && PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS]) {
+      iconUrl = PRIORITY_COLORS[marker.priority as keyof typeof PRIORITY_COLORS] || ICONS.default;
+    } else if (marker.status && STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS]) {
+      iconUrl = STATUS_COLORS[marker.status as keyof typeof STATUS_COLORS] || ICONS.default;
+    } else if (marker.totalAmount !== undefined) {
+      const amountTier = marker.totalAmount <= 300000 ? "low" : marker.totalAmount <= 1000000 ? "medium" : "high";
+      iconUrl = AMOUNT_COLORS[amountTier as keyof typeof AMOUNT_COLORS] || ICONS.default;
     } else {
       iconUrl = ICONS.default;
     }
@@ -106,6 +144,12 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
 
   // Faded if filtered out
   const opacity = marker.matchesFilters === false ? 0.4 : 1.0;
+
+  // Fallback for undefined iconUrl
+  if (!iconUrl) {
+    console.warn("Marker iconUrl is undefined for marker:", marker);
+    iconUrl = ICONS.default;
+  }
 
   return {
     icon: L.icon({

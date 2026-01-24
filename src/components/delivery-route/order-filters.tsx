@@ -1,6 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+export interface OrderFiltersProps {
+  priorityFilters?: PriorityFilterState;
+  statusFilters?: StatusFilterState;
+  amountFilters?: AmountFilterState;
+  complexityFilters?: ComplexityFilterState;
+  onPriorityChange?: (filters: PriorityFilterState) => void;
+  onStatusChange?: (filters: StatusFilterState) => void;
+  onAmountChange?: (filters: AmountFilterState) => void;
+  onComplexityChange?: (filters: ComplexityFilterState) => void;
+}
+import { useEffect, useMemo, useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
-import { pl } from "@/lib/translations";
 import {
   ChevronDown,
   AlertCircle,
@@ -10,7 +19,6 @@ import {
   CheckCircle,
   XCircle,
   Wrench,
-  Calendar,
   Check,
   Square,
 } from "lucide-react";
@@ -44,26 +52,6 @@ export type AmountFilterState = {
   [key: string]: boolean;
 };
 
-export type UpdatedAtFilterState = {
-  recent: boolean; // Less than 1 week
-  moderate: boolean; // 1 week - 1 month
-  old: boolean; // More than 1 month
-  [key: string]: boolean;
-};
-
-interface OrderFiltersProps {
-  priorityFilters?: PriorityFilterState;
-  statusFilters?: StatusFilterState;
-  amountFilters?: AmountFilterState;
-  complexityFilters?: ComplexityFilterState;
-  updatedAtFilters?: UpdatedAtFilterState;
-  onPriorityChange: (filters: PriorityFilterState) => void;
-  onStatusChange?: (filters: StatusFilterState) => void;
-  onAmountChange?: (filters: AmountFilterState) => void;
-  onComplexityChange?: (filters: ComplexityFilterState) => void;
-  onUpdatedAtChange?: (filters: UpdatedAtFilterState) => void;
-}
-
 const PRIORITY_DEFAULT: PriorityFilterState = {
   low: true,
   medium: true,
@@ -89,12 +77,6 @@ const AMOUNT_DEFAULT: AmountFilterState = {
   high: true,
 };
 
-const UPDATED_AT_DEFAULT: UpdatedAtFilterState = {
-  recent: true,
-  moderate: true,
-  old: true,
-};
-
 const clonePriorityDefaults = (): PriorityFilterState => ({
   ...PRIORITY_DEFAULT,
 });
@@ -102,22 +84,17 @@ const cloneStatusDefaults = (): StatusFilterState => ({ ...STATUS_DEFAULT });
 const cloneComplexityDefaults = (): ComplexityFilterState => ({
   ...COMPLEXITY_DEFAULT,
 });
-const cloneUpdatedAtDefaults = (): UpdatedAtFilterState => ({
-  ...UPDATED_AT_DEFAULT,
-});
 
-export const OrderFilters: React.FC<OrderFiltersProps> = ({
+export const OrderFilters = ({
   priorityFilters,
   statusFilters,
   amountFilters,
   complexityFilters,
-  updatedAtFilters,
   onPriorityChange,
   onStatusChange,
   onAmountChange,
   onComplexityChange,
-  onUpdatedAtChange,
-}) => {
+}: OrderFiltersProps) => {
   const [priorities, setPriorities] = useState<PriorityFilterState>(
     priorityFilters ?? clonePriorityDefaults(),
   );
@@ -132,10 +109,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
 
   const [amounts, setAmounts] = useState<AmountFilterState>(
     amountFilters ?? AMOUNT_DEFAULT,
-  );
-
-  const [updatedAt, setUpdatedAt] = useState<UpdatedAtFilterState>(
-    updatedAtFilters ?? cloneUpdatedAtDefaults(),
   );
 
   useEffect(() => {
@@ -166,13 +139,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     }
   }, [complexityFilters]);
 
-  useEffect(() => {
-    if (updatedAtFilters) {
-      // eslint-disable-next-line
-      setUpdatedAt(updatedAtFilters);
-    }
-  }, [updatedAtFilters]);
-
   // Compute if all filters in each group are selected
   const allPrioritiesSelected = useMemo(() => {
     return Object.values(priorities).every(Boolean);
@@ -190,14 +156,10 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     return Object.values(amounts).every(Boolean);
   }, [amounts]);
 
-  const allUpdatedAtSelected = useMemo(() => {
-    return Object.values(updatedAt).every(Boolean);
-  }, [updatedAt]);
-
   const handlePriorityChange = (priority: keyof PriorityFilterState) => {
     const newFilters = { ...priorities, [priority]: !priorities[priority] };
     setPriorities(newFilters);
-    onPriorityChange(newFilters);
+    onPriorityChange?.(newFilters);
   };
 
   const handleStatusChange = (status: keyof StatusFilterState) => {
@@ -221,12 +183,6 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     onAmountChange?.(newFilters);
   };
 
-  const handleUpdatedAtChange = (period: keyof UpdatedAtFilterState) => {
-    const newFilters = { ...updatedAt, [period]: !updatedAt[period] };
-    setUpdatedAt(newFilters);
-    onUpdatedAtChange?.(newFilters);
-  };
-
   const handleSelectAllPriorities = () => {
     const nextState = !allPrioritiesSelected;
     const newFilters: PriorityFilterState = {
@@ -235,7 +191,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
       high: nextState,
     };
     setPriorities(newFilters);
-    onPriorityChange(newFilters);
+    onPriorityChange?.(newFilters);
   };
 
   const handleSelectAllStatuses = () => {
@@ -272,32 +228,21 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
     onAmountChange?.(newFilters);
   };
 
-  const handleSelectAllUpdatedAt = () => {
-    const nextState = !allUpdatedAtSelected;
-    const newFilters: UpdatedAtFilterState = {
-      recent: nextState,
-      moderate: nextState,
-      old: nextState,
-    };
-    setUpdatedAt(newFilters);
-    onUpdatedAtChange?.(newFilters);
-  };
-
   return (
-    <div className="w-full px-6 py-4 border-b border-border bg-muted/50">
-      <div className="flex gap-4">
+    <div className="w-full px-4 py-3 border-b border-border bg-muted/50">
+      <div className="flex gap-3">
         <div className="flex items-center">
           <h3
             className="text-sm font-semibold text-foreground/70 tracking-wider whitespace-nowrap"
             style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
           >
-            {pl.filters.toUpperCase()}
+            FILTRY
           </h3>
         </div>
         <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
             {/* PRIORITY GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allPrioritiesSelected}
@@ -313,7 +258,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.priority}
+                  Priorytet
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -322,10 +267,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handlePriorityChange("low")}
                   size="sm"
                   aria-label="Filter by Low priority"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.priorityLow}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Niski priorytet"
                 >
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown
+                    className={
+                      priorities.low ? "h-4 w-4 text-[#fd5c63]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -333,10 +282,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handlePriorityChange("medium")}
                   size="sm"
                   aria-label="Filter by Medium priority"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-yellow-50 data-[state=on]:text-yellow-700 data-[state=on]:border-yellow-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.priorityMedium}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Średni priorytet"
                 >
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle
+                    className={
+                      priorities.medium ? "h-4 w-4 text-[#BD3039]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
 
                 <Toggle
@@ -344,15 +297,19 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handlePriorityChange("high")}
                   size="sm"
                   aria-label="Filter by High priority"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-red-50 data-[state=on]:text-red-700 data-[state=on]:border-red-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.priorityHigh}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Wysoki priorytet"
                 >
-                  <Zap className="h-4 w-4" />
+                  <Zap
+                    className={
+                      priorities.high ? "h-4 w-4 text-[#C6011F]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
             {/* STATUS GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allStatusesSelected}
@@ -368,7 +325,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.status}
+                  Status
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-2">
@@ -377,48 +334,63 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleStatusChange("pending")}
                   size="sm"
                   aria-label="Filter by Pending status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-blue-50 data-[state=on]:text-blue-700 data-[state=on]:border-blue-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusPending}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Oczekujący"
                 >
-                  <Clock className="h-4 w-4" />
+                  <Play
+                    className={
+                      statuses.pending ? "h-4 w-4 text-[#F0E68C]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={statuses["in-progress"]}
                   onPressedChange={() => handleStatusChange("in-progress")}
                   size="sm"
                   aria-label="Filter by In Progress status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-purple-50 data-[state=on]:text-purple-700 data-[state=on]:border-purple-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusInProgress}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="W trakcie"
                 >
-                  <Play className="h-4 w-4" />
+                  <Clock
+                    className={
+                      statuses["in-progress"]
+                        ? "h-4 w-4 text-[#FFA500]"
+                        : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={statuses.completed}
                   onPressedChange={() => handleStatusChange("completed")}
                   size="sm"
                   aria-label="Filter by Completed status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-emerald-50 data-[state=on]:text-emerald-700 data-[state=on]:border-emerald-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusCompleted}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Zakończony"
                 >
-                  <CheckCircle className="h-4 w-4" />
+                  <CheckCircle
+                    className={
+                      statuses.completed ? "h-4 w-4 text-[#4CAF50]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={statuses.cancelled}
                   onPressedChange={() => handleStatusChange("cancelled")}
                   size="sm"
                   aria-label="Filter by Cancelled status"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-gray-50 data-[state=on]:text-gray-700 data-[state=on]:border-gray-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.statusCancelled}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Anulowany"
                 >
-                  <XCircle className="h-4 w-4" />
+                  <XCircle
+                    className={
+                      statuses.cancelled ? "h-4 w-4 text-[#444C38]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
             {/* AMOUNT GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allAmountsSelected}
@@ -434,7 +406,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.amount}
+                  Kwota
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -443,37 +415,47 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleAmountChange("low")}
                   size="sm"
                   aria-label="Filter by Low amount"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-indigo-50 data-[state=on]:text-indigo-700 data-[state=on]:border-indigo-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountLow}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Niski"
                 >
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown
+                    className={
+                      amounts.low ? "h-4 w-4 text-[#eec0c8]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={amounts.medium}
                   onPressedChange={() => handleAmountChange("medium")}
                   size="sm"
                   aria-label="Filter by Medium amount"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-purple-50 data-[state=on]:text-purple-700 data-[state=on]:border-purple-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountMedium}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Średnia kwota"
                 >
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle
+                    className={
+                      amounts.medium ? "h-4 w-4 text-[#F9629F]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={amounts.high}
                   onPressedChange={() => handleAmountChange("high")}
                   size="sm"
                   aria-label="Filter by High amount"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-pink-50 data-[state=on]:text-pink-700 data-[state=on]:border-pink-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.amountHigh}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Wysoka kwota"
                 >
-                  <Zap className="h-4 w-4" />
+                  <Zap
+                    className={
+                      amounts.high ? "h-4 w-4 text-[#FF00FF]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
             {/* COMPLEXITY GROUP */}
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-35">
               <div className="flex items-center gap-1 mb-1">
                 <Toggle
                   pressed={allComplexitiesSelected}
@@ -489,7 +471,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   )}
                 </Toggle>
                 <span className="text-xs font-medium text-foreground/70">
-                  {pl.complexity}
+                  Złożoność
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -498,93 +480,55 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                   onPressedChange={() => handleComplexityChange("simple")}
                   size="sm"
                   aria-label="Filter by Simple complexity (Level 1)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-sky-50 data-[state=on]:text-sky-700 data-[state=on]:border-sky-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.complexitySimple}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Prosty"
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench
+                    className={
+                      complexities.simple ? "h-4 w-4 text-[#F0E68C]" : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={complexities.moderate}
                   onPressedChange={() => handleComplexityChange("moderate")}
                   size="sm"
                   aria-label="Filter by Moderate complexity (Level 2)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-amber-50 data-[state=on]:text-amber-700 data-[state=on]:border-amber-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.complexityModerate}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Średnia złożoność"
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench
+                    className={
+                      complexities.moderate
+                        ? "h-4 w-4 text-[#FFFF00]"
+                        : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
-
                 <Toggle
                   pressed={complexities.complex}
                   onPressedChange={() => handleComplexityChange("complex")}
                   size="sm"
                   aria-label="Filter by Complex (Level 3)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-red-50 data-[state=on]:text-red-700 data-[state=on]:border-red-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.complexityComplex}
+                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-accent/10 h-7 w-full flex-1 p-0 flex items-center justify-center"
+                  title="Złożony"
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench
+                    className={
+                      complexities.complex
+                        ? "h-4 w-4 text-[#FEBE10]"
+                        : "h-4 w-4"
+                    }
+                  />
                 </Toggle>
               </div>
             </div>
-            {/* UPDATED AT GROUP */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 mb-1">
-                <Toggle
-                  pressed={allUpdatedAtSelected}
-                  onPressedChange={handleSelectAllUpdatedAt}
-                  size="sm"
-                  aria-label="Select all updated periods"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-6 w-6 p-0"
-                >
-                  {allUpdatedAtSelected ? (
-                    <Check className="h-3 w-3" />
-                  ) : (
-                    <Square className="h-3 w-3" />
-                  )}
-                </Toggle>
-                <span className="text-xs font-medium text-foreground/70">
-                  {pl.updatedAt}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <Toggle
-                  pressed={updatedAt.recent}
-                  onPressedChange={() => handleUpdatedAtChange("recent")}
-                  size="sm"
-                  aria-label="Filter by Recent updates (less than 1 week)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-green-50 data-[state=on]:text-green-700 data-[state=on]:border-green-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.updatedRecent}
-                >
-                  <Calendar className="h-4 w-4" />
-                </Toggle>
-
-                <Toggle
-                  pressed={updatedAt.moderate}
-                  onPressedChange={() => handleUpdatedAtChange("moderate")}
-                  size="sm"
-                  aria-label="Filter by Moderate updates (1 week - 1 month)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-yellow-50 data-[state=on]:text-yellow-700 data-[state=on]:border-yellow-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.updatedModerate}
-                >
-                  <Calendar className="h-4 w-4" />
-                </Toggle>
-
-                <Toggle
-                  pressed={updatedAt.old}
-                  onPressedChange={() => handleUpdatedAtChange("old")}
-                  size="sm"
-                  aria-label="Filter by Old updates (more than 1 month)"
-                  className="border border-border/50 bg-background/50 hover:bg-accent/50 data-[state=on]:bg-gray-50 data-[state=on]:text-gray-700 data-[state=on]:border-gray-300 h-7 w-full flex-1 p-0 flex items-center justify-center"
-                  title={pl.updatedOld}
-                >
-                  <Calendar className="h-4 w-4" />
-                </Toggle>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+          </div>{" "}
+          {/* end grid */}
+        </div>{" "}
+        {/* end flex-1 */}
+      </div>{" "}
+      {/* end flex gap-3 */}
     </div>
   );
 };
