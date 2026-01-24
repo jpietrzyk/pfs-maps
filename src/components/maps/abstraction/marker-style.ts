@@ -76,7 +76,7 @@ export function getMarkerStyle(marker: MapMarkerData, filters?: MapFiltersState)
   // Special case: outfiltered markers always gray
   if (marker.type === "outfiltered") {
     iconUrl = ICONS.pool;
-  } else if (marker.type === "pool" || marker.type === "pool-high-value") {
+  } else if (marker.type === "pool") {
     if (filters) {
       // Complexity filters take precedence
       if (marker.product?.complexity !== undefined) {

@@ -51,8 +51,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
   const [calculatedRoutes, setCalculatedRoutes] = useState<RouteSegment[]>([]);
 
-  const ORANGE_THRESHOLD = 500000;
-  const mapyApiKey = import.meta.env.VITE_MAPY_COM_API_KEY as
+    const mapyApiKey = import.meta.env.VITE_MAPY_COM_API_KEY as
     | string
     | undefined;
 
@@ -120,7 +119,6 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
     return allOrders.map((order) => {
       // Check if order is in delivery by checking if it's in the orders array (not by deliveryId field)
       const isUnassigned = !deliveryOrderIds.has(order.id);
-      const isHighValue = order.product.price > ORANGE_THRESHOLD;
 
       // Check if this unassigned order is filtered out
       const matchesFilters =
@@ -128,9 +126,9 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
       const isDisabled = !matchesFilters;
 
       // Determine marker type
-      let type: "delivery" | "pool" | "pool-high-value" = "delivery";
+      let type: "delivery" | "pool" = "delivery";
       if (isUnassigned) {
-        type = isHighValue ? "pool-high-value" : "pool";
+        type = "pool";
       }
 
       const waypointIndex = waypointIndexMap.get(order.id);

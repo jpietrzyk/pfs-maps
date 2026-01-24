@@ -56,8 +56,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
     setRouteSegments([]);
   }, [setRouteSegments]);
 
-  const ORANGE_THRESHOLD = 500000;
-
+  
   // Transform orders to markers
   const markers: MapMarkerData[] = React.useMemo(() => {
     // Deduplicate on initialization: filter unassigned orders that are also in delivery orders
@@ -80,8 +79,7 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
       let type: MapMarkerData["type"] = "delivery";
 
       if (isUnassigned) {
-        type =
-          order.product.price > ORANGE_THRESHOLD ? "pool-high-value" : "pool";
+        type = "pool";
       }
 
       const popupContent = (
