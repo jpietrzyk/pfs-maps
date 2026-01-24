@@ -1,29 +1,3 @@
-  /**
-   * Filter button and marker base colors (single source of truth)
-   */
-  filterColors: {
-    priority: {
-      low: '#fd5c63',
-      medium: '#BD3039',
-      high: '#C6011F',
-    },
-    status: {
-      pending: '#90EE90',
-      inprogress: '#3CB371',
-      completed: '#2E8B57',
-      cancelled: '#444C38',
-    },
-    amount: {
-      low: '#eec0c8',
-      medium: '#F9629F',
-      high: '#FF00FF',
-    },
-    complexity: {
-      simple: '#F0E68C',
-      moderate: '#FFFF00',
-      complex: '#FEBE10',
-    },
-  },
 /**
  * Map Configuration
  *
