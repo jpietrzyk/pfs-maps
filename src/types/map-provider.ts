@@ -48,7 +48,7 @@ export interface MapMarker {
    * Visual properties that should be consistent across providers
    */
   isHighlighted?: boolean;
-  iconType?: 'default' | 'pool' | 'highlight' | 'high-value';
+  iconType?: 'default' | 'unassigned' | 'highlight' | 'high-value';
 }
 
 /**

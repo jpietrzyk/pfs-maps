@@ -6,11 +6,11 @@
 
 export const mapConfig = {
   /**
-   * Pool Order Markers Configuration
+   * Unassigned Order Markers Configuration
    */
-  poolMarkers: {
+  unassignedMarkers: {
     /**
-     * Use bitmap (PNG) icons for pool order markers
+     * Use bitmap (PNG) icons for unassigned order markers
      *
      * TRUE (bitmap):
      * - Faster rendering with 200+ markers (5-10x performance gain)

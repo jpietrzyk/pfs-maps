@@ -56,8 +56,6 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
     setRouteSegments([]);
   }, [setRouteSegments]);
 
-  const ORANGE_THRESHOLD = 500000;
-
   // Transform orders to markers
   const markers: MapMarkerData[] = React.useMemo(() => {
     // Deduplicate on initialization: filter unassigned orders that are also in delivery orders
@@ -70,28 +68,27 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
     return allOrders.map((order) => {
       // Check if order is in delivery by checking if it's in the orders array (not by deliveryId field)
       // This is because orders from waypoint system don't have deliveryId set on the Order object
-      const isPool = !deliveryOrderIds.has(order.id);
+      const isUnassigned = !deliveryOrderIds.has(order.id);
 
       // Check if this unassigned order matches current filters
-      const matchesFilters = isPool
+      const matchesFilters = isUnassigned
         ? (unassignedOrderFilterStatus?.get(order.id) ?? true)
         : true; // Delivery orders always match (no filtering applied to them)
 
       let type: MapMarkerData["type"] = "delivery";
 
-      if (isPool) {
-        type =
-          order.product.price > ORANGE_THRESHOLD ? "pool-high-value" : "pool";
+      if (isUnassigned) {
+        type = "unassigned";
       }
 
       const popupContent = (
         <OrderPopupContent
           order={order}
-          isPool={isPool}
-          toggleText={isPool ? pl.addToDelivery : pl.removeFromDelivery}
+          isUnassigned={isUnassigned}
+          toggleText={isUnassigned ? pl.addToDelivery : pl.removeFromDelivery}
           onToggle={async () => {
             try {
-              if (isPool) {
+              if (isUnassigned) {
                 if (!currentDelivery) {
                   alert("Wybierz najpierw trasę dostawy");
                   return;
@@ -111,13 +108,13 @@ const OrderMapAdapter: React.FC<OrderMapAdapterProps> = ({
               }
             } catch (error) {
               console.error(
-                isPool
+                isUnassigned
                   ? "Failed to add order to delivery:"
                   : "Failed to remove order from delivery:",
                 error,
               );
               alert(
-                isPool
+                isUnassigned
                   ? "Failed to add order to delivery"
                   : "Failed to remove order from delivery",
               );

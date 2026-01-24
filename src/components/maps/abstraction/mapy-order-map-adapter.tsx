@@ -51,7 +51,6 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
   const [calculatedRoutes, setCalculatedRoutes] = useState<RouteSegment[]>([]);
 
-  const ORANGE_THRESHOLD = 500000;
   const mapyApiKey = import.meta.env.VITE_MAPY_COM_API_KEY as
     | string
     | undefined;
@@ -119,25 +118,26 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
 
     return allOrders.map((order) => {
       // Check if order is in delivery by checking if it's in the orders array (not by deliveryId field)
-      const isPool = !deliveryOrderIds.has(order.id);
-      const isHighValue = order.product.price > ORANGE_THRESHOLD;
+      const isUnassigned = !deliveryOrderIds.has(order.id);
 
       // Check if this unassigned order is filtered out
       const matchesFilters =
-        isPool && filteredOrderIds ? filteredOrderIds.has(order.id) : true;
+        isUnassigned && filteredOrderIds
+          ? filteredOrderIds.has(order.id)
+          : true;
       const isDisabled = !matchesFilters;
 
       // Determine marker type
-      let type: "delivery" | "pool" | "pool-high-value" = "delivery";
-      if (isPool) {
-        type = isHighValue ? "pool-high-value" : "pool";
+      let type: "delivery" | "unassigned" = "delivery";
+      if (isUnassigned) {
+        type = "unassigned";
       }
 
       const waypointIndex = waypointIndexMap.get(order.id);
 
       // Handle toggle action
       const handleToggle = async () => {
-        if (isPool) {
+        if (isUnassigned) {
           // Add to delivery
           if (currentDelivery) {
             await addOrderToDelivery(currentDelivery.id, order.id);
@@ -154,7 +154,9 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
         }
       };
 
-      const toggleText = isPool ? pl.addToDelivery : pl.removeFromDelivery;
+      const toggleText = isUnassigned
+        ? pl.addToDelivery
+        : pl.removeFromDelivery;
 
       // Create marker data for styling
       const markerData: MapMarkerData = {
@@ -174,7 +176,7 @@ const MapyOrderMapAdapter: React.FC<MapyOrderMapAdapterProps> = ({
         popupContent: (
           <OrderPopupContent
             order={order}
-            isPool={isPool}
+            isUnassigned={isUnassigned}
             toggleText={toggleText}
             onToggle={handleToggle}
           />
