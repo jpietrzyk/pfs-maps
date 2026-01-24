@@ -44,10 +44,10 @@ export class LeafletMapProvider implements MapProvider {
       shadowSize: [41, 41],
     }));
 
-    // Pool icon (grey) - for unassigned orders
-    this.markerIcons.set("pool", L.icon({
+    // Unassigned icon (grey) - for unassigned orders
+    this.markerIcons.set("unassigned", L.icon({
       iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png",
+        "/markers/unassigned-marker.svg",
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
@@ -163,8 +163,8 @@ export class LeafletMapProvider implements MapProvider {
       nativeMarker: marker,
       iconType: this.getIconForOrder(order) === this.markerIcons.get("highlight")
         ? "highlight"
-        : this.getIconForOrder(order) === this.markerIcons.get("pool")
-        ? "pool"
+        : this.getIconForOrder(order) === this.markerIcons.get("unassigned")
+        ? "unassigned"
         : this.getIconForOrder(order) === this.markerIcons.get("high-value")
         ? "high-value"
         : "default",
@@ -189,8 +189,8 @@ export class LeafletMapProvider implements MapProvider {
     marker.iconType =
       newIcon === this.markerIcons.get("highlight")
         ? "highlight"
-        : newIcon === this.markerIcons.get("pool")
-        ? "pool"
+        : newIcon === this.markerIcons.get("unassigned")
+        ? "unassigned"
         : newIcon === this.markerIcons.get("high-value")
         ? "high-value"
         : "default";

@@ -226,7 +226,7 @@ export default function DeliveryRouteManagerProvider({
   // NEW: Simplified since deliveries no longer have embedded orders
   const applyOptimisticAdd = useCallback(
     (deliveryId: string, orderId: string, atIndex?: number) => {
-      const orderFromPool = unassignedOrders.find(
+      const orderFromUnassigned = unassignedOrders.find(
         (order) => order.id === orderId,
       );
 
@@ -236,12 +236,12 @@ export default function DeliveryRouteManagerProvider({
       );
 
       // Add to delivery orders (if it's the current delivery)
-      if (currentDelivery?.id === deliveryId && orderFromPool) {
+      if (currentDelivery?.id === deliveryId && orderFromUnassigned) {
         setDeliveryOrders((prev) => {
           if (prev.some((order) => order.id === orderId)) return prev;
           const insertAt = atIndex ?? prev.length;
           const next = [...prev];
-          next.splice(insertAt, 0, orderFromPool);
+          next.splice(insertAt, 0, orderFromUnassigned);
           return next;
         });
       }

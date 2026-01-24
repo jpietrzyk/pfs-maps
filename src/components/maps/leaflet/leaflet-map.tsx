@@ -104,9 +104,7 @@ const createOrderPopupContent = (
             letterSpacing: "0.5px",
           }}
         >
-          {isUnassigned
-            ? "📦 Unassigned Order"
-            : "🚛 Assigned Order"}
+          {isUnassigned ? "📦 Unassigned Order" : "🚛 Assigned Order"}
         </div>
       </div>
       <div style={{ fontSize: "13px", color: "#4b5563", marginBottom: "8px" }}>
@@ -226,7 +224,7 @@ function MapFitter({
       );
       map.fitBounds(bounds, { padding: [40, 40] });
     } else {
-      // If no delivery orders, show all orders (pool orders)
+      // If no delivery orders, show all  orders)
       const bounds = L.latLngBounds(
         unassignedOrders.map((o) => [o.location.lat, o.location.lng]),
       );
@@ -283,8 +281,8 @@ const LeafletMap = ({
       }),
     [],
   );
-  // Pool/unassigned marker icons
-  const poolIcon = React.useMemo(
+  // Unassigned marker icon
+  const unassignedIcon = React.useMemo(
     () =>
       L.icon({
         iconUrl:
@@ -464,7 +462,7 @@ const LeafletMap = ({
         if (isUnassigned) {
           iconUrl =
             "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png";
-          icon = poolIcon;
+          icon = unassignedIcon;
         }
         if (highlightedOrderId === order.id) {
           iconUrl =
