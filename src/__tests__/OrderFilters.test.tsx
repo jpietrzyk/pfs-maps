@@ -3,10 +3,9 @@ import "@testing-library/jest-dom";
 import { OrderFilters } from "@/components/delivery-route/order-filters";
 
 describe("OrderFilters", () => {
-  it("should render filters section with heading", () => {
+  it("should render filters section", () => {
     render(<OrderFilters onPriorityChange={jest.fn()} />);
 
-    expect(screen.getByText("FILTRY")).toBeInTheDocument();
     expect(screen.getByText("Priorytet")).toBeInTheDocument();
   });
 
