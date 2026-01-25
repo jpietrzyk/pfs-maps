@@ -63,14 +63,6 @@ export const OrderFilters = ({
   return (
     <div className="w-full px-4 py-3 border-b border-border bg-muted/50">
       <div className="flex gap-3">
-        <div className="flex items-center">
-          <h3
-            className="text-sm font-semibold text-foreground/70 tracking-wider whitespace-nowrap"
-            style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
-          >
-            FILTRY
-          </h3>
-        </div>
         <div className="flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
             <FiltersGroup

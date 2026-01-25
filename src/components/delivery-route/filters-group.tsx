@@ -71,7 +71,7 @@ export const FiltersGroup = ({
         </Toggle>
         <span className="text-xs font-medium text-foreground/70">{name}</span>
       </div>
-      <div className={`grid grid-cols-${gridCols} gap-2`}>
+      <div className={`grid grid-cols-${gridCols} gap-2 lg:flex lg:flex-wrap`}>
         {options.map((option) => (
           <Toggle
             key={option.key}
