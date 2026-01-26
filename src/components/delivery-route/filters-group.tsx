@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  isValidElement,
-  cloneElement,
-} from "react";
+import { useMemo, isValidElement, cloneElement } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { Check, Square } from "lucide-react";
 
@@ -31,25 +24,14 @@ export const FiltersGroup = ({
   onChange,
   gridCols = 3,
 }: FiltersGroupProps) => {
-  const [currentFilters, setCurrentFilters] =
-    useState<Record<string, boolean>>(filters);
-
-  const prevFiltersRef = useRef<Record<string, boolean>>(filters);
-
-  useEffect(() => {
-    if (filters && prevFiltersRef.current !== filters) {
-      prevFiltersRef.current = filters;
-      setCurrentFilters(filters);
-    }
-  }, [filters]);
+  // Remove local state, use filters prop directly
 
   const allSelected = useMemo(() => {
-    return Object.values(currentFilters).every(Boolean);
-  }, [currentFilters]);
+    return Object.values(filters).every(Boolean);
+  }, [filters]);
 
   const handleFilterChange = (key: string) => {
-    const newFilters = { ...currentFilters, [key]: !currentFilters[key] };
-    setCurrentFilters(newFilters);
+    const newFilters = { ...filters, [key]: !filters[key] };
     onChange?.(newFilters);
   };
 
@@ -59,7 +41,6 @@ export const FiltersGroup = ({
     options.forEach((option) => {
       newFilters[option.key] = nextState;
     });
-    setCurrentFilters(newFilters);
     onChange?.(newFilters);
   };
 
@@ -90,7 +71,7 @@ export const FiltersGroup = ({
         {options.map((option) => (
           <Toggle
             key={option.key}
-            pressed={currentFilters[option.key] ?? false}
+            pressed={filters[option.key] ?? false}
             onPressedChange={() => handleFilterChange(option.key)}
             size="sm"
             aria-label={`Filtruj po ${option.label}`}
@@ -99,7 +80,7 @@ export const FiltersGroup = ({
           >
             {isValidElement(option.icon)
               ? cloneElement(option.icon, {
-                  className: currentFilters[option.key]
+                  className: filters[option.key]
                     ? `h-4 w-4 ${option.color || ""}`
                     : "h-4 w-4",
                 } as React.HTMLAttributes<HTMLElement>)
