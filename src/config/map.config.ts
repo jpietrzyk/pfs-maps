@@ -44,7 +44,16 @@ export const mapConfig = {
       completed: "#2E8B57",
       cancelled: "#444C38",
     },
-    // Add more groups as needed
+    ammount: {
+      low: "#1E90FF",
+      medium: "#104E8B",
+      high: "#08306B",
+    },
+    complexity: {
+      low: "#FFD700",
+      medium: "#FFA500",
+      high: "#FF8C00",
+    },
   },
   /**
    * Delivery Order Markers Configuration

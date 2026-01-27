@@ -107,6 +107,48 @@ export const OrderFilters = ({
       color: mapConfig.markerColors.status.cancelled,
     },
   ];
+
+  const ammountOptions = [
+    {
+      key: "low",
+      label: "Niska kwota",
+      icon: <ChevronDown />,
+      color: mapConfig.markerColors.ammount.low,
+    },
+    {
+      key: "medium",
+      label: "Średnia kwota",
+      icon: <AlertCircle />,
+      color: mapConfig.markerColors.ammount.medium,
+    },
+    {
+      key: "high",
+      label: "Wysoka kwota",
+      icon: <Zap />,
+      color: mapConfig.markerColors.ammount.high,
+    },
+  ];
+
+  const complexityOptions = [
+    {
+      key: "simple",
+      label: "Prosta złożoność",
+      icon: <Wrench />,
+      color: mapConfig.markerColors.complexity.low,
+    },
+    {
+      key: "moderate",
+      label: "Średnia złożoność",
+      icon: <Wrench />,
+      color: mapConfig.markerColors.complexity.medium,
+    },
+    {
+      key: "complex",
+      label: "Złożona złożoność",
+      icon: <Wrench />,
+      color: mapConfig.markerColors.complexity.high,
+    },
+  ];
   return (
     <div className="w-full px-4 py-3 border-b border-border bg-muted/50">
       <div className="flex gap-3">
@@ -152,26 +194,7 @@ export const OrderFilters = ({
                   high: true,
                 }
               }
-              options={[
-                {
-                  key: "low",
-                  label: "Niska kwota",
-                  icon: <ChevronDown />,
-                  color: "#eec0c8",
-                },
-                {
-                  key: "medium",
-                  label: "Średnia kwota",
-                  icon: <AlertCircle />,
-                  color: "#F9629F",
-                },
-                {
-                  key: "high",
-                  label: "Wysoka kwota",
-                  icon: <Zap />,
-                  color: "#FF00FF",
-                },
-              ]}
+              options={ammountOptions}
               onChange={
                 onAmountChange as (filters: Record<string, boolean>) => void
               }
@@ -185,26 +208,7 @@ export const OrderFilters = ({
                   complex: true,
                 }
               }
-              options={[
-                {
-                  key: "simple",
-                  label: "Prosta złożoność",
-                  icon: <Wrench />,
-                  color: "text-[#F0E68C]",
-                },
-                {
-                  key: "moderate",
-                  label: "Średnia złożoność",
-                  icon: <Wrench />,
-                  color: "text-[#FFA500]",
-                },
-                {
-                  key: "complex",
-                  label: "Złożona złożoność",
-                  icon: <Wrench />,
-                  color: "text-[#4CAF50]",
-                },
-              ]}
+              options={complexityOptions}
               onChange={
                 onComplexityChange as (filters: Record<string, boolean>) => void
               }
