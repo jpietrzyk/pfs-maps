@@ -23,9 +23,9 @@ const ICONS = {
   amountMedium: "/markers/marker-amount-medium.svg",
   amountHigh: "/markers/marker-amount-high.svg",
   // Complexity
-  complexitySimple: "/markers/marker-complexity-simple.svg",
-  complexityModerate: "/markers/marker-complexity-moderate.svg",
-  complexityComplex: "/markers/marker-complexity-complex.svg",
+  complexitySimple: "/markers/marker-complexity-low.svg",
+  complexityModerate: "/markers/marker-complexity-medium.svg",
+  complexityComplex: "/markers/marker-complexity-high.svg",
 };
 
 export function createNumberedIcon(iconUrl: string, badgeNumber?: number) {
