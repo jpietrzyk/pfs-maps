@@ -44,7 +44,7 @@ export type PriorityFilterState = {
 
 export type StatusFilterState = {
   pending: boolean;
-  inprogress: boolean;
+  "in-progress": boolean;
   completed: boolean;
   cancelled: boolean;
   [key: string]: boolean;
