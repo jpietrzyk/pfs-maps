@@ -1,4 +1,3 @@
-// @ts-ignore
 import markerColors from "./marker-colors.json";
 /**
  * Map Configuration
