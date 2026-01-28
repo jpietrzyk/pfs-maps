@@ -127,6 +127,27 @@ export default function DeliveryRouteMapLayout({
   // Remove localStorage filter logic (now handled by context)
 
   // Helper function to determine amount tier
+  // Accept both totalAmount and totalamount fields for compatibility
+  type OrderWithAmount = Order & {
+    totalAmount?: number | string;
+    totalamount?: number | string;
+  };
+
+  const getOrderAmount = React.useCallback((order: OrderWithAmount): number => {
+    // Prefer camelCase, fallback to lowercase
+    const value =
+      order.totalAmount !== undefined ? order.totalAmount : order.totalamount;
+    if (typeof value === "number") return value;
+    if (typeof value === "string") {
+      // Remove spaces, replace comma with dot if needed, remove thousands separator
+      const cleaned = value.replace(/\s/g, "").replace(/,/g, "");
+      // If value is like "2,19800" (should be 219800), just remove comma
+      const parsed = parseInt(cleaned, 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+    return 0;
+  }, []);
+
   const getAmountTier = (amount: number): keyof AmountFilterState => {
     if (amount <= 300000) return "low";
     if (amount <= 1000000) return "medium";
@@ -161,7 +182,7 @@ export default function DeliveryRouteMapLayout({
     const priorityMatch = priorityFilters[order.priority] ?? false;
     const statusMatch = statusFilters[order.status] ?? false;
     const amountMatch =
-      amountFilters[getAmountTier(order.totalAmount ?? 0)] ?? false;
+      amountFilters[getAmountTier(getOrderAmount(order))] ?? false;
     const complexityMatch =
       complexityFilters[getComplexityTier(order.product.complexity)] ?? false;
 
@@ -199,7 +220,7 @@ export default function DeliveryRouteMapLayout({
       const priorityMatch = priorityFilters[order.priority] ?? false;
       const statusMatch = statusFilters[order.status] ?? false;
       const amountMatch =
-        amountFilters[getAmountTier(order.totalAmount ?? 0)] ?? false;
+        amountFilters[getAmountTier(getOrderAmount(order))] ?? false;
       const complexityMatch =
         complexityFilters[getComplexityTier(order.product.complexity)] ?? false;
 
@@ -234,6 +255,7 @@ export default function DeliveryRouteMapLayout({
     statusFilters,
     amountFilters,
     complexityFilters,
+    getOrderAmount,
   ]);
 
   const totalAvailableOrders = displayedOrders.length + unassignedOrders.length;
