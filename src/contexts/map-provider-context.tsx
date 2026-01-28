@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useMemo } from "react";
 import type { MapProvider } from "@/types/map-provider";
-import { LeafletMapProvider } from "@/providers/LeafletMapProvider";
+import { LeafletMapProvider } from "@/providers/leaflet-map-provider";
 
 interface MapProviderContextValue {
   provider: MapProvider | null;
@@ -52,7 +52,7 @@ export const MapProviderProvider: React.FC<MapProviderProviderProps> = ({
 
   const value = useMemo(
     () => ({ provider, providerType }),
-    [provider, providerType]
+    [provider, providerType],
   );
 
   return (

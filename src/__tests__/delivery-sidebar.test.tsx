@@ -4,17 +4,17 @@ import { render, waitFor, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import DeliverySidebar from "@/components/delivery-route-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
-import { DeliveryRoutesApi } from "@/services/deliveryRoutesApi";
-import { OrdersApi } from "@/services/ordersApi";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
+import { DeliveryRoutesApi } from "@/services/delivery-routes-api";
+import { OrdersApi } from "@/services/orders-api";
 import type { Order } from "@/types/order";
 import { RouteSegmentsContext } from "@/contexts/route-segments-context";
 import type { RouteSegmentData } from "@/contexts/route-segments-context";
 
 // Mock the OrdersApi
-jest.mock("@/services/ordersApi");
+jest.mock("@/services/orders-api");
 // Mock the DeliveryRoutesApi
-jest.mock("@/services/deliveryRoutesApi");
+jest.mock("@/services/delivery-routes-api");
 
 const mockOrders: Order[] = [
   {

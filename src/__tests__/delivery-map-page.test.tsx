@@ -1,16 +1,16 @@
 // import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import DeliveryMapPage from "@/pages/DeliveryRouteMapPage";
+import DeliveryMapPage from "@/pages/delivery-route-map-page";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
-import { MapFiltersProvider } from "@/contexts/MapFiltersContext";
-import { OrdersApi } from "@/services/ordersApi";
-import { DeliveryRouteWaypointsApi } from "@/services/deliveryRouteWaypointsApi";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
+import { MapFiltersProvider } from "@/contexts/map-filters-context";
+import { OrdersApi } from "@/services/orders-api";
+import { DeliveryRouteWaypointsApi } from "@/services/delivery-route-waypoints-api";
 import type { Order } from "@/types/order";
 
 // Mock the OrdersApi
-jest.mock("@/services/ordersApi");
+jest.mock("@/services/orders-api");
 
 const mockOrders: Order[] = [
   {

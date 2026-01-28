@@ -66,7 +66,7 @@ const OrdersCountDisplay: React.FC<OrdersCountDisplayProps> = ({
           className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-1 h-9"
           variant="ghost"
         >
-          Zamówienia: {count} / {totalCount}
+          {pl.orders}: {count} / {totalCount}
         </Button>
 
         <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>

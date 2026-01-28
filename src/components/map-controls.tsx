@@ -45,7 +45,7 @@ export function MapControls({
             <button
               onClick={onResetData}
               className="border border-border/50 bg-background/50 hover:bg-accent/50 text-sm font-medium px-3 py-2 rounded shadow-sm transition-colors inline-flex items-center gap-2 h-9"
-              aria-label="Resetuj dane"
+              aria-label={pl.reset}
             >
               <RefreshCcw className="h-4 w-4" />
               {pl.reset}
@@ -58,12 +58,12 @@ export function MapControls({
               {currentMapProvider === "mapy" ? (
                 <>
                   <Map className="h-4 w-4" />
-                  Mapy.cz
+                  {pl.mapycz}
                 </>
               ) : (
                 <>
                   <MapPin className="h-4 w-4" />
-                  Leaflet
+                  {pl.leaflet}
                 </>
               )}
             </NavigationMenuTrigger>
@@ -78,7 +78,7 @@ export function MapControls({
                   }`}
                 >
                   <MapPin className="h-4 w-4" />
-                  Leaflet
+                  {pl.leaflet}
                 </button>
                 <button
                   onClick={() => onMapProviderChange("mapy")}
@@ -89,7 +89,7 @@ export function MapControls({
                   }`}
                 >
                   <Map className="h-4 w-4" />
-                  Mapy.cz
+                  {pl.mapycz}
                 </button>
               </div>
             </NavigationMenuContent>

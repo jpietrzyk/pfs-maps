@@ -1,7 +1,7 @@
 // Shared marker style logic for all map providers
 import L from "leaflet";
 import type { MapMarkerData } from "./map-data";
-import type { MapFiltersState } from "../../../contexts/MapFiltersContextTypes";
+import type { MapFiltersState } from "../../../contexts/map-filters-context-types";
 
 // Marker icon URLs (should match across providers)
 const ICONS = {

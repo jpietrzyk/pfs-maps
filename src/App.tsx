@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import DeliveryRoutesListPage from "@/pages/DeliveryRoutesListPage";
-import DeliveryMapPage from "@/pages/DeliveryRouteMapPage";
-import MapyCzMapPage from "@/pages/MapyCzMapPage";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
-import HereMapPage from "@/pages/HereMapPage";
-import { MapFiltersProvider } from "@/contexts/MapFiltersContext";
+import DeliveryRoutesListPage from "@/pages/delivery-routes-list-page";
+import DeliveryMapPage from "@/pages/delivery-route-map-page";
+import MapyCzMapPage from "@/pages/mapy-cz-map-page";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
+import HereMapPage from "@/pages/here-map-page";
+import { MapFiltersProvider } from "@/contexts/map-filters-context";
 
 function App() {
   return (
