@@ -33,6 +33,7 @@ const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 import { SidebarContext, useSidebar } from "./useSidebar";
+import { pl } from "@/lib/translations";
 
 // Define the SidebarContextProps type to match the context value structure
 type SidebarContextProps = {
@@ -278,7 +279,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
-      aria-label="Przełącz panel boczny"
+      aria-label={pl.ariaToggleSidebar}
       tabIndex={-1}
       onClick={toggleSidebar}
       title="Toggle Sidebar"

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { DeliveryRouteSegment } from "@/components/delivery-route/delivery-route-segment";
+import { pl } from "@/lib/translations";
 import type { RouteSegment, RouteData } from "@/types/map-provider";
 import type { Order } from "@/types/order";
 import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
@@ -61,13 +62,13 @@ describe("DeliveryRouteSegment", () => {
     render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should render N/A for distance and duration when no route data
-    expect(screen.getAllByText("N/A")).toHaveLength(2);
+    expect(screen.getAllByText(pl.notAvailable)).toHaveLength(2);
 
     // Should render connection icon
     expect(screen.getByTestId("connection-icon")).toBeInTheDocument();
 
     // Should render refresh button
-    const refreshButton = screen.getByLabelText("Odśwież trasę");
+    const refreshButton = screen.getByLabelText(pl.ariaRefreshRoute);
     expect(refreshButton).toBeInTheDocument();
   });
 
@@ -90,7 +91,7 @@ describe("DeliveryRouteSegment", () => {
     render(<DeliveryRouteSegment segment={segment} />, { wrapper: Wrapper });
 
     // Should display "N/A" for both distance and duration
-    const notAvailableElements = screen.getAllByText("N/A");
+    const notAvailableElements = screen.getAllByText(pl.notAvailable);
     expect(notAvailableElements).toHaveLength(2); // One for distance, one for duration
   });
 
@@ -128,7 +129,7 @@ describe("DeliveryRouteSegment", () => {
       { wrapper: Wrapper },
     );
 
-    const refreshButton = screen.getByLabelText("Odśwież trasę");
+    const refreshButton = screen.getByLabelText(pl.ariaRefreshRoute);
     fireEvent.click(refreshButton);
 
     expect(mockRecalculate).toHaveBeenCalled();
@@ -141,7 +142,7 @@ describe("DeliveryRouteSegment", () => {
       wrapper: Wrapper,
     });
 
-    const refreshButton = screen.getByLabelText("Przeliczanie trasy");
+    const refreshButton = screen.getByLabelText(pl.ariaRecalculating);
     expect(refreshButton).toBeDisabled();
   });
 
@@ -198,11 +199,11 @@ describe("DeliveryRouteSegment", () => {
     });
 
     // Should show N/A for both segments since they have no route data
-    expect(screen.getAllByText("N/A")).toHaveLength(2);
+    expect(screen.getAllByText(pl.notAvailable)).toHaveLength(2);
 
     rerender(<DeliveryRouteSegment segment={segment2} />);
 
     // Should still show N/A for the new segment
-    expect(screen.getAllByText("N/A")).toHaveLength(2);
+    expect(screen.getAllByText(pl.notAvailable)).toHaveLength(2);
   });
 });

@@ -2,7 +2,7 @@ import type { RouteSegment } from "@/types/map-provider";
 import type { RouteManager } from "@/services/route-manager";
 import { RefreshCcw, Route, Clock, ArrowRight } from "lucide-react";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
-import { formatDurationPL } from "@/lib/translations";
+import { formatDurationPL, pl } from "@/lib/translations";
 
 interface DeliveryRouteSegmentProps {
   segment: RouteSegment;
@@ -78,21 +78,21 @@ export const DeliveryRouteSegment: React.FC<DeliveryRouteSegmentProps> = ({
         <span className="font-medium text-xs text-foreground truncate">
           {segment.routeData?.distance
             ? formatDistance(segment.routeData.distance)
-            : "N/A"}
+            : pl.notAvailable}
         </span>
         <span className="text-muted-foreground text-xs">|</span>
         <Clock className="h-3 w-3 text-muted-foreground" />
         <span className="font-medium text-xs text-foreground truncate">
           {segment.routeData?.duration
             ? formatDurationPL(segment.routeData.duration)
-            : "N/A"}
+            : pl.notAvailable}
         </span>
       </div>
       <button
         onClick={handleRecalculate}
         disabled={isCalculating}
         className="p-1 hover:bg-purple-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-purple-600 hover:text-purple-700 border border-transparent hover:border-purple-300"
-        aria-label={isCalculating ? "Przeliczanie trasy" : "Odśwież trasę"}
+        aria-label={isCalculating ? pl.ariaRecalculating : pl.ariaRefreshRoute}
       >
         <RefreshCcw className="h-3 w-3" />
       </button>

@@ -120,6 +120,10 @@ export const pl = {
   ariaInfoAboutOrder: "Informacje o zamówieniu",
   ariaRefreshRoute: "Odśwież trasę",
   ariaRecalculating: "Przeliczanie...",
+  notAvailable: "N/A",
+  ariaToggleSidebar: "Przełącz panel boczny",
+  leaflet: "Leaflet",
+  mapycz: "Mapy.cz",
 } as const;
 
 /**
