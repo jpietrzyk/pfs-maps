@@ -128,20 +128,25 @@ export default function DeliveryRouteMapLayout({
 
   // Helper function to determine amount tier
   // Accept both totalAmount and totalamount fields for compatibility
-  const getOrderAmount = (order: any): number => {
+  type OrderWithAmount = Order & {
+    totalAmount?: number | string;
+    totalamount?: number | string;
+  };
+
+  const getOrderAmount = React.useCallback((order: OrderWithAmount): number => {
     // Prefer camelCase, fallback to lowercase
-    let value =
+    const value =
       order.totalAmount !== undefined ? order.totalAmount : order.totalamount;
     if (typeof value === "number") return value;
     if (typeof value === "string") {
       // Remove spaces, replace comma with dot if needed, remove thousands separator
-      let cleaned = value.replace(/\s/g, "").replace(/,/g, "");
+      const cleaned = value.replace(/\s/g, "").replace(/,/g, "");
       // If value is like "2,19800" (should be 219800), just remove comma
       const parsed = parseInt(cleaned, 10);
       if (!isNaN(parsed)) return parsed;
     }
     return 0;
-  };
+  }, []);
 
   const getAmountTier = (amount: number): keyof AmountFilterState => {
     if (amount <= 300000) return "low";
@@ -169,7 +174,6 @@ export default function DeliveryRouteMapLayout({
   }, [priorityFilters, statusFilters, amountFilters, complexityFilters]);
 
   // Filter unassigned orders based on active filters (for UI display)
-  let debugCount = 0;
   const filteredUnassignedOrders = unassignedOrders.filter((order) => {
     if (!hasActiveFilters) {
       return true; // No filters active, so show all orders
@@ -251,6 +255,7 @@ export default function DeliveryRouteMapLayout({
     statusFilters,
     amountFilters,
     complexityFilters,
+    getOrderAmount,
   ]);
 
   const totalAvailableOrders = displayedOrders.length + unassignedOrders.length;
