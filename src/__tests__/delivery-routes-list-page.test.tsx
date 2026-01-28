@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import DeliveryRoutesListPage from "@/pages/DeliveryRoutesListPage";
+import DeliveryRoutesListPage from "@/pages/delivery-routes-list-page";
 import type { DeliveryRoute } from "@/types/delivery-route";
 
 jest.mock("@/services/delivery-routes-api", () => ({

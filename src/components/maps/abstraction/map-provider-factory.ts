@@ -1,5 +1,5 @@
 import type { MapProvider } from "@/types/map-provider";
-import { LeafletMapProvider } from "@/providers/LeafletMapProvider";
+import { LeafletMapProvider } from "@/providers/leaflet-map-provider";
 
 export type MapProviderType = "leaflet" | "google" | "here" | "mapy";
 

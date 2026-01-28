@@ -3,7 +3,7 @@ import { act } from "react-dom/test-utils";
 import "@testing-library/jest-dom";
 import { DeliveryOrderList } from "@/components/delivery-route/delivery-order-list";
 import type { Order } from "@/types/order";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
 import { RouteSegmentsContext } from "@/contexts/route-segments-context";
 import type { RouteSegmentData } from "@/contexts/route-segments-context";
 

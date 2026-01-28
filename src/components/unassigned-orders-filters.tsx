@@ -1,4 +1,4 @@
-import { UnassignedOrdersFilterGroup } from "./UnassignedOrdersFilterGroup";
+import { UnassignedOrdersFilterGroup } from "./unassigned-orders-filter-group";
 
 export interface FilterGroupConfig {
   key: string;

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { MapFiltersContext, type MapFiltersContextType } from "../contexts/MapFiltersContextTypes";
+import { MapFiltersContext, type MapFiltersContextType } from "../contexts/map-filters-context-types";
 
 export const useMapFilters = (): MapFiltersContextType => {
   const context = useContext(MapFiltersContext);

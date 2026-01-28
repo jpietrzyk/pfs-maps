@@ -2,7 +2,7 @@ import {
   MapFiltersContext,
   defaultFilters,
   type MapFiltersState,
-} from "./MapFiltersContextTypes";
+} from "./map-filters-context-types";
 
 import React, { useState, useMemo } from "react";
 

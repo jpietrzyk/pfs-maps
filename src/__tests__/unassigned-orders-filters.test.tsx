@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { UnassignedOrdersFilterGroup } from "../components/UnassignedOrdersFilterGroup";
-import { UnassignedOrdersFilters } from "../components/UnassignedOrdersFilters";
-import type { FilterGroupConfig } from "../components/UnassignedOrdersFilters";
+import { UnassignedOrdersFilterGroup } from "../components/unassigned-orders-filter-group";
+import { UnassignedOrdersFilters } from "../components/unassigned-orders-filters";
+import type { FilterGroupConfig } from "../components/unassigned-orders-filters";
 
 describe("UnassignedOrdersFilterGroup", () => {
   it("renders group title and filter options", () => {
@@ -47,7 +47,7 @@ describe("UnassignedOrdersFilters", () => {
       },
     ];
     // Mock useMapFilters
-    jest.mock("@/hooks/useMapFilters", () => ({
+    jest.mock("@/hooks/use-map-filters", () => ({
       useMapFilters: () => ({
         filters: { priorityFilters: { high: false, medium: true } },
         setFilters: jest.fn(),

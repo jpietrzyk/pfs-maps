@@ -4,7 +4,7 @@ import { render, waitFor, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import DeliverySidebar from "@/components/delivery-route-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
 import { DeliveryRoutesApi } from "@/services/delivery-routes-api";
 import { OrdersApi } from "@/services/orders-api";
 import type { Order } from "@/types/order";

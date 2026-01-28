@@ -1,5 +1,5 @@
 import type { RouteSegment } from "@/types/map-provider";
-import type { RouteManager } from "@/services/RouteManager";
+import type { RouteManager } from "@/services/route-manager";
 import { RefreshCcw, Route, Clock, ArrowRight } from "lucide-react";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { formatDurationPL } from "@/lib/translations";

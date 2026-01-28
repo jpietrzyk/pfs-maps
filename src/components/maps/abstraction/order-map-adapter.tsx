@@ -10,7 +10,7 @@ import { useOrderHighlight } from "@/hooks/use-order-highlight";
 import { useSegmentHighlight } from "@/hooks/use-segment-highlight";
 import { useDeliveryRoute } from "@/hooks/use-delivery-route";
 import { useRouteSegments } from "@/hooks/use-route-segments";
-import { useMapFilters } from "@/hooks/useMapFilters";
+import { useMapFilters } from "@/hooks/use-map-filters";
 import { pl } from "@/lib/translations";
 import { OrderPopupContent } from "./order-popup-content";
 import { getMarkerStyle } from "./marker-style";

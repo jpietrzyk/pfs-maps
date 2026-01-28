@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { DeliveryRouteSegment } from "@/components/delivery-route/delivery-route-segment";
 import type { RouteSegment, RouteData } from "@/types/map-provider";
 import type { Order } from "@/types/order";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
 
 describe("DeliveryRouteSegment", () => {
   const createMockOrder = (id: string = "order-1"): Order => ({

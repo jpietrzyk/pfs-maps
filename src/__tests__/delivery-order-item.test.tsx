@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { DeliveryOrderItem } from "@/components/delivery-route/delivery-order-item";
 import type { Order } from "@/types/order";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
 import {
   DndContext,
   PointerSensor,

@@ -3,7 +3,7 @@ import { act } from "react-dom/test-utils";
 import "@testing-library/jest-dom";
 import { DeliveryRouteManager } from "@/components/delivery-route-manager";
 import type { Order, Product } from "@/types/order";
-import DeliveryRouteManagerProvider from "@/providers/DeliveryRouteManagerProvider";
+import DeliveryRouteManagerProvider from "@/providers/delivery-route-manager-provider";
 
 describe("DeliveryRouteManager", () => {
   const createMockOrder = (

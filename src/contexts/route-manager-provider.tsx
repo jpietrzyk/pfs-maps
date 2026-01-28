@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RouteManagerContext } from "./route-manager-context";
-import { RouteManager } from "@/services/RouteManager";
+import { RouteManager } from "@/services/route-manager";
 
 export default function RouteManagerProvider({
   children,
